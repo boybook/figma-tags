@@ -20,13 +20,20 @@ declare namespace TransferDeclare {
         suc: boolean
     }
 
+    type DocumentPluginData = {
+        key: string,
+        value: string
+    }
+
     type CurrentSelection = {
-        file_id: string,
-        node: {
-            type: 'PAGE' | 'FRAME',
-            id: string,
-            name: string
-        }
+        type: 'PAGE' | 'FRAME',
+        id: string,
+        name: string
+    }
+
+    type InitData = {
+        file_id?: string,
+        selection: CurrentSelection,
     }
 }
 

@@ -1,6 +1,23 @@
 import { dispatch, handleEvent } from './codeMessageHandler';
 import SelectionChange = TransferDeclare.CurrentSelection;
 figma.showUI(__html__);
+figma.ui.resize(288, 600);
+
+switch (figma.command) {
+	case 'node':
+	default:
+	{
+		let file = figma.fileKey;
+		if (!file) {
+			file = figma.root.getPluginData('file-id');
+		}
+		dispatch("init", <TransferDeclare.InitData> {
+			file_id: file,
+			selection: packageCurrentSelection()
+		});
+		break;
+	}
+}
 
 // Handle events from UI
 handleEvent('client-storage-get', (data: TransferDeclare.ClientStorageGetRequest) => {
@@ -21,26 +38,25 @@ handleEvent('client-storage-set', (data: TransferDeclare.ClientStorageSetRequest
 		dispatch('client-storage-set', result);
 	});
 });
+handleEvent('document-plugin-data-set', (data: TransferDeclare.DocumentPluginData) => {
+	figma.root.setPluginData(data.key, data.value);
+})
 
 figma.on("selectionchange", () => {
-	selectionChange();
+	dispatch("selectionchange", packageCurrentSelection());
 });
 
 figma.on("currentpagechange", () => {
-	selectionChange();
+	dispatch("selectionchange", packageCurrentSelection());
 });
 
-function selectionChange() {
-	const file = figma.fileKey;
+function packageCurrentSelection() : SelectionChange {
 	const node = figma.currentPage.selection.length > 0 ? getPageRootNode(figma.currentPage.selection[0]) : figma.currentPage;
-	dispatch("selectionchange", <SelectionChange>{
-		file_id: file,
-		node: {
-			type: node.type === 'PAGE' ? 'PAGE' : 'FRAME',
-			id: node.id,
-			name: node.name
-		}
-	});
+	return {
+		type: node.type === 'PAGE' ? 'PAGE' : 'FRAME',
+		id: node.id,
+		name: node.name
+	};
 }
 
 function isRootFrame(node: BaseNode): node is FrameNode | ComponentNode | InstanceNode {

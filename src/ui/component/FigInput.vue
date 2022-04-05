@@ -1,6 +1,7 @@
 <template>
   <input
       :value="val"
+      :placeholder="placeholder"
       :class="'input--size-' + size"
       @input="$emit('update:val', $event.target.value)"
       type="text"
@@ -17,6 +18,7 @@ export default {
       type: String,
       default: "",
     },
+    placeholder: String,
     size: {
       validator(value) {
         return ['small', 'normal', 'large'].includes(value)
