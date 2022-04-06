@@ -2,7 +2,7 @@
   <input
       :value="val"
       :placeholder="placeholder"
-      :class="'input--size-' + size"
+      :class="classObject"
       @input="$emit('update:val', $event.target.value)"
       type="text"
   />
@@ -24,6 +24,12 @@ export default {
         return ['small', 'normal', 'large'].includes(value)
       },
       default: 'normal'
+    },
+    status: {
+      validator(value) {
+        return [undefined, 'error', 'warning'].includes(value)
+      },
+      default: undefined
     }
   },
   emits: ["update:val"],
@@ -34,8 +40,15 @@ export default {
           emit("update:val", newVal);
         },
     );
+    const classObject = {
+      'input--size-small': (props.size === 'small'),
+      'input--size-normal': (props.size === 'normal'),
+      'input--size-large': (props.size === 'large'),
+      'input--status-error': (props.status === 'error'),
+      'input--status-warning': (props.status === 'warning')
+    }
     return {
-      ...toRefs(props),
+      ...toRefs(props), classObject
     };
   },
 }
@@ -88,6 +101,14 @@ input::placeholder {
   color: rgba(0, 0, 0, 0.85);
   font-size: 16px;
   line-height: 28px;
+}
+
+.input--status-error {
+  box-shadow: inset 0 0 0 1px #f24822 !important;
+}
+
+.input--status-warning {
+  box-shadow: inset 0 0 0 1px #faad14 !important;
 }
 
 </style>

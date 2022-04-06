@@ -1,7 +1,8 @@
 <template>
   <div class="page-node-init">
     <img :src="require('./resource/file-input.svg')" alt="file-input">
-    <FigInput v-model:val="fileUrl" placeholder="从录入文件URL开始" />
+    <FigInput v-model:val="fileUrl" :status="error ? 'error' : undefined" placeholder="从录入文件URL开始" />
+    <p v-show="error" id="p-alert"> 请确保输入的URL为该设计稿的分享链接 </p>
     <FigButton type="primary" style="width: 80px" @click="check"> GO </FigButton>
   </div>
 </template>
@@ -11,7 +12,7 @@
 import { ref } from "vue";
 import FigInput from "../component/FigInput.vue";
 import FigButton from "../component/FigButton.vue";
-import {dispatch} from "../uiMessageHandler";
+import { dispatch } from "../uiMessageHandler";
 
 export default {
   name: "PageNodeInitFile",
@@ -19,6 +20,7 @@ export default {
   emits: [ 'set-file-id' ],
   setup(_, context) {
     const fileUrl = ref('');
+    const error = ref(false);
 
     function check() {
       const result = fileUrl.value.split('?')[0].replace("https://", '').replace(/([#\/])/g, '&').split('&');
@@ -30,11 +32,14 @@ export default {
             value: fileId
           });
           context.emit('set-file-id', fileId);
+          error.value = false;
+          return;
         }
       }
+      error.value = true;
     }
 
-    return { fileUrl, check }
+    return { fileUrl, error, check }
   }
 }
 </script>
@@ -59,6 +64,11 @@ export default {
 .page-node-init > input {
   align-self: stretch;
   text-align:center;
+}
+
+#p-alert {
+  font-size: 12px;
+  color: #f24822;
 }
 
 </style>
