@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
-		"target": "es6",
-		"module": "es2015",
+		"target": "esnext",
+		"module": "esnext",
 		"moduleResolution": "node",
 		"typeRoots": [
 			"./node_modules/@types",

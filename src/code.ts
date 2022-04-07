@@ -1,5 +1,5 @@
 import { dispatch, handleEvent } from './codeMessageHandler';
-import SelectionChange = TransferDeclare.CurrentSelection;
+import SelectionChange = Transfer.CurrentSelection;
 figma.showUI(__html__);
 figma.ui.resize(288, 600);
 
@@ -11,7 +11,7 @@ switch (figma.command) {
 		if (!file) {
 			file = figma.root.getPluginData('file-id');
 		}
-		dispatch("init", <TransferDeclare.InitData> {
+		dispatch("init", <Transfer.InitData> {
 			file_id: file,
 			selection: packageCurrentSelection()
 		});
@@ -20,25 +20,25 @@ switch (figma.command) {
 }
 
 // Handle events from UI
-handleEvent('client-storage-get', (data: TransferDeclare.ClientStorageGetRequest) => {
+handleEvent('client-storage-get', (data: Transfer.ClientStorageGetRequest) => {
 	figma.clientStorage.getAsync(data.key).then(r => {
-		const result: TransferDeclare.ClientStorageGetResult = {
+		const result: Transfer.ClientStorageGetResult = {
 			key: data.key,
 			result: r
 		}
 		dispatch('client-storage-get', result);
 	});
 });
-handleEvent('client-storage-set', (data: TransferDeclare.ClientStorageSetRequest) => {
+handleEvent('client-storage-set', (data: Transfer.ClientStorageSetRequest) => {
 	figma.clientStorage.setAsync(data.key, data.data).then(() => {
-		const result: TransferDeclare.ClientStorageSetResult = {
+		const result: Transfer.ClientStorageSetResult = {
 			key: data.key,
 			suc: true
 		}
 		dispatch('client-storage-set', result);
 	});
 });
-handleEvent('document-plugin-data-set', (data: TransferDeclare.DocumentPluginData) => {
+handleEvent('document-plugin-data-set', (data: Transfer.DocumentPluginData) => {
 	figma.root.setPluginData(data.key, data.value);
 })
 

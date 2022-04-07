@@ -21,7 +21,7 @@ import {PropType} from "vue";
 export default {
   name: "PageNodeTopBar",
   props: {
-    current: Object as PropType<TransferDeclare.CurrentSelection>,
+    current: Object as PropType<Transfer.CurrentSelection>,
   },
   emits: [ 'refresh', 'page-settings'],
   setup() {

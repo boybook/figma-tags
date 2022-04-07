@@ -9,8 +9,8 @@ export class DataProviderBlobSave implements DataProvider {
 
     private blob: BlobProvider;
 
-    private fullTags?: DataDeclare.FullTags;
-    private fullNodes?: DataDeclare.FullNodes;
+    private fullTags?: Storage.FullTags;
+    private fullNodes?: Storage.FullNodes;
 
     constructor(helper: BlobProvider) {
         this.blob = helper;
@@ -21,19 +21,19 @@ export class DataProviderBlobSave implements DataProvider {
     }
 
     reloadFullTags = async () => {
-        this.fullTags = <DataDeclare.FullTags> JSON.parse(await this.blob.storageGet('tags'));
+        this.fullTags = <Storage.FullTags> JSON.parse(await this.blob.storageGet('tags'));
         return this.fullTags;
     }
 
-    setFullTags = async (fullTags: DataDeclare.FullTags) => {
+    setFullTags = async (fullTags: Storage.FullTags) => {
         await this.blob.storageSet('tags', JSON.stringify(fullTags));
     }
 
-    getFullNodes = async () : Promise<DataDeclare.FullNodes> => {
+    getFullNodes = async () : Promise<Storage.FullNodes> => {
         if (this.fullNodes) {
             return this.fullNodes;
         } else {
-            this.fullNodes = <DataDeclare.FullNodes> JSON.parse(await this.blob.storageGet('nodes'));
+            this.fullNodes = <Storage.FullNodes> JSON.parse(await this.blob.storageGet('nodes'));
             return this.fullNodes;
         }
     }
@@ -43,7 +43,7 @@ export class DataProviderBlobSave implements DataProvider {
         return full[fileId + "#" + nodeId];
     }
 
-    saveNode = async (fileId: string, nodeId: string, node: DataDeclare.Node) => {
+    saveNode = async (fileId: string, nodeId: string, node: Storage.Node) => {
         const full = await this.getFullNodes();
         full[fileId + "#" + nodeId] = node;
         await this.blob.storageSet('nodes', JSON.stringify(full));
@@ -56,8 +56,8 @@ export class DataProviderBlobSave implements DataProvider {
     }
 
     selectNodes = async (tagType: string, tag: string, sortTagType?: string) => {
-        const array = <[DataDeclare.Node]> Object.values(await this.getFullNodes());
-        const filter = <[DataDeclare.Node]> array
+        const array = <[Storage.Node]> Object.values(await this.getFullNodes());
+        const filter = <[Storage.Node]> array
             .filter(n => n.tags[tagType])
             .filter(n => n.tags[tagType]?.find(t => t.name === tag));
         if (sortTagType) {

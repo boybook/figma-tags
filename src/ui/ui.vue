@@ -15,10 +15,10 @@ export default {
   setup() {
     const page = ref<'PageNode' | 'PageSetting' | 'PageSelect'>(undefined);
     const provider = reactive(new DataProviderBlobSave(BlobLocalProvider));
-    const initData = ref<TransferDeclare.InitData>(undefined);
+    const initData = ref<Transfer.InitData>(undefined);
 
     onMounted(() => {
-      handleEvent("init", (data: TransferDeclare.InitData) => {
+      handleEvent("init", (data: Transfer.InitData) => {
         initData.value = data;
         page.value = 'PageNode';
       })

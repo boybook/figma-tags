@@ -1,11 +1,11 @@
 import { dispatch, handleEvent } from "../../uiMessageHandler";
 
 // Local Data Provider
-handleEvent('client-storage-get', (data: TransferDeclare.ClientStorageGetResult) => {
+handleEvent('client-storage-get', (data: Transfer.ClientStorageGetResult) => {
     promiseClientStorageGet.set(data.key, data.result);
 });
 
-handleEvent('client-storage-set', (data: TransferDeclare.ClientStorageSetResult) => {
+handleEvent('client-storage-set', (data: Transfer.ClientStorageSetResult) => {
     promiseClientStorageSet.set(data.key, data.suc);
 });
 

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { toRefs, defineComponent, watch } from "vue";
+import {toRefs, defineComponent, watch, ref, computed} from "vue";
 
 export default {
   name: "FigInput",
@@ -20,16 +20,18 @@ export default {
     },
     placeholder: String,
     size: {
+      type: String,
       validator(value) {
         return ['small', 'normal', 'large'].includes(value)
       },
       default: 'normal'
     },
     status: {
+      type: String,
       validator(value) {
-        return [undefined, 'error', 'warning'].includes(value)
+        return ['', 'error', 'warning'].includes(value)
       },
-      default: undefined
+      default: ''
     }
   },
   emits: ["update:val"],
@@ -40,13 +42,15 @@ export default {
           emit("update:val", newVal);
         },
     );
-    const classObject = {
-      'input--size-small': (props.size === 'small'),
-      'input--size-normal': (props.size === 'normal'),
-      'input--size-large': (props.size === 'large'),
-      'input--status-error': (props.status === 'error'),
-      'input--status-warning': (props.status === 'warning')
-    }
+    const classObject = computed(() => (
+      {
+        'input--size-small': props.size === 'small',
+        'input--size-normal': props.size === 'normal',
+        'input--size-large': props.size === 'large',
+        'input--status-error': props.status === 'error',
+        'input--status-warning': props.status === 'warning'
+      }
+    ));
     return {
       ...toRefs(props), classObject
     };

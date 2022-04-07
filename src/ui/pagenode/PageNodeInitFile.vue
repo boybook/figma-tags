@@ -1,8 +1,10 @@
 <template>
   <div class="page-node-init">
     <img :src="require('./resource/file-input.svg')" alt="file-input">
-    <FigInput v-model:val="fileUrl" :status="error ? 'error' : undefined" placeholder="从录入文件URL开始" />
-    <p v-show="error" id="p-alert"> 请确保输入的URL为该设计稿的分享链接 </p>
+    <div class="page-node-init-input">
+      <FigInput v-model:val="fileUrl" :status="error ? 'error' : ''" placeholder="从录入文件URL开始" />
+      <p v-show="error" id="p-alert" style="margin-top: 8px"> 请确保输入的URL为该设计稿的分享链接 </p>
+    </div>
     <FigButton type="primary" style="width: 80px" @click="check"> GO </FigButton>
   </div>
 </template>
@@ -61,9 +63,25 @@ export default {
   margin: 16px 0;
 }
 
-.page-node-init > input {
+.page-node-init-input {
+  flex: none;
   align-self: stretch;
-  text-align:center;
+  flex-grow: 0;
+  margin: 8px 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+}
+
+.page-node-init-input > input {
+  align-self: stretch;
+  text-align: center;
+}
+
+.page-node-init-input p {
+  margin: 8px 0 0;
 }
 
 #p-alert {
