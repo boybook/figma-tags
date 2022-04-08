@@ -1,7 +1,7 @@
 <template>
   <PageNodeInitFile v-if="!fileId" @set-file-id="onSetFileId" />
   <PageNodeTopBar v-if="fileId" :current="currentSelection" @page-settings="fileId = undefined" />
-  <PageNodeFooter @save="toSave" @delete="toDelete" />
+  <PageNodeFooter v-if="fileId" @save="toSave" @delete="toDelete" />
   <div id="ui" v-if="fileId">
     <div class="title">
       <!--
