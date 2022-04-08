@@ -6,16 +6,18 @@
 
 import { dispatch, handleEvent } from "./uiMessageHandler";
 import { onMounted, reactive, ref } from 'vue';
-import { DataProviderBlobSave } from "./provider/DataProviderBlobSave";
+import DataProviderBlobSave from "./provider/DataProviderBlobSave";
 import BlobLocalProvider from "./provider/blob/BlobLocalProvider";
 import PageNode from "./pagenode/PageNode.vue";
+import DataProvider from './provider/DataProvider';
 
 export default {
   components: { PageNode },
   setup() {
-    const page = ref<'PageNode' | 'PageSetting' | 'PageSelect'>(undefined);
-    const provider = reactive(new DataProviderBlobSave(BlobLocalProvider));
-    const initData = ref<Transfer.InitData>(undefined);
+    const page = ref<'PageNode' | 'PageSetting' | 'PageSelect'>();
+    DataProviderBlobSave.constructor(BlobLocalProvider);
+    const provider = reactive<DataProvider>(DataProviderBlobSave);
+    const initData = ref<Transfer.InitData>();
 
     onMounted(() => {
       handleEvent("init", (data: Transfer.InitData) => {
@@ -26,7 +28,7 @@ export default {
 
     return { page, provider, initData }
   }
-};
+}
 </script>
 
 <style scoped>

@@ -3,9 +3,10 @@
 		"target": "es6",
 		"module": "es2015",
 		"moduleResolution": "node",
+		"sourceMap": true,
 		"typeRoots": [
 			"./node_modules/@types",
 			"./node_modules/@figma"
-		  ]
+		]
 	}
 }

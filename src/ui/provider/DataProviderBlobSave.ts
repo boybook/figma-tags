@@ -5,64 +5,68 @@ export interface BlobProvider {
     storageSet: (key: string, data: any) => Promise<void>
 }
 
-export class DataProviderBlobSave implements DataProvider {
+export default {
 
-    private blob: BlobProvider;
+    helper: <BlobProvider> undefined,
 
-    private fullTags?: Storage.FullTags;
-    private fullNodes?: Storage.FullNodes;
+    fullTags: <Storage.FullTags> undefined,
+    fullNodes: <Storage.FullNodes> undefined,
 
     constructor(helper: BlobProvider) {
-        this.blob = helper;
-    }
+        this.helper = helper;
+    },
 
-    getFullTags = async () => {
+    async getFullTags() : Promise<Storage.FullTags> {
         return this.fullTags ? this.fullTags : this.reloadFullTags();
-    }
+    },
 
-    reloadFullTags = async () => {
-        this.fullTags = <Storage.FullTags> JSON.parse(await this.blob.storageGet('tags'));
+    async reloadFullTags() : Promise<Storage.FullTags> {
+        this.fullTags = <Storage.FullTags> JSON.parse(await this.helper.storageGet('tags'));
         return this.fullTags;
-    }
+    },
 
-    setFullTags = async (fullTags: Storage.FullTags) => {
-        await this.blob.storageSet('tags', JSON.stringify(fullTags));
-    }
+    async setFullTags(fullTags: Storage.FullTags) : Promise<void> {
+        await this.helper.storageSet('tags', JSON.stringify(fullTags));
+    },
 
-    getFullNodes = async () : Promise<Storage.FullNodes> => {
+    async getFullNodes() : Promise<Storage.FullNodes> {
         if (this.fullNodes) {
             return this.fullNodes;
         } else {
-            this.fullNodes = <Storage.FullNodes> JSON.parse(await this.blob.storageGet('nodes'));
+            this.fullNodes = <Storage.FullNodes> JSON.parse(await this.helper.storageGet('nodes'));
             return this.fullNodes;
         }
-    }
+    },
 
-    getNode = async (fileId: string, nodeId: string) => {
+    async getNode(fileId: string, nodeId: string) : Promise<Storage.Node | undefined> {
         const full = await this.getFullNodes();
         return full[fileId + "#" + nodeId];
-    }
+    },
 
-    saveNode = async (fileId: string, nodeId: string, node: Storage.Node) => {
+    async saveNode(fileId: string, nodeId: string, node: Storage.Node) : Promise<void> {
         const full = await this.getFullNodes();
         full[fileId + "#" + nodeId] = node;
-        await this.blob.storageSet('nodes', JSON.stringify(full));
-    }
+        await this.helper.storageSet('nodes', JSON.stringify(full));
+    },
 
-    deleteNode = async (fileId: string, nodeId: string) => {
+    async deleteNode(fileId: string, nodeId: string) : Promise<void> {
         const full = await this.getFullNodes();
         delete full[fileId + "#" + nodeId];
-        await this.blob.storageSet('nodes', JSON.stringify(full));
-    }
+        await this.helper.storageSet('nodes', JSON.stringify(full));
+    },
 
-    selectNodes = async (tagType: string, tag: string, sortTagType?: string) => {
+    async selectNodes(tagType: string, tag: string, sortTagType?: string) : Promise<[Storage.Node]> {
         const array = <[Storage.Node]> Object.values(await this.getFullNodes());
         const filter = <[Storage.Node]> array
             .filter(n => n.tags[tagType])
+<<<<<<< HEAD
             .filter(n => n.tags[tagType]?.find(t => t === tag));
+=======
+            .filter(n => n.tags[tagType] && n.tags[tagType].find(t => t === tag));
+>>>>>>> 79e7d43dd8fa8a249d7ab100e697373cb1fa5d99
         if (sortTagType) {
             const fullTags = await this.getFullTags();
-            const sortBase = fullTags[sortTagType]?.tags;
+            const sortBase = fullTags[sortTagType] ? fullTags[sortTagType].tags : undefined;
             if (sortBase) {
                 return filter.sort((n1, n2) => {
                     const n1Tags = n1.tags[sortTagType];
