@@ -48,7 +48,7 @@ declare namespace Storage {
 
     type TagGroup = {
         name: string,
-        tags: [ Storage.Tag ]
+        tags: Storage.Tag[]
     }
 
     // tag_type, TagGroup
@@ -96,5 +96,14 @@ declare namespace Context {
     }
 
     type TagTree = TagType[]
+
+    type Node = {
+        saved: boolean,
+        title: string,
+        file_id: string,
+        node_id: string,
+        cover?: string,
+        tags: Storage.NodeTags
+    }
 
 }

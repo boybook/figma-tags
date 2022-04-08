@@ -1,24 +1,35 @@
 <template>
   <PageNodeInitFile v-if="!fileId" @set-file-id="onSetFileId" />
   <PageNodeTopBar v-if="fileId" :current="currentSelection" @page-settings="fileId = undefined" />
+  <PageNodeFooter />
   <div id="ui" v-if="fileId">
-    <div class="title" v-if="!loading">
+    <div class="title">
       <!--
       <a v-tooltip="{ content: node.notion_id ? 'Linked' : 'Unlinked', placement: 'bottom', offset: 4}" :href="node.notion_url" target="_blank">
         Link
       </a>
       -->
-      <FigInput v-model:val="node.title" />
+      <FigInput v-if="node" v-model:val="node.title" />
     </div>
-    <div></div>
-    <FigTag :removable="true" />
+    <div class="selected" v-show="collectTags?.length > 0">
+      <FigTag
+          v-for="tag in collectTags"
+          :tag="tag"
+          :removable="true"
+          @remove="tag.check = !tag.check"
+      >
+      </FigTag>
+    </div>
+    <div class="tree">
+      <TagTree :tag-tree="tagTree" />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 
 import DataProvider from "../provider/DataProvider";
-import {onMounted, PropType, ref} from "vue";
+import { computed, onMounted, PropType, ref, watchEffect} from "vue";
 import { handleEvent } from "../uiMessageHandler";
 
 import FigInput from "../component/FigInput.vue";
@@ -27,10 +38,12 @@ import FigTag from "../component/FigTag.vue";
 import PageNodeTopBar from "./PageNodeTopBar.vue";
 import PageNodeInitFile from "./PageNodeInitFile.vue";
 import * as Utils from "../utils";
+import TagTree from "../component/tagtree/TagTree.vue";
+import PageNodeFooter from "./PageNodeFooter.vue";
 
 export default {
   name: "PageNode",
-  components: { PageNodeInitFile, FigButton, FigInput, FigTag, PageNodeTopBar },
+  components: {PageNodeFooter, TagTree, PageNodeInitFile, FigButton, FigInput, FigTag, PageNodeTopBar },
   props: {
     provider: Object as PropType<DataProvider>,
     initData: Object as PropType<Transfer.InitData>
@@ -42,32 +55,52 @@ export default {
     const fileId = ref(props.initData.file_id);
     const currentSelection = ref<Transfer.CurrentSelection>(props.initData.selection);
 
-    const node = ref<Storage.Node>();
+    const node = ref<Context.Node>();
     const tagTree = ref<Context.TagTree>();
 
+    // 监听从插件传来的 selectionchange
     onMounted(() => {
       handleEvent("selectionchange", async (data: Transfer.CurrentSelection) => {
         currentSelection.value = data;
-        node.value = await provider.getNode(fileId.value, currentSelection.value.id);
-        if (!node.value) {  // 为空值时，初始化一个空的Node
-          node.value = {
-            title: currentSelection.value.name,
-            file_id: fileId.value,
-            node_id: currentSelection.value.id,
-            tags: {}
-          }
-        }
-        tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, await provider.getFullTags());
       });
     });
 
+    // selection改变时，自动刷新当前已选中的frame
+    watchEffect(async () => {
+      if (!currentSelection.value) return;
+      const fullTags = await provider.getFullTags();
+      const nodeData = await provider.getNode(fileId.value, currentSelection.value.id);
+      node.value = Utils.storageNode2ContextNode(nodeData);
+      // Node为空时，初始化一个缺省的Node
+      if (!node.value) {
+        node.value = {
+          saved: false,
+          title: currentSelection.value.name,
+          file_id: fileId.value,
+          node_id: currentSelection.value.id,
+          tags: {}
+        }
+      }
+      tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags);
+    });
+
+    // flat出所有已选Tag
+    const collectTags = computed(() => {
+      return tagTree.value
+          ?.flatMap(type => Object.values(type.tags))
+          .flat()
+          .filter(t => t.check)
+    });
+
+    // 成功设置fileId的监听
     const onSetFileId = (file: string) => {
       fileId.value = file;
     }
 
     return {
-      provider, fileId, currentSelection, node, tagTree, onSetFileId
+      provider, fileId, currentSelection, node, tagTree, collectTags, onSetFileId
     };
+
   }
 }
 </script>
@@ -77,10 +110,52 @@ export default {
 #ui{
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  padding: 46px 12px 64px;
+}
+
+#ui > * {
+  flex: none;
+  align-self: stretch;
+  flex-grow: 0;
+  margin: 0 0 12px;
+}
+
+.title {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  padding: var(--size-medium);
-  padding-top: 34px;
+  padding: 0;
+}
+
+.title > * {
+  flex: none;
+  flex-grow: 1;
+}
+
+.tree {
+  padding-top: 12px;
+  border-top: solid #e0e0e0 1px;
+}
+
+.selected {
+  padding: 0 0 8px;
+  margin-bottom: 4px !important;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-flow: wrap;
+}
+
+.selected .tag {
+  margin: 0 4px 4px 0;
+  flex: none;
+  flex-grow: 0;
+}
+
+.selected .tag svg {
+  padding: 0 4px 0 2px;
+  cursor: pointer;
 }
 
 </style>

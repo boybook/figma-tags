@@ -21,7 +21,24 @@ export class DataProviderBlobSave implements DataProvider {
     }
 
     reloadFullTags = async () => {
-        this.fullTags = <Storage.FullTags> JSON.parse(await this.blob.storageGet('tags'));
+        let result = await this.blob.storageGet('tags');
+        if (!result) result = "{}";
+        this.fullTags = <Storage.FullTags> JSON.parse(result);
+        // 如果没有取到，那么会返回默认的tags
+        if (Object.values(this.fullTags).length === 0) {
+            this.fullTags = {
+                'Default': {
+                    name: 'Default',
+                    tags: [
+                        {
+                            name: "Tag",
+                            color: { r: 0, g: 0, b: 0, a: 0.85 },
+                            background: { r: 227, g: 226, b: 224, a: 0.5 }
+                        }
+                    ]
+                }
+            }
+        }
         return this.fullTags;
     }
 
@@ -33,7 +50,9 @@ export class DataProviderBlobSave implements DataProvider {
         if (this.fullNodes) {
             return this.fullNodes;
         } else {
-            this.fullNodes = <Storage.FullNodes> JSON.parse(await this.blob.storageGet('nodes'));
+            let result = await this.blob.storageGet('nodes');
+            if (!result) result = "{}";
+            this.fullNodes = <Storage.FullNodes> JSON.parse(result);
             return this.fullNodes;
         }
     }

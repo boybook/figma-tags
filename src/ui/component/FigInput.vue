@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import {toRefs, defineComponent, watch, ref, computed} from "vue";
+import { toRefs, defineComponent, watch, ref, computed } from "vue";
 
 export default {
   name: "FigInput",

@@ -3,6 +3,8 @@ import SelectionChange = Transfer.CurrentSelection;
 figma.showUI(__html__);
 figma.ui.resize(288, 600);
 
+//figma.clientStorage.setAsync("tags", undefined).then();
+
 switch (figma.command) {
 	case 'node':
 	default:

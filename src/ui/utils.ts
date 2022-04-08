@@ -56,3 +56,16 @@ export function storageTags2ContextTagTree(storageTags: Storage.NodeTags, fullTa
     }
     return tagTree;
 }
+
+export function storageNode2ContextNode(node : Storage.Node) : Context.Node {
+    return node ? {
+        saved: true,
+        ...node
+    } : undefined;
+}
+
+export function contextNode2ContextNode(node : Context.Node) : Storage.Node {
+    return {
+        ...node
+    }
+}
