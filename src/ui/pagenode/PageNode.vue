@@ -1,7 +1,12 @@
 <template>
   <PageNodeInitFile v-if="!fileId" @set-file-id="onSetFileId" />
-  <PageNodeTopBar v-if="fileId" :current="currentSelection" @page-settings="fileId = undefined" />
-  <PageNodeFooter v-if="fileId" @save="toSave" @delete="toDelete" />
+  <PageNodeTopBar
+      v-if="fileId"
+      :current="currentSelection"
+      @refresh="reloadNode"
+      @page-settings="fileId = undefined"
+  />
+  <PageNodeFooter v-if="fileId" :show-del="node.saved" @save="toSave" @delete="toDelete" />
   <div id="ui" v-if="fileId">
     <div class="title">
       <!--
@@ -158,7 +163,7 @@ export default {
     }
 
     return {
-      provider, fileId, currentSelection, fullTags, node, tagTree, collectTags, onSetFileId, addTag, toSave, toDelete
+      provider, fileId, currentSelection, fullTags, node, tagTree, collectTags, reloadNode, onSetFileId, addTag, toSave, toDelete
     };
 
   }

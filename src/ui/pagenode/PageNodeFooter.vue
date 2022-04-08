@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
     <FigButton type="primary" @click="$emit('save')">Save</FigButton>
-    <FigButton @click="$emit('delete')" style="padding: 8px">
+    <FigButton v-if="showDel" @click="$emit('delete')" style="padding: 8px">
       <img :src="require('./resource/delete.svg')" alt="delete">
     </FigButton>
   </div>
@@ -13,7 +13,10 @@ import FigButton from "../component/FigButton.vue";
 
 export default {
   name: "PageNodeFooter",
-  components: {FigButton},
+  components: { FigButton },
+  props: {
+    showDel: Boolean
+  },
   emits: [
       'save',
       'delete'
