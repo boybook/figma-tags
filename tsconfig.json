@@ -3,9 +3,10 @@
 		"target": "esnext",
 		"module": "esnext",
 		"moduleResolution": "node",
+		"sourceMap": true,
 		"typeRoots": [
 			"./node_modules/@types",
 			"./node_modules/@figma"
-		  ]
+		]
 	}
 }
