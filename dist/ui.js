@@ -14224,7 +14224,7 @@ module.exports = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQi
 /*! exports provided: default */
 /***/ (function(module, exports) {
 
-throw new Error("Module parse failed: Unexpected token (45:41)\nFile was processed with these loaders:\n * ./node_modules/ts-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n|         const filter = array\n|             .filter(n => n.tags[tagType])\n>             .filter(n => n.tags[tagType]?.find(t => t === tag));\n|         if (sortTagType) {\n|             const fullTags = await this.getFullTags();");
+throw new Error("Module parse failed: Unexpected token (2:8)\nFile was processed with these loaders:\n * ./node_modules/ts-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n| export class DataProviderBlobSave {\n>     blob;\n|     fullTags;\n|     fullNodes;");
 
 /***/ }),
 
