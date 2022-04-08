@@ -5,7 +5,7 @@ export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGr
     };
 
     for (let tag of fullTagGroup.tags) {
-        const tagNameSubs = tag.name.replaceAll(' ', '').split('/', 2);
+        const tagNameSubs = tag.name.replace(' ', '').split('/', 2);
         const childTag = tagNameSubs.length > 1 ? tagNameSubs[0] : '';
         if (!tags[childTag]) {
             tags[childTag] = [];

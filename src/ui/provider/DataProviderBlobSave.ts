@@ -59,16 +59,16 @@ export class DataProviderBlobSave implements DataProvider {
         const array = <[Storage.Node]> Object.values(await this.getFullNodes());
         const filter = <[Storage.Node]> array
             .filter(n => n.tags[tagType])
-            .filter(n => n.tags[tagType]?.find(t => t.name === tag));
+            .filter(n => n.tags[tagType]?.find(t => t === tag));
         if (sortTagType) {
             const fullTags = await this.getFullTags();
             const sortBase = fullTags[sortTagType]?.tags;
             if (sortBase) {
                 return filter.sort((n1, n2) => {
                     const n1Tags = n1.tags[sortTagType];
-                    const n1TagIndex = (n1Tags && n1Tags.length > 0) ? sortBase.findIndex(t => t.name === n1Tags[0].name) : -1;
+                    const n1TagIndex = (n1Tags && n1Tags.length > 0) ? sortBase.findIndex(t => t.name === n1Tags[0]) : -1;
                     const n2Tags = n2.tags[sortTagType];
-                    const n2TagIndex = (n2Tags && n2Tags.length > 0) ? sortBase.findIndex(t => t.name === n2Tags[0].name) : -1;
+                    const n2TagIndex = (n2Tags && n2Tags.length > 0) ? sortBase.findIndex(t => t.name === n2Tags[0]) : -1;
                     return n1TagIndex - n2TagIndex;
                 });
             } else {

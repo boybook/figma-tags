@@ -48,11 +48,11 @@ export default {
     onMounted(() => {
       handleEvent("selectionchange", async (data: Transfer.CurrentSelection) => {
         currentSelection.value = data;
-        node.value = await provider.getNode(fileId, currentSelection.value.id);
+        node.value = await provider.getNode(fileId.value, currentSelection.value.id);
         if (!node.value) {  // 为空值时，初始化一个空的Node
           node.value = {
             title: currentSelection.value.name,
-            file_id: fileId,
+            file_id: fileId.value,
             node_id: currentSelection.value.id,
             tags: {}
           }
