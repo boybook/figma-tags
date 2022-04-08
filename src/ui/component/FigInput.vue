@@ -8,8 +8,9 @@
   />
 </template>
 
-<script>
-import { toRefs, defineComponent, watch, ref, computed } from "vue";
+<script lang="ts">
+
+import {toRefs, watch, computed} from "vue";
 
 export default {
   name: "FigInput",
@@ -35,11 +36,16 @@ export default {
     }
   },
   emits: ["update:val"],
-  setup(props, { emit }) {
+  setup(props, context) {
+    /*onMounted(() => {
+      // 聚焦元素
+      console.log(context);
+      context.value.focus();
+    });*/
     watch(
         () => props.val,
         (newVal) => {
-          emit("update:val", newVal);
+          context.emit("update:val", newVal);
         },
     );
     const classObject = computed(() => (

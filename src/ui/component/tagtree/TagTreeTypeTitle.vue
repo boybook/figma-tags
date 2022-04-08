@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-title" @click="open = !open" @mouseover="hover = true" @mouseleave="hover = false">
+  <div class="tree-title" @click="toggle" @mouseover="hover = true" @mouseleave="hover = false">
     <img :src="require('../../resource/fold.svg')" alt="fold" class="icon-fold" :class="{ 'rotate-0': !open, 'rotate-90': open }">
     <span class="title-area">
       <span class="title-name">
@@ -7,8 +7,13 @@
       </span>
       <span class="counter" v-bind:class="{ 'counter-zero': count === 0 }"> {{ count }} </span>
     </span>
-    <div class="tree-extra-area" v-if="hover">
-
+    <div class="tree-extra-area">
+      <div v-if="extraAdd"
+           class="tree-extra-operation"
+           @click="$emit('extraAdd')"
+      >
+        <img :src="require('../../resource/add.svg')" alt="add">
+      </div>
     </div>
   </div>
 </template>
@@ -20,21 +25,29 @@ export default {
 
   name: "TagTreeTypeTitle",
   props: {
-    open: Boolean,
-    count: Number
+    open: {
+      type: Boolean,
+      default: true
+    },
+    lockOpen: {
+      type: Boolean,
+      default: false
+    },
+    count: Number,
+    extraAdd: Boolean
   },
-  emits: [ 'update:open' ],
+  emits: [ 'update:open', 'extraAdd' ],
 
   setup(props, context) {
-    watch(
-        () => props.open,
-        (newVal) => {
-          context.emit("update:open", newVal)
-        }
-    );
+    const open = ref(props.open);
     const hover = ref(false);
 
-    return { hover }
+    const toggle = () => {
+      open.value = props.lockOpen || !open.value;
+      context.emit("update:open", open.value);
+    }
+
+    return { open, hover, toggle }
   }
 }
 
@@ -123,6 +136,32 @@ export default {
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.25) !important;
   background: rgba(0, 0, 0, 0.03) !important;
+}
+
+.tree-extra-area {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+.tree-extra-operation {
+  margin-left: 4px;
+  flex: none;
+  flex-grow: 0;
+  border-radius: 2px;
+  padding: 4px;
+  transition: background-color 100ms ease;
+  cursor: pointer;
+  animation-name: easein;
+  animation-duration: 100ms;
+}
+
+.tree-extra-operation:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 </style>

@@ -22,7 +22,7 @@ export default {
   props: {
     tagType: Object as PropType<Context.TagType>,
   },
-  emits: ["selectTag"],
+  emits: [ "selectTag" ],
   setup(props, context) {
     const onSelectTag = (tag, check) => {
       context.emit('selectTag', tag, check)
