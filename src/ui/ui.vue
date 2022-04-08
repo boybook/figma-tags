@@ -6,7 +6,7 @@
 
 import { dispatch, handleEvent } from "./uiMessageHandler";
 import { onMounted, reactive, ref } from 'vue';
-import DataProviderBlobSave from "./provider/DataProviderBlobSave";
+import { DataProviderBlobSave } from "./provider/DataProviderBlobSave";
 import BlobLocalProvider from "./provider/blob/BlobLocalProvider";
 import PageNode from "./pagenode/PageNode.vue";
 import DataProvider from './provider/DataProvider';
@@ -15,8 +15,7 @@ export default {
   components: { PageNode },
   setup() {
     const page = ref<'PageNode' | 'PageSetting' | 'PageSelect'>();
-    DataProviderBlobSave.constructor(BlobLocalProvider);
-    const provider = reactive<DataProvider>(DataProviderBlobSave);
+    const provider = reactive<DataProvider>(new DataProviderBlobSave(BlobLocalProvider));
     const initData = ref<Transfer.InitData>();
 
     onMounted(() => {

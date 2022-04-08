@@ -1,8 +1,8 @@
 <template>
   <div class="current-select">
     <div class="current-select-name">
-      <img v-show="current && current.type === 'PAGE'" :src="require('./resource/page.svg')" alt="page">
-      <img v-show="current && current.type === 'FRAME'" :src="require('./resource/frame.svg')" alt="frame">
+      <img v-show="current?.type === 'PAGE'" :src="require('./resource/page.svg')" alt="page">
+      <img v-show="current?.type === 'FRAME'" :src="require('./resource/frame.svg')" alt="frame">
       <p> {{ current ? current.name : '...' }} </p>
     </div>
     <button v-on:click="$emit('refresh')" class="current-select-icon">
