@@ -1,7 +1,7 @@
 <template>
   <PageNodeInitFile v-if="!fileId" @set-file-id="onSetFileId" />
   <PageNodeTopBar v-if="fileId" :current="currentSelection" @page-settings="fileId = undefined" />
-  <PageNodeFooter />
+  <PageNodeFooter @save="toSave" @delete="toDelete" />
   <div id="ui" v-if="fileId">
     <div class="title">
       <!--
@@ -21,7 +21,7 @@
       </FigTag>
     </div>
     <div class="tree">
-      <TagTree :tag-tree="tagTree" />
+      <TagTree :tag-tree="tagTree" @add-tag="addTag" />
     </div>
   </div>
 </template>
@@ -29,15 +29,16 @@
 <script lang="ts">
 
 import DataProvider from "../provider/DataProvider";
+import { exportCover } from "../provider/CoverProvider";
 import { computed, onMounted, PropType, ref, watchEffect} from "vue";
 import { handleEvent } from "../uiMessageHandler";
+import * as Utils from "../utils";
 
 import FigInput from "../component/FigInput.vue";
 import FigButton from "../component/FigButton.vue";
 import FigTag from "../component/FigTag.vue";
 import PageNodeTopBar from "./PageNodeTopBar.vue";
 import PageNodeInitFile from "./PageNodeInitFile.vue";
-import * as Utils from "../utils";
 import TagTree from "../component/tagtree/TagTree.vue";
 import PageNodeFooter from "./PageNodeFooter.vue";
 
@@ -55,6 +56,7 @@ export default {
     const fileId = ref(props.initData.file_id);
     const currentSelection = ref<Transfer.CurrentSelection>(props.initData.selection);
 
+    const fullTags = ref<Storage.FullTags>();
     const node = ref<Context.Node>();
     const tagTree = ref<Context.TagTree>();
 
@@ -65,11 +67,15 @@ export default {
       });
     });
 
-    // selection改变时，自动刷新当前已选中的frame
-    watchEffect(async () => {
+    const reloadNode = async () => {
       if (!currentSelection.value) return;
-      const fullTags = await provider.getFullTags();
+      console.log("currentSelection update", currentSelection.value);
+      fullTags.value = JSON.parse(JSON.stringify(await provider.getFullTags()));
       const nodeData = await provider.getNode(fileId.value, currentSelection.value.id);
+
+      console.log("fullTags", fullTags.value);
+      console.log("nodeData", nodeData);
+
       node.value = Utils.storageNode2ContextNode(nodeData);
       // Node为空时，初始化一个缺省的Node
       if (!node.value) {
@@ -81,8 +87,11 @@ export default {
           tags: {}
         }
       }
-      tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags);
-    });
+      tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
+    }
+
+    // selection改变时，自动刷新当前已选中的frame
+    watchEffect(reloadNode);
 
     // flat出所有已选Tag
     const collectTags = computed(() => {
@@ -97,8 +106,59 @@ export default {
       fileId.value = file;
     }
 
+    // 如果在本次新增了tag，需要添加到里面，用于最终发给服务端（包含颜色等信息）
+    const newTags = ref<Storage.FullTags>({});
+
+    // 用户手动添加Tag
+    const addTag = (tagType: string, tag: Storage.Tag) => {
+      if (fullTags.value) {
+        if (!fullTags.value[tagType]) {
+          fullTags.value[tagType] = {
+            name: tagType,
+            tags: []
+          }
+        }
+        fullTags.value[tagType].tags.push(tag);
+        if (!node.value.tags[tagType]) node.value.tags[tagType] = [];
+        node.value.tags[tagType].push(tag.name);
+
+        // 添加到newTags中
+        if (!newTags.value[tagType]) {
+          newTags.value[tagType] = {
+            name: tagType,
+            tags: []
+          }
+        }
+        newTags.value[tagType].tags.push(tag);
+
+        tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
+      } else {
+        throw "FullTags is undefined";
+      }
+    }
+
+    // 保存Node
+    const toSave = async () => {
+      const nodeTags: Storage.NodeTags = {};
+      for (let tagType of tagTree.value) {
+        if (Object.values(tagType.tags).length > 0) {
+          nodeTags[tagType.type] = Object.values(tagType.tags).flat().filter(tag => tag.check).flatMap(tag => tag.name);
+        }
+      }
+      node.value.tags = nodeTags;
+      node.value.saved = true;
+      node.value.cover = await exportCover(node.value.node_id);
+      await provider.saveNode(fileId.value, node.value.node_id, node.value, newTags.value);
+    }
+
+    // 删除Node
+    const toDelete = async () => {
+      await provider.deleteNode(fileId.value, currentSelection.value.id);
+      await reloadNode();
+    }
+
     return {
-      provider, fileId, currentSelection, node, tagTree, collectTags, onSetFileId
+      provider, fileId, currentSelection, fullTags, node, tagTree, collectTags, onSetFileId, addTag, toSave, toDelete
     };
 
   }

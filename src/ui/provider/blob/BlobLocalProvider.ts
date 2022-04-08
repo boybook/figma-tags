@@ -16,7 +16,7 @@ handleEvent('client-storage-get', (data: Transfer.ClientStorageGetResult) => {
 });
 
 handleEvent('client-storage-set', (data: Transfer.ClientStorageSetResult) => {
-    const result = promiseClientStorageGet.get(data.key);
+    const result = promiseClientStorageSet.get(data.key);
     if (result) {
         result.got = true;
         result.result = data.suc

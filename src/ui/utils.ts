@@ -69,3 +69,11 @@ export function contextNode2ContextNode(node : Context.Node) : Storage.Node {
         ...node
     }
 }
+
+export function defaultTag(name: string) : Storage.Tag {
+    return {
+        name: name,
+        color: { r: 0, g: 0, b: 0, a: 0.85 },
+        background: { r: 227, g: 226, b: 224, a: 0.5 }
+    }
+}

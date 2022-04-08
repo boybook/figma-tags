@@ -1,4 +1,5 @@
 import DataProvider from "./DataProvider";
+import * as Utils from "../utils";
 
 export interface BlobProvider {
     storageGet: (key: string) => Promise<any>
@@ -62,9 +63,43 @@ export class DataProviderBlobSave implements DataProvider {
         return full[fileId + "#" + nodeId];
     }
 
-    saveNode = async (fileId: string, nodeId: string, node: Storage.Node) => {
+    tryAddTag = async (type: string, tags: (Storage.Tag | string)[]) : Promise<boolean> => {
+        let added = false;
+        const fullTags = await this.getFullTags();
+        if (!fullTags[type]) {
+            fullTags[type] = {
+                name: type,
+                tags: []
+            };
+            added = true;
+        }
+        for (let tag of tags) {
+            const finalTag: Storage.Tag = typeof tag === 'string' ? Utils.defaultTag(tag) : tag;
+            if (!fullTags[type].tags.find(t => t.name === finalTag.name)) {
+                fullTags[type].tags.push(finalTag);
+                added = true;
+            }
+        }
+        return added;
+    }
+
+    saveNode = async (fileId: string, nodeId: string, node: Storage.Node, newTags: Storage.FullTags) => {
+        // 把新tag添加到fullTags中
+        let tagsChanged = false;
+        const fullTags = await this.getFullTags();
+        for (let type in newTags) {
+            tagsChanged = await this.tryAddTag(type, newTags[type].tags);
+        }
+        for (let type in node.tags) {
+            tagsChanged = await this.tryAddTag(type, node.tags[type]) || tagsChanged;
+        }
+        if (tagsChanged) {
+            await this.setFullTags(fullTags);
+        }
+
         const full = await this.getFullNodes();
         full[fileId + "#" + nodeId] = node;
+        console.log("saveNode", full);
         await this.blob.storageSet('nodes', JSON.stringify(full));
     }
 

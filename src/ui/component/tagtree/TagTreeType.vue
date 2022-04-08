@@ -14,7 +14,8 @@
 
 <script lang="ts">
 
-import {PropType, ref} from "vue";
+import { PropType, ref } from "vue";
+import * as Utils from "../../utils";
 import TagTreeTypeTitle from "./TagTreeTypeTitle.vue";
 import TagTreeTypeList from "./TagTreeTypeList.vue";
 import TagTreeTypeAddTag from "./TagTreeTypeAddTag.vue";
@@ -34,14 +35,17 @@ export default {
     }
   },
   emits: [
-      'selectTag'
+      'selectTag',
+      'addTag'
   ],
   setup(props, context) {
     const addingTag = ref(false);
+    // 一层层往外传，直到PageNode
     const addTag = (text) => {
-      addingTag.value = false;
-      console.log("add tag", text);
-      //TODO
+      if (text && text.length > 0) {
+        addingTag.value = false;
+        context.emit('addTag', props.tagType.type, Utils.defaultTag(text));
+      }
     }
     const onSelectTag = (tag, check) => {
       context.emit('selectTag', tag, check);

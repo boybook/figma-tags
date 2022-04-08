@@ -2,7 +2,7 @@
   <!-- 一个Tag都没有的时候，怎么办 -->
   <ul class="tag-tree-ul">
     <li v-for="tagType in tagTree">
-      <TagTreeType :tag-type="tagType" />
+      <TagTreeType :tag-type="tagType" @add-tag="addTag" />
     </li>
   </ul>
 </template>
@@ -17,7 +17,12 @@ export default {
   props: {
     tagTree: Object as PropType<Context.TagTree>
   },
-  setup(props) {
+  emits: [ 'addTag' ],
+  setup(props, context) {
+    const addTag = (tagType: string, tag: Storage.Tag) => {
+      context.emit('addTag', tagType, tag);
+    };
+    return { addTag }
   }
 }
 </script>

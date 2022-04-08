@@ -10,17 +10,14 @@
 <script lang="ts">
 
 import {PropType} from "vue";
+import * as Utils from "../utils";
 
 export default {
   name: "FigTag",
   props: {
     tag: {
       type: Object as PropType<Storage.Tag>,
-      default: {
-        name: "Tag",
-        color: { r: 0, g: 0, b: 0, a: 0.85 },
-        background: { r: 227, g: 226, b: 224, a: 0.5 }
-      }
+      default: Utils.defaultTag('Tag')
     },
     removable: {
       type: Boolean,
