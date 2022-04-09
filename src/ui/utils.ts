@@ -1,3 +1,5 @@
+import TagColor = Transfer.TagColor;
+
 export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGroup) : Context.ClassifiedTags {
     // type
     const tags : Context.ClassifiedTags = new Map();
@@ -70,15 +72,63 @@ export function contextNode2ContextNode(node : Context.Node) : Storage.Node {
     }
 }
 
-export function defaultTag(name: string) : Storage.Tag {
+export function defaultTag(name: string, randomColor?: boolean) : Storage.Tag {
+    const color: Transfer.TagColor = randomColor ? randomTagColor() : tagColors.default;
     return {
         name: name,
-        color: { r: 0, g: 0, b: 0, a: 0.85 },
-        background: { r: 227, g: 226, b: 224, a: 0.5 }
+        color: color.color,
+        background: color.background
     }
 }
 
 export function figmaURL(fileId: string, nodeId: string) : string {
-    //https://www.figma.com/file/HnNCyyFP7RtHTJ33kZcP71/?node-id=0%3A1
     return "https://www.figma.com/file/" + fileId + "/?node-id=" + encodeURIComponent(nodeId);
+}
+
+const tagColors = {
+    default: {
+        background: { r: 227, g: 226, b: 224, a: 1 },
+        color: { r: 50, g: 48, b: 44, a: 1 }
+    },
+    gray: {
+        background: { r: 227, g: 226, b: 224, a: 1 },
+        color: { r: 50, g: 48, b: 44, a: 1 }
+    },
+    brown: {
+        background: { r: 238, g: 224, b: 218, a: 1 },
+        color: { r: 68, g: 42, b: 30, a: 1 }
+    },
+    orange: {
+        background: { r: 250, g: 222, b: 201, a: 1 },
+        color: { r: 73, g: 41, b: 14, a: 1 }
+    },
+    yellow: {
+        background: { r: 253, g: 236, b: 200, a: 1 },
+        color: { r: 64, g: 44, b: 27, a: 1 }
+    },
+    green: {
+        background: { r: 219, g: 237, b: 219, a: 1 },
+        color: { r: 28, g: 56, b: 41, a: 1 }
+    },
+    blue: {
+        background: { r: 211, g: 229, b: 239, a: 1 },
+        color: { r: 24, g: 51, b: 71, a: 1 }
+    },
+    purple: {
+        background: { r: 232, g: 222, b: 238, a: 1 },
+        color: { r: 65, g: 36, b: 84, a: 1 }
+    },
+    pink: {
+        background: { r: 245, g: 224, b: 233, a: 1 },
+        color: { r: 76, g: 35, b: 55, a: 1 }
+    },
+    red: {
+        background: { r: 255, g: 226, b: 221, a: 1 },
+        color: { r: 93, g: 23, b: 21, a: 1 }
+    }
+}
+
+export function randomTagColor() : TagColor {
+    const index = Math.round(Math.random() * Object.values(tagColors).length);
+    return tagColors[Object.keys(tagColors)[index]];
 }

@@ -57,7 +57,7 @@ export default {
     const addTag = (text) => {
       if (text && text.length > 0) {
         addingTag.value = false;
-        context.emit('addTag', props.tagType.type, Utils.defaultTag(text));
+        context.emit('addTag', props.tagType.type, Utils.defaultTag(text, true));
       }
     }
     const onSelectTag = (tag, check) => {

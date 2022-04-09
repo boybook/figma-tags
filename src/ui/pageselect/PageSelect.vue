@@ -91,6 +91,7 @@ export default {
 
 .back-button {
   padding: 4px 8px 4px 4px;
+  margin-top: 3px;
   margin-left: 4px;
   background-color: rgba(0, 0, 0, 0);
   font-size: 12px;

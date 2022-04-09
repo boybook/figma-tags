@@ -48,6 +48,11 @@ declare namespace Transfer {
         width: number,
         height: number
     }
+
+    type TagColor = {
+        color: RGBA,
+        background: RGBA
+    }
 }
 
 // 定义Tag、Node相关的数据储存的数据结构
