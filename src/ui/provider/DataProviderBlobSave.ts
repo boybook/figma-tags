@@ -23,28 +23,28 @@ export class DataProviderBlobSave implements DataProvider {
 
     reloadFullTags = async () => {
         let result = await this.blob.storageGet('tags');
-        if (!result) result = "{}";
-        this.fullTags = <Storage.FullTags> JSON.parse(result);
+        if (!result) result = "[]";
+        this.fullTags = <Storage.FullTags> new Map(JSON.parse(result));
         // 如果没有取到，那么会返回默认的tags
-        if (Object.values(this.fullTags).length === 0) {
-            this.fullTags = {
-                'Default': {
+        if (this.fullTags.size === 0) {
+            this.fullTags.set('Default',
+                {
                     name: 'Default',
                     tags: [
                         {
                             name: "Tag",
-                            color: { r: 0, g: 0, b: 0, a: 0.85 },
-                            background: { r: 227, g: 226, b: 224, a: 0.5 }
+                            color: {r: 0, g: 0, b: 0, a: 0.85},
+                            background: {r: 227, g: 226, b: 224, a: 0.5}
                         }
                     ]
                 }
-            }
+            )
         }
         return this.fullTags;
     }
 
     setFullTags = async (fullTags: Storage.FullTags) => {
-        await this.blob.storageSet('tags', JSON.stringify(fullTags));
+        await this.blob.storageSet('tags', JSON.stringify([...fullTags]));
     }
 
     getFullNodes = async () : Promise<Storage.FullNodes> => {
@@ -66,17 +66,17 @@ export class DataProviderBlobSave implements DataProvider {
     tryAddTag = async (type: string, tags: (Storage.Tag | string)[]) : Promise<boolean> => {
         let added = false;
         const fullTags = await this.getFullTags();
-        if (!fullTags[type]) {
-            fullTags[type] = {
+        if (!fullTags.has(type)) {
+            fullTags.set(type, {
                 name: type,
                 tags: []
-            };
+            });
             added = true;
         }
         for (let tag of tags) {
             const finalTag: Storage.Tag = typeof tag === 'string' ? Utils.defaultTag(tag) : tag;
-            if (!fullTags[type].tags.find(t => t.name === finalTag.name)) {
-                fullTags[type].tags.push(finalTag);
+            if (!fullTags.get(type).tags.find(t => t.name === finalTag.name)) {
+                fullTags.get(type).tags.push(finalTag);
                 added = true;
             }
         }
@@ -87,8 +87,8 @@ export class DataProviderBlobSave implements DataProvider {
         // 把新tag添加到fullTags中
         let tagsChanged = false;
         const fullTags = await this.getFullTags();
-        for (let type in newTags) {
-            tagsChanged = await this.tryAddTag(type, newTags[type].tags);
+        for (let type of newTags.keys()) {
+            tagsChanged = await this.tryAddTag(type, newTags.get(type).tags);
         }
         for (let type in node.tags) {
             tagsChanged = await this.tryAddTag(type, node.tags[type]) || tagsChanged;
@@ -99,7 +99,7 @@ export class DataProviderBlobSave implements DataProvider {
 
         const full = await this.getFullNodes();
         full[fileId + "#" + nodeId] = node;
-        console.log("saveNode", full);
+
         await this.blob.storageSet('nodes', JSON.stringify(full));
     }
 
@@ -116,7 +116,7 @@ export class DataProviderBlobSave implements DataProvider {
             .filter(n => n.tags[tagType]?.find(t => t === tag));
         if (sortTagType) {
             const fullTags = await this.getFullTags();
-            const sortBase = fullTags[sortTagType]?.tags;
+            const sortBase = fullTags.get(sortTagType)?.tags;
             if (sortBase) {
                 return filter.sort((n1, n2) => {
                     const n1Tags = n1.tags[sortTagType];

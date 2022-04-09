@@ -1,6 +1,6 @@
 <template>
   <div class="tag-adding">
-    <FigInput v-focus v-model:val="text" placeholder="The tag name" />
+    <FigInput v-focus v-model:val="text" :status="error ? 'error' : ''" :placeholder="placeholder" @submit="submit" />
     <FigButton @click="cancel">
       <img :src="require('../../resource/close-black.svg')" alt="close">
     </FigButton>
@@ -12,23 +12,43 @@
 
 <script lang="ts">
 
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import FigInput from "../FigInput.vue";
 import FigButton from "../FigButton.vue";
 
 export default {
   name: "TagTreeTypeAddTag",
   components: { FigButton, FigInput },
+  props: {
+    placeholder: String,
+    defaultText: {
+      type: String,
+      default: ""
+    }
+  },
   emits: [ 'submit', 'cancel' ],
   setup(props, context) {
-    const text = ref("");
+    const text = ref(props.defaultText);
+    const error = ref(false);
+    watch(
+        text,
+        (newVal) => {
+          if (newVal.length > 0) {
+            error.value = false;
+          }
+        }
+    );
     const submit = () => {
+      if (!text.value || text.value.length === 0) {
+        error.value = true;
+        return;
+      }
       context.emit('submit', text.value);
     }
     const cancel = () => {
       context.emit('cancel');
     }
-    return { text, submit, cancel };
+    return { text, error, submit, cancel };
   }
 }
 
@@ -40,7 +60,7 @@ export default {
   display: flex !important;
   flex-direction: row;
   align-items: center;
-  padding: 5px 2px 5px 24px;
+  padding: 0;
 }
 
 .tag-adding input {

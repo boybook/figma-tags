@@ -4,31 +4,37 @@
       v-if="fileId"
       :current="currentSelection"
       @refresh="reloadNode"
-      @page-settings="fileId = undefined"
+      @page-settings="openSettings"
   />
-  <PageNodeFooter v-if="fileId" :show-del="node.saved" @save="toSave" @delete="toDelete" />
-  <div id="ui" v-if="fileId">
-    <div class="title">
-      <!--
-      <a v-tooltip="{ content: node.notion_id ? 'Linked' : 'Unlinked', placement: 'bottom', offset: 4}" :href="node.notion_url" target="_blank">
-        Link
-      </a>
-      -->
-      <FigInput v-if="node" v-model:val="node.title" />
+  <PageNodeFooter
+      v-if="fileId && !loading" :show-del="node?.saved"
+      @save="toSave"
+      @delete="toDelete"
+  />
+  <LoadingWithContent :loading="!!loading" :msg="loading">
+    <div id="ui" v-if="fileId">
+      <div class="title">
+        <!--
+        <a v-tooltip="{ content: node.notion_id ? 'Linked' : 'Unlinked', placement: 'bottom', offset: 4}" :href="node.notion_url" target="_blank">
+          Link
+        </a>
+        -->
+        <FigInput v-if="node" v-model:val="node.title" />
+      </div>
+      <div class="selected" v-show="collectTags?.length > 0">
+        <FigTag
+            v-for="tag in collectTags"
+            :tag="tag"
+            :removable="true"
+            @remove="tag.check = !tag.check"
+        >
+        </FigTag>
+      </div>
+      <div class="tree">
+        <TagTree :tag-tree="tagTree" @add-tag="addTag" @add-tag-type="addTagType" />
+      </div>
     </div>
-    <div class="selected" v-show="collectTags?.length > 0">
-      <FigTag
-          v-for="tag in collectTags"
-          :tag="tag"
-          :removable="true"
-          @remove="tag.check = !tag.check"
-      >
-      </FigTag>
-    </div>
-    <div class="tree">
-      <TagTree :tag-tree="tagTree" @add-tag="addTag" />
-    </div>
-  </div>
+  </LoadingWithContent>
 </template>
 
 <script lang="ts">
@@ -36,7 +42,7 @@
 import DataProvider from "../provider/DataProvider";
 import { exportCover } from "../provider/CoverProvider";
 import { computed, onMounted, PropType, ref, watchEffect} from "vue";
-import { handleEvent } from "../uiMessageHandler";
+import { dispatch, handleEvent} from "../uiMessageHandler";
 import * as Utils from "../utils";
 
 import FigInput from "../component/FigInput.vue";
@@ -46,10 +52,13 @@ import PageNodeTopBar from "./PageNodeTopBar.vue";
 import PageNodeInitFile from "./PageNodeInitFile.vue";
 import TagTree from "../component/tagtree/TagTree.vue";
 import PageNodeFooter from "./PageNodeFooter.vue";
+import LoadingWithContent from "../component/LoadingWithContent.vue";
 
 export default {
   name: "PageNode",
-  components: {PageNodeFooter, TagTree, PageNodeInitFile, FigButton, FigInput, FigTag, PageNodeTopBar },
+  components: {
+    LoadingWithContent,
+    PageNodeFooter, TagTree, PageNodeInitFile, FigButton, FigInput, FigTag, PageNodeTopBar },
   props: {
     provider: Object as PropType<DataProvider>,
     initData: Object as PropType<Transfer.InitData>
@@ -57,6 +66,7 @@ export default {
 
   setup(props) {
     const provider = <DataProvider> props.provider;
+    const loading = ref<string|undefined>(undefined);
 
     const fileId = ref(props.initData.file_id);
     const currentSelection = ref<Transfer.CurrentSelection>(props.initData.selection);
@@ -74,8 +84,9 @@ export default {
 
     const reloadNode = async () => {
       if (!currentSelection.value) return;
+      loading.value = 'Loading Node...';
       console.log("currentSelection update", currentSelection.value);
-      fullTags.value = JSON.parse(JSON.stringify(await provider.getFullTags()));
+      fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags()])));
       const nodeData = await provider.getNode(fileId.value, currentSelection.value.id);
 
       console.log("fullTags", fullTags.value);
@@ -93,6 +104,7 @@ export default {
         }
       }
       tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
+      loading.value = undefined;
     }
 
     // selection改变时，自动刷新当前已选中的frame
@@ -101,7 +113,7 @@ export default {
     // flat出所有已选Tag
     const collectTags = computed(() => {
       return tagTree.value
-          ?.flatMap(type => Object.values(type.tags))
+          ?.flatMap(type => [...type.tags.values()])
           .flat()
           .filter(t => t.check)
     });
@@ -112,30 +124,46 @@ export default {
     }
 
     // 如果在本次新增了tag，需要添加到里面，用于最终发给服务端（包含颜色等信息）
-    const newTags = ref<Storage.FullTags>({});
+    const newTags = ref<Storage.FullTags>(new Map());
 
     // 用户手动添加Tag
     const addTag = (tagType: string, tag: Storage.Tag) => {
       if (fullTags.value) {
-        if (!fullTags.value[tagType]) {
-          fullTags.value[tagType] = {
+        if (!fullTags.value.has(tagType)) {
+          fullTags.value.set(tagType, {
             name: tagType,
             tags: []
-          }
+          });
         }
-        fullTags.value[tagType].tags.push(tag);
+        fullTags.value.get(tagType).tags.unshift(tag);
         if (!node.value.tags[tagType]) node.value.tags[tagType] = [];
         node.value.tags[tagType].push(tag.name);
 
         // 添加到newTags中
-        if (!newTags.value[tagType]) {
-          newTags.value[tagType] = {
-            name: tagType,
-            tags: []
-          }
+        if (!newTags.value.get(tagType)) {
+          newTags.value.set(tagType,
+              {
+                name: tagType,
+                tags: []
+              }
+          )
         }
-        newTags.value[tagType].tags.push(tag);
+        newTags.value.get(tagType).tags.push(tag);
 
+        tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
+      } else {
+        throw "FullTags is undefined";
+      }
+    }
+
+    // 用户手动添加 Tag Type（Tag大分类）
+    const addTagType = (tagType: string) => {
+      console.log("addTagType", tagType);
+      if (fullTags.value && !fullTags.value.has(tagType)) {
+        fullTags.value.set(tagType, {
+          name: tagType,
+          tags: []
+        });
         tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
       } else {
         throw "FullTags is undefined";
@@ -144,27 +172,48 @@ export default {
 
     // 保存Node
     const toSave = async () => {
+      loading.value = 'Saving Node... (collect)';
       const nodeTags: Storage.NodeTags = {};
       for (let tagType of tagTree.value) {
-        if (Object.values(tagType.tags).length > 0) {
-          nodeTags[tagType.type] = Object.values(tagType.tags).flat().filter(tag => tag.check).flatMap(tag => tag.name);
+        const tags = [...tagType.tags.values()].flat().filter(tag => tag.check).flatMap(tag => tag.name);
+        if (tags.length > 0) {
+          nodeTags[tagType.type] = tags;
         }
       }
       node.value.tags = nodeTags;
       node.value.saved = true;
+      loading.value = 'Saving Node... (cover)';
       node.value.cover = await exportCover(node.value.node_id);
+      loading.value = 'Saving Node... (storage)';
       await provider.saveNode(fileId.value, node.value.node_id, node.value, newTags.value);
+      loading.value = undefined;
     }
 
     // 删除Node
     const toDelete = async () => {
+      loading.value = 'Deleting Node...';
       await provider.deleteNode(fileId.value, currentSelection.value.id);
+      loading.value = 'Reloading Node...';
       await reloadNode();
+      loading.value = undefined;
+    }
+
+    const openSettings = () => {
+      // TODO
+      dispatch('client-storage-set', {
+        key: 'tags',
+        data: undefined
+      });
+      dispatch('client-storage-set', {
+        key: 'nodes',
+        data: undefined
+      });
     }
 
     return {
-      provider, fileId, currentSelection, fullTags, node, tagTree, collectTags, reloadNode, onSetFileId, addTag, toSave, toDelete
-    };
+      provider, loading, fileId, currentSelection, fullTags, node, tagTree, collectTags,
+      reloadNode, onSetFileId, addTag, addTagType, toSave, toDelete, openSettings
+    }
 
   }
 }

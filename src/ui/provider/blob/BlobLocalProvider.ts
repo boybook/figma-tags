@@ -38,13 +38,15 @@ const storageGet = (key: string) => {
     });
     return new Promise((resolve, reject) => {
         let timeout = 5000;
-        setInterval(() => {
+        const interval = setInterval(() => {
             const result = promiseClientStorageGet.get(key);
             if (result?.got) {
                 promiseClientStorageGet.delete(key);
                 resolve(result.result);
+                clearInterval(interval);
             } else if (timeout-- <= 0) {
                 reject("client-storage-get `" + key + "` timeout");
+                clearInterval(interval);
             }
         }, 1);
     });
@@ -61,13 +63,15 @@ const storageSet = (key: string, data: any) => {
     });
     return new Promise<void>((resolve, reject) => {
         let timeout = 5000;
-        setInterval(() => {
+        const interval = setInterval(() => {
             const result = promiseClientStorageSet.get(key);
             if (result?.got) {
                 promiseClientStorageSet.delete(key);
                 resolve();
+                clearInterval(interval);
             } else if (timeout-- <= 0) {
                 reject("client-storage-set `" + key + "` timeout");
+                clearInterval(interval);
             }
         }, 1);
     });

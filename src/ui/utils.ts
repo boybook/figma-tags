@@ -1,14 +1,12 @@
 export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGroup) : Context.ClassifiedTags {
     // type
-    const tags : Context.ClassifiedTags = {
-        '': [] // 把默认组放在最前面
-    };
-
+    const tags : Context.ClassifiedTags = new Map();
+    tags.set('', []);
     for (let tag of fullTagGroup.tags) {
         const tagNameSubs = tag.name.replace(' ', '').split('/', 2);
         const childTag = tagNameSubs.length > 1 ? tagNameSubs[0] : '';
-        if (!tags[childTag]) {
-            tags[childTag] = [];
+        if (!tags.has(childTag)) {
+            tags.set(childTag, []);
         }
         const treeTag: Context.Tag = {
             check: false,
@@ -16,12 +14,12 @@ export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGr
             color: tag.color,
             background: tag.background
         };
-        tags[childTag].push(treeTag);
+        tags.get(childTag).push(treeTag);
     }
-    for (let tagKey in tags['']) {
-        if (tags[tags[''][tagKey].name]) {
-            tags[tags[''][tagKey].name].unshift(tags[''][tagKey]);
-            tags[''].splice(Number(tagKey), 1);
+    for (let tagKey in tags.get('')) {
+        if (tags.has(tags.get('')[tagKey].name)) {
+            tags.get(tags.get('')[tagKey].name).unshift(tags.get('')[tagKey]);
+            tags.get('').splice(Number(tagKey), 1);
         }
     }
 
@@ -35,18 +33,22 @@ export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGr
  */
 export function storageTags2ContextTagTree(storageTags: Storage.NodeTags, fullTags: Storage.FullTags) : Context.TagTree {
     const tagTree: Context.TagTree = [];
-    for (let typeName in fullTags) {
+    for (let typeName of fullTags.keys()) {
         const entry: Context.TagType = {
             type: typeName,
-            tags: storageTagType2ContextClassifiedTags(fullTags[typeName])
+            tags: storageTagType2ContextClassifiedTags(fullTags.get(typeName))
         };
         if (Object.keys(storageTags).length > 0) {
-            for (let childTag in entry.tags) {
-                for (let tagIndex in entry.tags[childTag]) {
-                    for (let tagValid of storageTags[typeName]) {
-                        if (entry.tags[childTag][tagIndex].name === tagValid) {
-                            entry.tags[childTag][tagIndex].check = true;
-                            break;
+            for (let childTag of entry.tags.keys()) {
+                for (let tagIndex in entry.tags.get(childTag)) {
+                    if (storageTags[typeName]) {
+                        for (let tagValid of storageTags[typeName]) {
+                            console.log("======== name", entry.tags.get(childTag)[tagIndex].name);
+                            console.log("======== tagValid", tagValid);
+                            if (entry.tags.get(childTag)[tagIndex].name === tagValid) {
+                                entry.tags.get(childTag)[tagIndex].check = true;
+                                break;
+                            }
                         }
                     }
                 }

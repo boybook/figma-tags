@@ -52,9 +52,7 @@ declare namespace Storage {
     }
 
     // tag_type, TagGroup
-    type FullTags = {
-        [tagType: string]: TagGroup
-    }
+    type FullTags = Map<string, TagGroup>
 
     type NodeTags = {
         [tagType: string]: string[]  // 这边的tag是纯string，颜色需要去对照上面的FullTags配置里取到
@@ -86,9 +84,7 @@ declare namespace Context {
     }
 
     // 通过 / 分了一级之后的tag
-    type ClassifiedTags = {
-        [subType: string]: Context.Tag[]
-    }
+    type ClassifiedTags = Map<string, Context.Tag[]>
 
     type TagType = {
         type: string,  // 类型名称

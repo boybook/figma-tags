@@ -1,9 +1,9 @@
 <template>
   <ul>
-    <li v-for="(childTags, childTagType) in tagType.tags">
-      <ul v-if="childTags.length > 0" class="sub-type">
+    <li v-for="childTagType in tagType.tags.keys()">
+      <ul v-if="tagType.tags.get(childTagType).length > 0" class="sub-type">
         <li class="sub-type-title" v-if="childTagType.length > 0"> {{ childTagType }} </li>
-        <li v-for="tag in childTags">
+        <li v-for="tag in tagType.tags.get(childTagType)">
           <TagTreeTypeListEntry :tag="tag" @selectTag="onSelectTag" />
         </li>
       </ul>
@@ -38,6 +38,19 @@ export default {
 ul {
   list-style-type:none;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: none;
+  align-self: stretch;
+}
+
+li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: none;
+  align-self: stretch;
 }
 
 .sub-type {

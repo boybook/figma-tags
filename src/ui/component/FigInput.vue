@@ -4,6 +4,7 @@
       :placeholder="placeholder"
       :class="classObject"
       @input="$emit('update:val', $event.target.value)"
+      @keyup.enter="$emit('submit')"
       type="text"
   />
 </template>
@@ -35,7 +36,7 @@ export default {
       default: ''
     }
   },
-  emits: ["update:val"],
+  emits: [ "update:val", "submit" ],
   setup(props, context) {
     /*onMounted(() => {
       // 聚焦元素

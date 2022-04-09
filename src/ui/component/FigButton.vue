@@ -9,11 +9,12 @@ export default {
   name: "FigButton",
   props: {
     type: {
+      type: String,
       validator(value) {
-        return ['primary', 'secondary', 'link'].includes(value)
+        return ['primary', 'secondary', 'link', 'dashed'].includes(value)
       },
       default: 'secondary'
-    }
+    },
   },
   setup() {
 
@@ -40,35 +41,63 @@ button {
 }
 
 .button--primary {
-  background: #18A0FB;
-  color: #FFF;
+  background: #18a0fb;
+  color: #fff;
 }
 
 .button--primary:hover {
   background: #0677bd;
 }
 
+.button--primary:active {
+  background: #0468a4;
+}
+
 .button--secondary {
-  background: #FFF;
+  background: #fff;
   color: rgba(0, 0, 0, .85);
-  box-shadow: inset 0 0 0 1px #E5E5E5;
+  box-shadow: inset 0 0 0 1px #e5e5e5;
 }
 
 .button--secondary:hover {
-  background: #FFF;
-  color: #18A0FB;
-  box-shadow: inset 0 0 0 1px #18A0FB;
+  background: #fff;
+  color: #18a0fb;
+  box-shadow: inset 0 0 0 1px #18a0fb;
+}
+
+.button--secondary:active {
+  color: #0468a4;
+  box-shadow: inset 0 0 0 1px #0468a4;
 }
 
 .button--link {
   padding: 6px 8px;
-  background: #FFF;
+  background: #fff;
   color: #18A0FB;
 }
 
 .button--link:hover {
-  background: #FFF;
   color: #0677bd;
+}
+
+.button--link:active {
+  color: #0468a4;
+}
+
+.button--dashed {
+  background: #fff;
+  color: rgba(0, 0, 0, .85);
+  border: dashed 1px rgba(0, 0, 0, 0.1);
+}
+
+.button--dashed:hover {
+  color: #18a0fb;
+  border: dashed 1px rgba(24, 160, 251, 0.8);
+}
+
+.button--dashed:active {
+  color: #0468a4;
+  border: dashed 1px rgba(4, 104, 164, 0.8);
 }
 
 </style>
