@@ -82,6 +82,7 @@ figma.on("selectionchange", () => {
 });
 
 figma.on("currentpagechange", () => {
+	console.log("currentpagechange", figma.currentPage.selection);
 	dispatch("selectionchange", packageCurrentSelection());
 });
 
@@ -90,12 +91,21 @@ figma.on("close", () => {
 });
 
 function packageCurrentSelection() : SelectionChange {
-	const node = figma.currentPage.selection.length > 0 ? getPageRootNode(figma.currentPage.selection[0]) : figma.currentPage;
-	return {
-		type: node.type === 'PAGE' ? 'PAGE' : 'FRAME',
-		id: node.id,
-		name: node.name
-	};
+	try {
+		const node = figma.currentPage.selection.length > 0 ? getPageRootNode(figma.currentPage.selection[0]) : figma.currentPage;
+		return {
+			type: node.type === 'PAGE' ? 'PAGE' : 'FRAME',
+			id: node.id,
+			name: node.name
+		};
+	} catch (e) {
+		console.log('packageCurrentSelection', e);
+		return {
+			type: 'PAGE',
+			id: figma.currentPage.id,
+			name: figma.currentPage.name
+		}
+	}
 }
 
 function isRootFrame(node: BaseNode): node is FrameNode | ComponentNode | InstanceNode {
@@ -103,6 +113,11 @@ function isRootFrame(node: BaseNode): node is FrameNode | ComponentNode | Instan
 }
 
 function getPageRootNode(node: BaseNode): SceneNode {
+	console.log("===========", node.parent);
+	if (node.parent === null) {
+		return <SceneNode> node;
+	}
+
 	while (node.parent.type !== "PAGE") {
 		node = node.parent;
 	}

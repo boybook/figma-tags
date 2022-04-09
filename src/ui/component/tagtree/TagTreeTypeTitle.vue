@@ -1,13 +1,19 @@
 <template>
   <div class="tree-title" @click="toggle" @mouseover="hover = true" @mouseleave="hover = false">
     <img :src="require('../../resource/fold.svg')" alt="fold" class="icon-fold" :class="{ 'rotate-0': !open, 'rotate-90': open }">
-    <span class="title-area">
-      <span class="title-name">
-        <slot></slot>
+    <div class="title-area">
+      <span class="title-name" v-if="!editing">
+        {{ typeName }}
       </span>
-      <span class="counter" v-if="operable" v-bind:class="{ 'counter-zero': count === 0 }"> {{ count }} </span>
-    </span>
-    <div class="tree-extra-area" v-if="operable">
+      <div class="title-name-edit" v-if="editing">
+        <TagTreeTypeAddTag :default-text="typeName" placeholder="Tag type name" @submit="editTypeName" @cancel="editing = false" />
+      </div>
+      <span class="counter" v-if="operable && !editing" v-bind:class="{ 'counter-zero': count === 0 }"> {{ count }} </span>
+      <div v-if="operable && !editing" v-show="hover" class="tree-extra-operation" @click="editing = true">
+        <img :src="require('../../resource/edit.svg')" alt="edit">
+      </div>
+    </div>
+    <div class="tree-extra-area" v-if="operable && !editing">
       <div v-if="extraLookup" v-show="hover" class="tree-extra-operation" @click="$emit('extraLookup')">
         <img :src="require('../../resource/lookup.svg')" alt="lookup">
       </div>
@@ -20,10 +26,12 @@
 
 <script lang="ts">
 import { ref, watch } from "vue";
+import TagTreeTypeAddTag from "./TagTreeTypeAddTag.vue";
 
 export default {
 
   name: "TagTreeTypeTitle",
+  components: { TagTreeTypeAddTag },
   props: {
     open: {
       type: Boolean,
@@ -33,6 +41,7 @@ export default {
       type: Boolean,
       default: false
     },
+    typeName: String,
     count: Number,
     extraLookup: Boolean,
     extraAdd: Boolean,
@@ -41,18 +50,24 @@ export default {
       default: true
     }
   },
-  emits: [ 'update:open', 'extraAdd', 'extraLookup' ],
+  emits: [ 'update:open', 'editTypeName', 'extraAdd', 'extraLookup' ],
 
   setup(props, context) {
     const open = ref(props.open);
     const hover = ref(false);
+    const editing = ref(false);
 
     const toggle = () => {
-      open.value = props.lockOpen || !open.value;
+      open.value = props.lockOpen || editing.value || !open.value;
       context.emit("update:open", open.value);
     }
 
-    return { open, hover, toggle }
+    const editTypeName = (name: string) => {
+      context.emit('editTypeName', name);
+      editing.value = false;
+    }
+
+    return { open, hover, editing, toggle, editTypeName }
   }
 }
 
@@ -167,6 +182,15 @@ export default {
 
 .tree-extra-operation:hover {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+.title-name-edit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: none;
+  align-self: stretch;
+  flex-grow: 1;
 }
 
 </style>

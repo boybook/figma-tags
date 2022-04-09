@@ -4,13 +4,13 @@
       :lock-open="addingTag"
       :count="[...tagType.tags.values()].flat().filter(t => t.check === true).length"
       :operable="operable"
+      :type-name="tagType.type"
+      @edit-type-name="editTypeName"
       :extra-add="true"
       @extra-add="addingTag = true"
       :extra-lookup="true"
       @extra-lookup="togglePage('PageSelect', tagType.type)"
-  >
-    {{ tagType.type }}
-  </TagTreeTypeTitle>
+  />
   <FigButton :v-if="operable" class="button-empty-add-tag" type="dashed" v-if="open && !addingTag && isTagTypeEmpty" @click="addingTag = true">
     <img :src="require('../../resource/plus.svg')" alt="add">
     <span style="margin-left: 8px">New Tag</span>
@@ -49,7 +49,8 @@ export default {
   },
   emits: [
       'selectTag',
-      'addTag'
+      'addTag',
+      'editTypeName'
   ],
   setup(props, context) {
     const addingTag = ref(false);
@@ -65,8 +66,11 @@ export default {
     }
     const isTagTypeEmpty = computed(() => {
       return [...props.tagType.tags.values()].flat().length === 0;
-    })
-    return { addingTag, isTagTypeEmpty, addTag, onSelectTag }
+    });
+    const editTypeName = (typeName: string) => {
+      context.emit('editTypeName', typeName);
+    }
+    return { addingTag, isTagTypeEmpty, addTag, onSelectTag, editTypeName }
   }
 }
 </script>

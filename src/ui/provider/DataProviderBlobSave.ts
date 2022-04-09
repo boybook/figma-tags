@@ -43,10 +43,36 @@ export class DataProviderBlobSave implements DataProvider {
         return this.fullTags;
     }
 
+    renameTagType = async (renames: Transfer.TagTypeRename) => {
+        const fullTags = await this.getFullTags();
+        const newMap: (Map<string, Storage.TagGroup>) = new Map<string, Storage.TagGroup>();
+        fullTags.forEach((obj, t) => {
+            if (renames[t]) {
+                obj.name = renames[t];
+                newMap.set(renames[t], obj);
+            } else {
+                newMap.set(t, obj);
+            }
+        })
+        const fullNodes = await this.getFullNodes();
+        for (let node of Object.values(fullNodes)) {
+            for (let t in node.tags) {
+                if (renames[t]) {
+                    node.tags[renames[t]] = node.tags[t];
+                    delete node.tags[t];
+                }
+            }
+        }
+        await this.setFullTags(newMap);
+        await this.setFullNodes(fullNodes);
+    };
+
     setFullTags = async (fullTags: Storage.FullTags) => {
         await this.blob.storageSet('tags', JSON.stringify([...fullTags]));
+        this.fullTags = fullTags;
     }
 
+    // BLOB SAVE ONLY
     getFullNodes = async () : Promise<Storage.FullNodes> => {
         if (this.fullNodes) {
             return this.fullNodes;
@@ -55,6 +81,14 @@ export class DataProviderBlobSave implements DataProvider {
             if (!result) result = "{}";
             this.fullNodes = <Storage.FullNodes> JSON.parse(result);
             return this.fullNodes;
+        }
+    }
+
+    // BLOB SAVE ONLY
+    setFullNodes = async (full: Storage.FullNodes) : Promise<void> => {
+        if (full) {
+            await this.blob.storageSet('nodes', JSON.stringify(full));
+            this.fullNodes = full;
         }
     }
 
@@ -100,7 +134,7 @@ export class DataProviderBlobSave implements DataProvider {
         const full = await this.getFullNodes();
         full[fileId + "#" + nodeId] = node;
 
-        await this.blob.storageSet('nodes', JSON.stringify(full));
+        await this.setFullNodes(full);
     }
 
     deleteNode = async (fileId: string, nodeId: string) => {

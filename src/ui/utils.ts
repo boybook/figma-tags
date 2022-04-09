@@ -72,6 +72,17 @@ export function contextNode2ContextNode(node : Context.Node) : Storage.Node {
     }
 }
 
+export function syncContextTagTree2ContextNode(tagTree: Context.TagTree, node: Context.Node) {
+    const nodeTags: Storage.NodeTags = {};
+    for (let tagType of tagTree) {
+        const tags = [...tagType.tags.values()].flat().filter(tag => tag.check).flatMap(tag => tag.name);
+        if (tags.length > 0) {
+            nodeTags[tagType.type] = tags;
+        }
+    }
+    node.tags = nodeTags;
+}
+
 export function defaultTag(name: string, randomColor?: boolean) : Storage.Tag {
     const color: Transfer.TagColor = randomColor ? randomTagColor() : tagColors.default;
     return {

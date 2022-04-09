@@ -5,10 +5,10 @@
       <img v-show="current?.type === 'FRAME'" :src="require('./resource/frame.svg')" alt="frame">
       <p> {{ current ? current.name : '...' }} </p>
     </div>
-    <button v-on:click="$emit('refresh')" class="current-select-icon">
+    <button @click="$emit('refresh')" class="current-select-icon">
       <img :src="require('./resource/refresh.svg')" alt="refresh">
     </button>
-    <button v-on:click="$emit('page-settings')" class="current-select-icon" style="border-left: 1px #E0E0E0 solid">
+    <button @click="$emit('page-settings')" class="current-select-icon" style="border-left: 1px #E0E0E0 solid">
       <img :src="require('./resource/setting.svg')" alt="setting">
     </button>
   </div>

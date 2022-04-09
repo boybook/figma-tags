@@ -52,7 +52,16 @@ export default {
 <style scoped>
 
 .node-tag {
+  animation: ease-show 0.5s ease-out;
+}
 
+@keyframes ease-show {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .node-tag-loading {

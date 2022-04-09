@@ -13,6 +13,12 @@ export default interface DataProvider {
     reloadFullTags: () => Promise<Storage.FullTags>
 
     /**
+     * 重命名某些TagType
+     * @param renames
+     */
+    renameTagType: (renames: Transfer.TagTypeRename) => Promise<void>
+
+    /**
      * 完整设置Tags（添加、删除、重新排序）
      * @param fullTags
      */

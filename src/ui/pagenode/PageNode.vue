@@ -31,7 +31,12 @@
         </FigTag>
       </div>
       <div class="tree">
-        <TagTree :tag-tree="tagTree" @add-tag="addTag" @add-tag-type="addTagType" :toggle-page="togglePage" />
+        <TagTree
+            :tag-tree="tagTree"
+            @add-tag="addTag"
+            @add-tag-type="addTagType"
+            @edit-type-name="editTypeName"
+            :toggle-page="togglePage" />
       </div>
     </div>
   </LoadingWithContent>
@@ -41,7 +46,7 @@
 
 import DataProvider from "../provider/DataProvider";
 import { exportCover } from "../provider/CoverProvider";
-import { computed, onMounted, PropType, ref, watchEffect} from "vue";
+import {computed, onMounted, PropType, ref, watch, watchEffect} from "vue";
 import { dispatch, handleEvent} from "../uiMessageHandler";
 import * as Utils from "../utils";
 
@@ -124,7 +129,7 @@ export default {
     // 如果在本次新增了tag，需要添加到里面，用于最终发给服务端（包含颜色等信息）
     const newTags = ref<Storage.FullTags>(new Map());
 
-    // 用户手动添加Tag
+    // 手动添加Tag
     const addTag = (tagType: string, tag: Storage.Tag) => {
       if (fullTags.value) {
         if (!fullTags.value.has(tagType)) {
@@ -154,7 +159,7 @@ export default {
       }
     }
 
-    // 用户手动添加 Tag Type（Tag大分类）
+    // 手动添加 Tag Type（Tag大分类）
     const addTagType = (tagType: string) => {
       console.log("addTagType", tagType);
       if (fullTags.value && !fullTags.value.has(tagType)) {
@@ -168,20 +173,64 @@ export default {
       }
     }
 
+    const renames = ref<Transfer.TagTypeRename>({});
+    const test = {
+      test: 'test1',
+      test1: 'test'
+    };
+    // 手动修改TagType的名称
+    const editTypeName = (oldName: string, newName: string) => {
+      console.log("editTypeName", oldName, newName);
+      if (oldName !== newName && newName.length > 0 && fullTags.value.has(oldName) && !fullTags.value.has(newName)) {
+        // 处理FullTags
+        const newMap: (Map<string, Storage.TagGroup>) = new Map<string, Storage.TagGroup>();
+        fullTags.value.forEach((obj, t) => {
+          if (t === oldName) {
+            obj.name = newName;
+            newMap.set(newName, obj);
+          } else {
+            newMap.set(t, obj);
+          }
+        })
+        fullTags.value = newMap;
+        // 处理Node中的tags
+        Utils.syncContextTagTree2ContextNode(tagTree.value, node.value);
+        if (node.value?.tags[oldName]) {
+          node.value.tags[newName] = node.value.tags[oldName];
+          delete node.value.tags[oldName];
+        }
+        // 处理newTags
+        for (let typeName of newTags.value.keys()) {
+          if (typeName === oldName) {
+            newTags.value.set(newName, newTags.value.get(typeName));
+            newTags.value.delete(typeName);
+          }
+        }
+        // 最终刷新TagTree
+        tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
+        // renames
+        const find = Object.entries(renames.value).find(([k, v]) => v === oldName);
+        if (find && find[1] === newName) {
+          delete renames.value[find[1]];
+        } else {
+          renames.value[oldName] = newName;
+        }
+      }
+    }
+
     // 保存Node
     const toSave = async () => {
       loading.value = 'Saving Node... (collect)';
-      const nodeTags: Storage.NodeTags = {};
-      for (let tagType of tagTree.value) {
-        const tags = [...tagType.tags.values()].flat().filter(tag => tag.check).flatMap(tag => tag.name);
-        if (tags.length > 0) {
-          nodeTags[tagType.type] = tags;
-        }
-      }
-      node.value.tags = nodeTags;
+      Utils.syncContextTagTree2ContextNode(tagTree.value, node.value);
       node.value.saved = true;
       loading.value = 'Saving Node... (cover)';
       node.value.cover = await exportCover(node.value.node_id);
+      if (Object.values(renames.value).length > 0) {
+        loading.value = 'Saving Node... (type rename)';
+        console.log("renames", renames.value);
+        await provider.renameTagType(renames.value);
+        renames.value = {};
+      }
       loading.value = 'Saving Node... (storage)';
       await provider.saveNode(fileId.value, node.value.node_id, node.value, newTags.value);
       loading.value = undefined;
@@ -216,7 +265,7 @@ export default {
 
     return {
       provider, loading, fileId, currentSelection, fullTags, node, tagTree, collectTags,
-      reloadNode, onSetFileId, addTag, addTagType, toSave, toDelete, openSettings
+      reloadNode, onSetFileId, addTag, addTagType, editTypeName, toSave, toDelete, openSettings
     }
 
   }

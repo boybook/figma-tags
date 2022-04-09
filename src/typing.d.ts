@@ -53,6 +53,10 @@ declare namespace Transfer {
         color: RGBA,
         background: RGBA
     }
+
+    type TagTypeRename = {
+        [nameFrom: string]: string
+    }
 }
 
 // 定义Tag、Node相关的数据储存的数据结构

@@ -24,7 +24,7 @@ import { ref } from "vue";
 
 export default {
   name: "TagTreeAddType",
-  components: {TagTreeTypeAddTag, FigInput, FigButton },
+  components: { TagTreeTypeAddTag, FigInput, FigButton },
   emits: ['submit'],
   setup(props, context) {
     const popup = ref(false);

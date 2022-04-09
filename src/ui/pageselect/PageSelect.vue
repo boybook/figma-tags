@@ -51,13 +51,15 @@ export default {
 
     const selectTag = (tagType: string, tag: Context.Tag, check: boolean) => {
       currentType.value = tagType;
-      const el = document.getElementById('anchor-' + tag.name);
-      if (el) {
-        document.body.scrollTo({
-          top: document.body.scrollTop + el.getBoundingClientRect().y - 40,
-          behavior: 'smooth'
-        });
-      }
+      setTimeout(() => {
+        const el = document.getElementById('anchor-' + tag.name);
+        if (el) {
+          document.body.scrollTo({
+            top: document.body.scrollTop + el.getBoundingClientRect().y - 40,
+            behavior: 'smooth'
+          });
+        }
+      }, 1);
     }
 
     return { tagTree, currentType, collectTags, selectTag }

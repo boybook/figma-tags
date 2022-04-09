@@ -1,7 +1,14 @@
 <template>
   <ul class="tag-tree-ul">
     <li v-for="tagType in tagTree">
-      <TagTreeType :toggle-page="togglePage" :operable="operable" :tag-type="tagType" @add-tag="addTag" @select-tag="(tag, check) => selectTag(tagType.type, tag, check)" />
+      <TagTreeType
+          :toggle-page="togglePage"
+          :operable="operable"
+          :tag-type="tagType"
+          @add-tag="addTag"
+          @select-tag="(tag, check) => selectTag(tagType.type, tag, check)"
+          @edit-type-name="(tagName) => editTypeName(tagType.type, tagName)"
+      />
     </li>
     <li v-if="operable">
       <TagTreeAddType @submit="addTagType" />
@@ -26,7 +33,7 @@ export default {
       default: true
     }
   },
-  emits: [ 'selectTag', 'addTag', 'addTagType' ],
+  emits: [ 'selectTag', 'addTag', 'addTagType', 'editTypeName' ],
   setup(props, context) {
     console.log("rendering TagTree", props.tagTree);
     const addTag = (tagType: string, tag: Storage.Tag) => {
@@ -36,9 +43,12 @@ export default {
       context.emit('addTagType', tagType);
     }
     const selectTag = (tagType: string, tag: Context.Tag, check: boolean) => {
-      context.emit('selectTag', tagType, tagType, check);
+      context.emit('selectTag', tagType, tag, check);
     }
-    return { addTag, addTagType, selectTag }
+    const editTypeName = (type: string, typeName: string) => {
+      context.emit('editTypeName', type, typeName);
+    }
+    return { addTag, addTagType, selectTag, editTypeName }
   }
 }
 </script>
