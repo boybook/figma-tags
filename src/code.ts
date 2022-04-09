@@ -1,5 +1,7 @@
 import { dispatch, handleEvent } from './codeMessageHandler';
 import SelectionChange = Transfer.CurrentSelection;
+import { markNode, unmarkNode } from "./codeCanvasTag";
+
 figma.showUI(__html__);
 figma.ui.resize(288, 600);
 
@@ -23,6 +25,7 @@ switch (figma.command) {
 }
 
 // Handle events from UI
+
 handleEvent('client-storage-get', (data: Transfer.ClientStorageGetRequest) => {
 	figma.clientStorage.getAsync(data.key).then(r => {
 		const result: Transfer.ClientStorageGetResult = {
@@ -32,6 +35,7 @@ handleEvent('client-storage-get', (data: Transfer.ClientStorageGetRequest) => {
 		dispatch('client-storage-get', result);
 	});
 });
+
 handleEvent('client-storage-set', (data: Transfer.ClientStorageSetRequest) => {
 	figma.clientStorage.setAsync(data.key, data.data).then(() => {
 		const result: Transfer.ClientStorageSetResult = {
@@ -41,9 +45,18 @@ handleEvent('client-storage-set', (data: Transfer.ClientStorageSetRequest) => {
 		dispatch('client-storage-set', result);
 	});
 });
+
 handleEvent('document-plugin-data-set', (data: Transfer.DocumentPluginData) => {
 	figma.root.setPluginData(data.key, data.value);
-})
+});
+
+handleEvent('canvas-mark-node', (data: Transfer.CanvasSignNode) => {
+	markNode(new Map<string, Storage.TagGroup>(JSON.parse(data.fullTags)), JSON.parse(data.node));
+});
+
+handleEvent('canvas-unmark-node', (nodeId: string) => {
+	unmarkNode(nodeId);
+});
 
 figma.on("selectionchange", () => {
 	dispatch("selectionchange", packageCurrentSelection());

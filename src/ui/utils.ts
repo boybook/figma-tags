@@ -43,8 +43,6 @@ export function storageTags2ContextTagTree(storageTags: Storage.NodeTags, fullTa
                 for (let tagIndex in entry.tags.get(childTag)) {
                     if (storageTags[typeName]) {
                         for (let tagValid of storageTags[typeName]) {
-                            console.log("======== name", entry.tags.get(childTag)[tagIndex].name);
-                            console.log("======== tagValid", tagValid);
                             if (entry.tags.get(childTag)[tagIndex].name === tagValid) {
                                 entry.tags.get(childTag)[tagIndex].check = true;
                                 break;

@@ -89,9 +89,6 @@ export default {
       fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags()])));
       const nodeData = await provider.getNode(fileId.value, currentSelection.value.id);
 
-      console.log("fullTags", fullTags.value);
-      console.log("nodeData", nodeData);
-
       node.value = Utils.storageNode2ContextNode(nodeData);
       // Node为空时，初始化一个缺省的Node
       if (!node.value) {
@@ -187,12 +184,18 @@ export default {
       loading.value = 'Saving Node... (storage)';
       await provider.saveNode(fileId.value, node.value.node_id, node.value, newTags.value);
       loading.value = undefined;
+      dispatch('canvas-mark-node', <Transfer.CanvasSignNode> {
+        fullTags: JSON.stringify([...fullTags.value]),
+        node: JSON.stringify(node.value)
+      })
     }
 
     // 删除Node
     const toDelete = async () => {
+      const nodeId = currentSelection.value.id;
       loading.value = 'Deleting Node...';
-      await provider.deleteNode(fileId.value, currentSelection.value.id);
+      await provider.deleteNode(fileId.value, nodeId);
+      dispatch('canvas-unmark-node', nodeId);
       loading.value = 'Reloading Node...';
       await reloadNode();
       loading.value = undefined;

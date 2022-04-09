@@ -35,6 +35,11 @@ declare namespace Transfer {
         file_id?: string,
         selection: CurrentSelection,
     }
+
+    type CanvasSignNode = {
+        fullTags: string,
+        node: string
+    }
 }
 
 // 定义Tag、Node相关的数据储存的数据结构
