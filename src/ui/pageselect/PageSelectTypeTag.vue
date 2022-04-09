@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import {PropType, ref} from "vue";
+import {PropType, ref, watchEffect} from "vue";
 import DataProvider from "../provider/DataProvider";
 import FigTag from "../component/FigTag.vue";
 import PageSelectTypeTagNode from "./PageSelectTypeTagNode.vue";
@@ -37,12 +37,13 @@ export default {
     const loading = ref(true);
     const list = ref<Storage.Node[]>([]);
 
-    // TODO sort
-
-    props.provider.selectNodes(props.tagType, props.tag.name).then(result => {
-      list.value = result;
-      loading.value = false;
-    });
+    watchEffect(() => {
+      // TODO sort
+      props.provider.selectNodes(props.tagType, props.tag.name).then(result => {
+        list.value = result;
+        loading.value = false;
+      });
+    })
 
     return { loading, list }
   }
@@ -72,6 +73,7 @@ export default {
   flex-direction: column !important;
   justify-content: center !important;
   align-items: center !important;
+  user-select: none;
 }
 
 .node-tag-loading p {
