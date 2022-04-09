@@ -31,7 +31,7 @@
         </FigTag>
       </div>
       <div class="tree">
-        <TagTree :tag-tree="tagTree" @add-tag="addTag" @add-tag-type="addTagType" />
+        <TagTree :tag-tree="tagTree" @add-tag="addTag" @add-tag-type="addTagType" :toggle-page="togglePage" />
       </div>
     </div>
   </LoadingWithContent>
@@ -60,6 +60,7 @@ export default {
     LoadingWithContent,
     PageNodeFooter, TagTree, PageNodeInitFile, FigButton, FigInput, FigTag, PageNodeTopBar },
   props: {
+    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
     provider: Object as PropType<DataProvider>,
     initData: Object as PropType<Transfer.InitData>
   },
@@ -68,7 +69,7 @@ export default {
     const provider = <DataProvider> props.provider;
     const loading = ref<string|undefined>(undefined);
 
-    const fileId = ref(props.initData.file_id);
+    const fileId = ref(props.initData.fileId);
     const currentSelection = ref<Transfer.CurrentSelection>(props.initData.selection);
 
     const fullTags = ref<Storage.FullTags>();

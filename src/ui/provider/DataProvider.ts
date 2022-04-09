@@ -49,6 +49,6 @@ export default interface DataProvider {
      * @param tag
      * @param sortTagType 根据另一的tag维度排序
      */
-    selectNodes: (tagType: string, tag: string, sortTagType?: string) => Promise<[Storage.Node]>
+    selectNodes: (tagType: string, tag: string, sortTagType?: string) => Promise<Storage.Node[]>
 
 }

@@ -31,14 +31,22 @@ declare namespace Transfer {
         name: string
     }
 
+    type Page = 'PageNode' | 'PageSetting' | 'PageSelect'
+
     type InitData = {
-        file_id?: string,
+        page: Page,
+        fileId?: string,
         selection: CurrentSelection,
     }
 
     type CanvasSignNode = {
         fullTags: string,
         node: string
+    }
+
+    type WindowResize = {
+        width: number,
+        height: number
     }
 }
 

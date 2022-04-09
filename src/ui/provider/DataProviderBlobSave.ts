@@ -110,8 +110,8 @@ export class DataProviderBlobSave implements DataProvider {
     }
 
     selectNodes = async (tagType: string, tag: string, sortTagType?: string) => {
-        const array = <[Storage.Node]> Object.values(await this.getFullNodes());
-        const filter = <[Storage.Node]> array
+        const array = <Storage.Node[]> Object.values(await this.getFullNodes());
+        const filter = <Storage.Node[]> array
             .filter(n => n.tags[tagType])
             .filter(n => n.tags[tagType]?.find(t => t === tag));
         if (sortTagType) {

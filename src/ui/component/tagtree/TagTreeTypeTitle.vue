@@ -5,13 +5,13 @@
       <span class="title-name">
         <slot></slot>
       </span>
-      <span class="counter" v-bind:class="{ 'counter-zero': count === 0 }"> {{ count }} </span>
+      <span class="counter" v-if="operable" v-bind:class="{ 'counter-zero': count === 0 }"> {{ count }} </span>
     </span>
-    <div class="tree-extra-area">
-      <div v-if="extraAdd"
-           class="tree-extra-operation"
-           @click="$emit('extraAdd')"
-      >
+    <div class="tree-extra-area" v-if="operable">
+      <div v-if="extraLookup" v-show="hover" class="tree-extra-operation" @click="$emit('extraLookup')">
+        <img :src="require('../../resource/lookup.svg')" alt="lookup">
+      </div>
+      <div v-if="extraAdd" class="tree-extra-operation" @click="$emit('extraAdd')">
         <img :src="require('../../resource/add.svg')" alt="add">
       </div>
     </div>
@@ -34,9 +34,14 @@ export default {
       default: false
     },
     count: Number,
-    extraAdd: Boolean
+    extraLookup: Boolean,
+    extraAdd: Boolean,
+    operable: {
+      type: Boolean,
+      default: true
+    }
   },
-  emits: [ 'update:open', 'extraAdd' ],
+  emits: [ 'update:open', 'extraAdd', 'extraLookup' ],
 
   setup(props, context) {
     const open = ref(props.open);

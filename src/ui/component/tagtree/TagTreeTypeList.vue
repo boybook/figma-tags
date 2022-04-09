@@ -4,7 +4,7 @@
       <ul v-if="tagType.tags.get(childTagType).length > 0" class="sub-type">
         <li class="sub-type-title" v-if="childTagType.length > 0"> {{ childTagType }} </li>
         <li v-for="tag in tagType.tags.get(childTagType)">
-          <TagTreeTypeListEntry :tag="tag" @selectTag="onSelectTag" />
+          <TagTreeTypeListEntry :tag="tag" :checkable="operable" @selectTag="onSelectTag" />
         </li>
       </ul>
     </li>
@@ -21,6 +21,10 @@ export default {
   components: { TagTreeTypeListEntry },
   props: {
     tagType: Object as PropType<Context.TagType>,
+    operable: {
+      type: Boolean,
+      default: true
+    }
   },
   emits: [ "selectTag" ],
   setup(props, context) {

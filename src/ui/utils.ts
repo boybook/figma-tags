@@ -77,3 +77,8 @@ export function defaultTag(name: string) : Storage.Tag {
         background: { r: 227, g: 226, b: 224, a: 0.5 }
     }
 }
+
+export function figmaURL(fileId: string, nodeId: string) : string {
+    //https://www.figma.com/file/HnNCyyFP7RtHTJ33kZcP71/?node-id=0%3A1
+    return "https://www.figma.com/file/" + fileId + "/?node-id=" + encodeURIComponent(nodeId);
+}

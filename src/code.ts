@@ -1,23 +1,34 @@
 import { dispatch, handleEvent } from './codeMessageHandler';
 import SelectionChange = Transfer.CurrentSelection;
-import { markNode, unmarkNode } from "./codeCanvasTag";
+import { interval, markNode, unmarkNode } from "./codeCanvasTag";
+import WindowResize = Transfer.WindowResize;
 
-figma.showUI(__html__);
-figma.ui.resize(288, 600);
+figma.showUI(__html__, { visible: false });
+
+let uiShowed = false;
 
 //figma.clientStorage.setAsync("tags", undefined).then();
 //figma.clientStorage.setAsync("nodes", undefined).then();
 
+let file = figma.fileKey;
+if (!file) {
+	file = figma.root.getPluginData('file-id');
+}
+
 switch (figma.command) {
-	case 'node':
-	default:
-	{
-		let file = figma.fileKey;
-		if (!file) {
-			file = figma.root.getPluginData('file-id');
-		}
+	case 'lookup': {
 		dispatch("init", <Transfer.InitData> {
-			file_id: file,
+			page: 'PageSelect',
+			fileId: file,
+			selection: packageCurrentSelection()
+		});
+		break;
+	}
+	case 'node':
+	default: {
+		dispatch("init", <Transfer.InitData> {
+			page: 'PageNode',
+			fileId: file,
 			selection: packageCurrentSelection()
 		});
 		break;
@@ -25,6 +36,14 @@ switch (figma.command) {
 }
 
 // Handle events from UI
+
+handleEvent('resize', (data: WindowResize) => {
+	if (!uiShowed) {
+		figma.ui.show();
+		uiShowed = true;
+	}
+	figma.ui.resize(data.width, data.height);
+});
 
 handleEvent('client-storage-get', (data: Transfer.ClientStorageGetRequest) => {
 	figma.clientStorage.getAsync(data.key).then(r => {
@@ -64,6 +83,10 @@ figma.on("selectionchange", () => {
 
 figma.on("currentpagechange", () => {
 	dispatch("selectionchange", packageCurrentSelection());
+});
+
+figma.on("close", () => {
+	clearInterval(interval);
 });
 
 function packageCurrentSelection() : SelectionChange {

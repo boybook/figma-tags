@@ -3,17 +3,20 @@
       v-model:open="open"
       :lock-open="addingTag"
       :count="[...tagType.tags.values()].flat().filter(t => t.check === true).length"
+      :operable="operable"
       :extra-add="true"
       @extra-add="addingTag = true"
+      :extra-lookup="true"
+      @extra-lookup="togglePage('PageSelect', tagType.type)"
   >
     {{ tagType.type }}
   </TagTreeTypeTitle>
-  <FigButton class="button-empty-add-tag" type="dashed" v-if="open && !addingTag && isTagTypeEmpty" @click="addingTag = true">
+  <FigButton :v-if="operable" class="button-empty-add-tag" type="dashed" v-if="open && !addingTag && isTagTypeEmpty" @click="addingTag = true">
     <img :src="require('../../resource/plus.svg')" alt="add">
     <span style="margin-left: 8px">New Tag</span>
   </FigButton>
-  <TagTreeTypeAddTag class="tag-tree-type-add-tag" v-if="addingTag" placeholder="The tag name" @submit="addTag" @cancel="addingTag = false" style="padding: 4px 5px 4px 24px" />
-  <TagTreeTypeList :tag-type="tagType" v-show="open" @select-tag="onSelectTag" />
+  <TagTreeTypeAddTag class="tag-tree-type-add-tag" v-if="operable && addingTag" placeholder="The tag name" @submit="addTag" @cancel="addingTag = false" style="padding: 4px 5px 4px 24px" />
+  <TagTreeTypeList v-show="open" :operable="operable" :tag-type="tagType" @select-tag="onSelectTag" />
 </template>
 
 <script lang="ts">
@@ -27,14 +30,19 @@ import FigButton from "../FigButton.vue";
 
 export default {
   name: "TagTreeType",
-  components: {FigButton, TagTreeTypeAddTag, TagTreeTypeList, TagTreeTypeTitle },
+  components: { FigButton, TagTreeTypeAddTag, TagTreeTypeList, TagTreeTypeTitle },
   props: {
+    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
     tagType: Object as PropType<Context.TagType>,
     checkable: {
       type: Boolean,
       default: true
     },
     open: {
+      type: Boolean,
+      default: true
+    },
+    operable: {
       type: Boolean,
       default: true
     }

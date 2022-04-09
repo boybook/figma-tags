@@ -1,5 +1,5 @@
 <template>
-  <div class="tag-entry" :class="{ 'selected': tag.check }" @click="onSelectTag()">
+  <div class="tag-entry" :class="{ 'selected': tag.check }" @click="onSelectTag">
     <FigTag :tag="tag" :removable="false"></FigTag>
     <img v-if="checkable" v-show="tag.check" :src="require('../../resource/check.svg')" alt="check" >
   </div>
@@ -25,7 +25,9 @@ export default {
   ],
   setup(props, context) {
     const onSelectTag = () => {
-      props.tag.check = !props.tag.check;
+      if (props.checkable) {
+        props.tag.check = !props.tag.check;
+      }
       context.emit('selectTag', props.tag, props.tag.check);
     }
     return { onSelectTag }

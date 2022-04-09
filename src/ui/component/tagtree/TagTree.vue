@@ -1,9 +1,9 @@
 <template>
   <ul class="tag-tree-ul">
     <li v-for="tagType in tagTree">
-      <TagTreeType :tag-type="tagType" @add-tag="addTag" />
+      <TagTreeType :toggle-page="togglePage" :operable="operable" :tag-type="tagType" @add-tag="addTag" @select-tag="(tag, check) => selectTag(tagType.type, tag, check)" />
     </li>
-    <li>
+    <li v-if="operable">
       <TagTreeAddType @submit="addTagType" />
     </li>
   </ul>
@@ -17,11 +17,16 @@ import TagTreeAddType from "./TagTreeAddType.vue";
 
 export default {
   name: "TagTree",
-  components: {TagTreeAddType, FigButton, TagTreeType },
+  components: { TagTreeAddType, FigButton, TagTreeType },
   props: {
-    tagTree: Object as PropType<Context.TagTree>
+    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
+    tagTree: Object as PropType<Context.TagTree>,
+    operable: {
+      type: Boolean,
+      default: true
+    }
   },
-  emits: [ 'addTag', 'addTagType' ],
+  emits: [ 'selectTag', 'addTag', 'addTagType' ],
   setup(props, context) {
     console.log("rendering TagTree", props.tagTree);
     const addTag = (tagType: string, tag: Storage.Tag) => {
@@ -30,7 +35,10 @@ export default {
     const addTagType = (tagType: string) => {
       context.emit('addTagType', tagType);
     }
-    return { addTag, addTagType }
+    const selectTag = (tagType: string, tag: Context.Tag, check: boolean) => {
+      context.emit('selectTag', tagType, tagType, check);
+    }
+    return { addTag, addTagType, selectTag }
   }
 }
 </script>

@@ -122,7 +122,7 @@ function getPageNode(node: BaseNode): PageNode {
     return <PageNode> node;
 }
 
-setInterval(() => {
+const interval = setInterval(() => {
     for (let el of figma.currentPage.selection) {
         const tileNodeId = figma.currentPage.getPluginData(el.id);
         if (tileNodeId) {
@@ -137,4 +137,4 @@ setInterval(() => {
 
 console.log("codeCanvasTag init!");
 
-export { markNode, unmarkNode }
+export { interval, markNode, unmarkNode }
