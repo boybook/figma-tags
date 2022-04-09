@@ -14,9 +14,16 @@ export default interface DataProvider {
 
     /**
      * 重命名某些TagType
+     * 如果from不存在，且to也不存在，那么直接新建一个
      * @param renames
      */
-    renameTagType: (renames: Transfer.TagTypeRename) => Promise<void>
+    renameTagType: (from: string, to: string) => Promise<void>
+
+    /**
+     * 更新FullTags（包含重命名、重新排序、删除等处理）
+     * @param renames
+     */
+    updateFullTags: (fullTags: Storage.FullTags, tagRenames: Transfer.TagRenameGroup) => Promise<void>
 
     /**
      * 完整设置Tags（添加、删除、重新排序）
@@ -40,7 +47,7 @@ export default interface DataProvider {
      * @param node
      * @param newTags 本次新增的Tag（记录了Tag的配色等信息）
      */
-    saveNode: (fileId: string, nodeId: string, node: Storage.Node, newTags: Storage.FullTags) => Promise<void>
+    saveNode: (fileId: string, nodeId: string, node: Storage.Node) => Promise<void>
 
     /**
      * 删除 Node（根据 file_id, node_id）

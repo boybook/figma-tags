@@ -58,6 +58,7 @@ import PageNodeInitFile from "./PageNodeInitFile.vue";
 import TagTree from "../component/tagtree/TagTree.vue";
 import PageNodeFooter from "./PageNodeFooter.vue";
 import LoadingWithContent from "../component/LoadingWithContent.vue";
+import {contextTagTree2StorageTags} from "../utils";
 
 export default {
   name: "PageNode",
@@ -126,9 +127,6 @@ export default {
       fileId.value = file;
     }
 
-    // 如果在本次新增了tag，需要添加到里面，用于最终发给服务端（包含颜色等信息）
-    const newTags = ref<Storage.FullTags>(new Map());
-
     // 手动添加Tag
     const addTag = (tagType: string, tag: Storage.Tag) => {
       if (fullTags.value) {
@@ -141,17 +139,6 @@ export default {
         fullTags.value.get(tagType).tags.unshift(tag);
         if (!node.value.tags[tagType]) node.value.tags[tagType] = [];
         node.value.tags[tagType].push(tag.name);
-
-        // 添加到newTags中
-        if (!newTags.value.get(tagType)) {
-          newTags.value.set(tagType,
-              {
-                name: tagType,
-                tags: []
-              }
-          )
-        }
-        newTags.value.get(tagType).tags.push(tag);
 
         tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
       } else {
@@ -173,15 +160,13 @@ export default {
       }
     }
 
-    const renames = ref<Transfer.TagTypeRename>({});
-    const test = {
-      test: 'test1',
-      test1: 'test'
-    };
     // 手动修改TagType的名称
-    const editTypeName = (oldName: string, newName: string) => {
+    const editTypeName = async (oldName: string, newName: string) => {
       console.log("editTypeName", oldName, newName);
-      if (oldName !== newName && newName.length > 0 && fullTags.value.has(oldName) && !fullTags.value.has(newName)) {
+      loading.value = "Saving the Type name";
+      await provider.renameTagType(oldName, newName);
+      await reloadNode();
+      /*if (oldName !== newName && newName.length > 0 && fullTags.value.has(oldName) && !fullTags.value.has(newName)) {
         // 处理FullTags
         const newMap: (Map<string, Storage.TagGroup>) = new Map<string, Storage.TagGroup>();
         fullTags.value.forEach((obj, t) => {
@@ -215,24 +200,22 @@ export default {
         } else {
           renames.value[oldName] = newName;
         }
-      }
+      }*/
     }
 
     // 保存Node
     const toSave = async () => {
+      console.log("toSave", tagTree.value);
       loading.value = 'Saving Node... (collect)';
       Utils.syncContextTagTree2ContextNode(tagTree.value, node.value);
       node.value.saved = true;
       loading.value = 'Saving Node... (cover)';
       node.value.cover = await exportCover(node.value.node_id);
-      if (Object.values(renames.value).length > 0) {
-        loading.value = 'Saving Node... (type rename)';
-        console.log("renames", renames.value);
-        await provider.renameTagType(renames.value);
-        renames.value = {};
-      }
+      loading.value = 'Saving Node... (tags)';
+      fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
+      await provider.updateFullTags(fullTags.value, {});
       loading.value = 'Saving Node... (storage)';
-      await provider.saveNode(fileId.value, node.value.node_id, node.value, newTags.value);
+      await provider.saveNode(fileId.value, node.value.node_id, node.value);
       loading.value = undefined;
       dispatch('canvas-mark-node', <Transfer.CanvasSignNode> {
         fullTags: JSON.stringify([...fullTags.value]),

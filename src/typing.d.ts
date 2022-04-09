@@ -54,8 +54,12 @@ declare namespace Transfer {
         background: RGBA
     }
 
-    type TagTypeRename = {
+    type TagRename = {
         [nameFrom: string]: string
+    }
+
+    type TagRenameGroup = {
+        [type: string]: TagRename
     }
 }
 

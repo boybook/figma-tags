@@ -10,7 +10,8 @@
 	},
 	"dependencies": {
 		"@vue/compiler-sfc": "^3.0.2",
-		"figma-plugin-ds": "^0.1.8"
+		"figma-plugin-ds": "^0.1.8",
+		"vuedraggable": "^4.1.0"
 	},
 	"devDependencies": {
 		"@figma/plugin-typings": "^1.18.2",

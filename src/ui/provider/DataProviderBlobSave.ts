@@ -31,11 +31,7 @@ export class DataProviderBlobSave implements DataProvider {
                 {
                     name: 'Default',
                     tags: [
-                        {
-                            name: "Tag",
-                            color: {r: 0, g: 0, b: 0, a: 0.85},
-                            background: {r: 227, g: 226, b: 224, a: 0.5}
-                        }
+                        Utils.defaultTag("Tag", false)
                     ]
                 }
             )
@@ -43,29 +39,113 @@ export class DataProviderBlobSave implements DataProvider {
         return this.fullTags;
     }
 
-    renameTagType = async (renames: Transfer.TagTypeRename) => {
-        const fullTags = await this.getFullTags();
+    renameTagType = async (from: string, to: string) => {
+        const old = await this.getFullTags();
         const newMap: (Map<string, Storage.TagGroup>) = new Map<string, Storage.TagGroup>();
-        fullTags.forEach((obj, t) => {
-            if (renames[t]) {
-                obj.name = renames[t];
-                newMap.set(renames[t], obj);
-            } else {
-                newMap.set(t, obj);
-            }
-        })
+
+        for (let [t, obj] of old.entries()) {
+            // type重命名
+            const newType = t === from ? to : t;
+            obj.name = newType;
+            newMap.set(newType, obj);
+        }
+
+        if (!newMap.has(to)) {
+            newMap.set(to, {
+                name: to,
+                tags: []
+            });
+        }
+
+        await this.setFullTags(newMap);
+
         const fullNodes = await this.getFullNodes();
         for (let node of Object.values(fullNodes)) {
             for (let t in node.tags) {
-                if (renames[t]) {
-                    node.tags[renames[t]] = node.tags[t];
+                if (t === from) {
+                    node.tags[to] = node.tags[t];
                     delete node.tags[t];
                 }
             }
         }
-        await this.setFullTags(newMap);
+
         await this.setFullNodes(fullNodes);
-    };
+    }
+
+    handleTagTypeDelete = async (types: string[]) => {
+        const fullNodes = await this.getFullNodes();
+        for (let node of Object.values(fullNodes)) {
+            for (let type in node.tags) {
+                for (let t of types) {
+                    if (type === t) {
+                        delete node.tags[type];
+                    }
+                }
+            }
+        }
+        await this.setFullNodes(fullNodes);
+    }
+
+    handleTagRename = async (renames: Transfer.TagRenameGroup) => {
+        const fullNodes = await this.getFullNodes();
+        for (let node of Object.values(fullNodes)) {
+            for (let type in renames) {
+                if (node.tags[type]) {
+                    for (let from in renames[type]) {
+                        for (let index in node.tags[type]) {
+                            if (node.tags[type][index] === from) {
+                                node.tags[type][index] = renames[type][from];
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        await this.setFullNodes(fullNodes);
+    }
+
+    handleTagDelete = async (type: string, tags: Storage.Tag[]) => {
+
+    }
+
+    updateFullTags = async (full: Storage.FullTags, tagRenames: Transfer.TagRenameGroup) => {
+        const old = await this.getFullTags();
+        const oldRename: (Map<string, Storage.TagGroup>) = new Map<string, Storage.TagGroup>();
+
+        // 对old进行重命名，用于后续比对（等于服务端先模拟跑重命名，然后才能验证删除等信息）
+        for (let [t, obj] of old.entries()) {
+            // tag重命名
+            if (tagRenames[t]) {
+                for (let tag of obj.tags) {
+                    if (tagRenames[t][tag.name]) {
+                        tag.name = tagRenames[t][tag.name];
+                    }
+                }
+            }
+            oldRename.set(t, obj);
+        }
+        await this.handleTagRename(tagRenames);
+
+        // 寻找被删除的type
+        const missingType = [...oldRename.keys()].filter(oldKey => ![...full.keys()].find(t => t === oldKey));
+        console.log("missingType", missingType);
+        await this.handleTagTypeDelete(missingType);
+
+        // 对比oldRename与full，寻找被删除的tags
+        for (let [t, obj] of full.entries()) {
+            const oldTagType = oldRename.get(t);
+            if (oldTagType) {
+                const missingTag = oldTagType.tags.filter(tag => !obj.tags.find(t => t.name === tag.name));
+                if (missingTag.length > 0) {
+                    console.log("missingTag", t, missingType);
+                    await this.handleTagDelete(t, missingTag);
+                }
+            }
+        }
+
+        await this.setFullTags(full);
+    }
 
     setFullTags = async (fullTags: Storage.FullTags) => {
         await this.blob.storageSet('tags', JSON.stringify([...fullTags]));
@@ -97,40 +177,7 @@ export class DataProviderBlobSave implements DataProvider {
         return full[fileId + "#" + nodeId];
     }
 
-    tryAddTag = async (type: string, tags: (Storage.Tag | string)[]) : Promise<boolean> => {
-        let added = false;
-        const fullTags = await this.getFullTags();
-        if (!fullTags.has(type)) {
-            fullTags.set(type, {
-                name: type,
-                tags: []
-            });
-            added = true;
-        }
-        for (let tag of tags) {
-            const finalTag: Storage.Tag = typeof tag === 'string' ? Utils.defaultTag(tag) : tag;
-            if (!fullTags.get(type).tags.find(t => t.name === finalTag.name)) {
-                fullTags.get(type).tags.push(finalTag);
-                added = true;
-            }
-        }
-        return added;
-    }
-
-    saveNode = async (fileId: string, nodeId: string, node: Storage.Node, newTags: Storage.FullTags) => {
-        // 把新tag添加到fullTags中
-        let tagsChanged = false;
-        const fullTags = await this.getFullTags();
-        for (let type of newTags.keys()) {
-            tagsChanged = await this.tryAddTag(type, newTags.get(type).tags);
-        }
-        for (let type in node.tags) {
-            tagsChanged = await this.tryAddTag(type, node.tags[type]) || tagsChanged;
-        }
-        if (tagsChanged) {
-            await this.setFullTags(fullTags);
-        }
-
+    saveNode = async (fileId: string, nodeId: string, node: Storage.Node) => {
         const full = await this.getFullNodes();
         full[fileId + "#" + nodeId] = node;
 

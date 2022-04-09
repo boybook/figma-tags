@@ -59,6 +59,18 @@ export function storageTags2ContextTagTree(storageTags: Storage.NodeTags, fullTa
     return tagTree;
 }
 
+export function contextTagTree2StorageTags(tagTree: Context.TagTree) : Storage.FullTags {
+    const fullTags: Storage.FullTags = new Map<string, Storage.TagGroup>();
+    for (let tagType of tagTree) {
+        fullTags.set(tagType.type, {
+            name: tagType.type,
+            tags: [...tagType.tags.values()].flat()
+        })
+    }
+    console.log("contextTagTree2StorageTags", fullTags);
+    return fullTags;
+}
+
 export function storageNode2ContextNode(node : Storage.Node) : Context.Node {
     return node ? {
         saved: true,
@@ -66,7 +78,7 @@ export function storageNode2ContextNode(node : Storage.Node) : Context.Node {
     } : undefined;
 }
 
-export function contextNode2ContextNode(node : Context.Node) : Storage.Node {
+export function contextNode2StorageNode(node : Context.Node) : Storage.Node {
     return {
         ...node
     }
