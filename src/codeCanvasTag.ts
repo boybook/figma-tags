@@ -6,6 +6,7 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
         });
 
         const page = getPageNode(node);
+        if (page.id === node.id) return;
 
         const tileNodeId = page.getPluginData(nodeData.node_id);
         if (tileNodeId) {
