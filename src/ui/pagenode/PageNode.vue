@@ -21,7 +21,7 @@
         -->
         <FigInput v-if="node" v-model:val="node.title" />
       </div>
-      <div class="selected" v-show="collectTags?.length > 0">
+      <div class="selected" :class="{ 'selected-empty': !collectTags || collectTags.length === 0 }">
         <FigTag
             v-for="tag in collectTags"
             :tag="tag"
@@ -140,6 +140,9 @@ export default {
     // 手动添加Tag（伪保存）
     const addTag = (tagType: string, tag: Storage.Tag) => {
       if (tagTree.value) {
+        if (tagTree.value.flatMap(type => [...type.tags.values()]).flat().find(t => t.name === tag.name)) {
+          return; // 重复了
+        }
         Utils.newTagToTagTree(tagTree.value, tagType, tag);
       } else {
         throw "tagTree is undefined";
@@ -296,7 +299,7 @@ export default {
   flex: none;
   align-self: stretch;
   flex-grow: 0;
-  margin: 0 0 12px;
+  margin-bottom: 12px;
 }
 
 .title {
@@ -323,6 +326,15 @@ export default {
   flex-direction: row;
   align-items: flex-start;
   flex-flow: wrap;
+  transition: all 500ms ease;
+  overflow: scroll;
+  max-height: 110px;
+}
+
+.selected-empty {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  max-height: 0 !important;
 }
 
 .selected .tag {
