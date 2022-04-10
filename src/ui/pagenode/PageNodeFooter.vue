@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    <FigButton type="primary" @click="$emit('save')">Save</FigButton>
+    <FigButton type="primary" @click="$emit('save')"> {{ $t('button.save') }} </FigButton>
     <FigButton v-if="showDel" @click="$emit('delete')" style="padding: 8px">
       <img :src="require('./resource/delete.svg')" alt="delete">
     </FigButton>

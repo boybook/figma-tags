@@ -63,6 +63,7 @@ import TagTree from "../component/tagtree/TagTree.vue";
 import PageNodeFooter from "./PageNodeFooter.vue";
 import LoadingWithContent from "../component/LoadingWithContent.vue";
 import {contextTagTree2StorageTags, newTagToTagTree} from "../utils";
+import {useI18n} from "vue-i18n";
 
 export default {
   name: "PageNode",
@@ -76,6 +77,7 @@ export default {
   },
 
   setup(props) {
+    const { locale, t } = useI18n();
     const provider = <DataProvider> props.provider;
     const loading = ref<string|undefined>(undefined);
 
@@ -96,7 +98,7 @@ export default {
     const reloadNode = async (keepCheck: boolean) => {
       if (!currentSelection.value) return;
       console.log("PageNode.reloadNode", currentSelection.value);
-      loading.value = 'Loading Node...';
+      loading.value = 'loading.node';
       fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags()])));
       const originNodeData = await provider.getNode(fileId.value, currentSelection.value.id);
       const nodeData = <Storage.Node> originNodeData ? JSON.parse(JSON.stringify(originNodeData)) : undefined;
@@ -148,7 +150,7 @@ export default {
     const editTag = async (tagType: string, nameFrom: string, tag: Storage.Tag) => {
       console.log("editTag", tagType, nameFrom, tag);
       if (tagTree.value && fullTags.value) {
-        loading.value = 'Saving Tag...';
+        loading.value = 'saving.tag';
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         const target = fullTags.value.get(tagType)?.tags.find(t => t.name === nameFrom);
         target.name = tag.name;
@@ -171,7 +173,7 @@ export default {
     const deleteTag = async (tagType: string, tagName: string) => {
       console.log("deleteTag", tagType, tagName);
       if (tagTree.value && fullTags.value) {
-        loading.value = 'Saving Tag...';
+        loading.value = 'saving.tag';
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         const tags = fullTags.value.get(tagType)?.tags;
         for (let i = 0; i < tags.length; i++) {
@@ -191,7 +193,7 @@ export default {
     const addTagType = async (tagType: string) => {
       console.log("addTagType", tagType);
       if (fullTags.value && !fullTags.value.has(tagType)) {
-        loading.value = 'Saving Tag type...';
+        loading.value = 'saving.tag';
         fullTags.value.set(tagType, {
           name: tagType,
           tags: []
@@ -224,7 +226,7 @@ export default {
         alert("Name already exists");
         return;
       }
-      loading.value = "Saving the Type name";
+      loading.value = "saving.tag";
       await provider.renameTagType(oldName, newName);
       await reloadNode(false);
     }

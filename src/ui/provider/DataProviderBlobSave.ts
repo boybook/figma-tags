@@ -1,5 +1,6 @@
 import DataProvider from "./DataProvider";
 import * as Utils from "../utils";
+import { useI18n } from "vue-i18n";
 
 export interface BlobProvider {
     storageGet: (key: string) => Promise<any>
@@ -22,14 +23,16 @@ export class DataProviderBlobSave implements DataProvider {
     }
 
     reloadFullTags = async () => {
+        const { t } = useI18n();
         let result = await this.blob.storageGet('tags');
         if (!result) result = "[]";
         this.fullTags = <Storage.FullTags> new Map(JSON.parse(result));
         // 如果没有取到，那么会返回默认的tags
         if (this.fullTags.size === 0) {
-            this.fullTags.set('Default',
+            const defaultName = t('tag_type.default');
+            this.fullTags.set(defaultName,
                 {
-                    name: 'Default',
+                    name: defaultName,
                     tags: [
                         Utils.defaultTag("Tag", false)
                     ]

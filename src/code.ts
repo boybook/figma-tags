@@ -9,6 +9,8 @@ let uiShowed = false;
 
 //figma.clientStorage.setAsync("tags", undefined).then();
 //figma.clientStorage.setAsync("nodes", undefined).then();
+//figma.clientStorage.setAsync("language", "ch").then();
+//figma.root.setPluginData("file-id", "");
 
 let file = figma.fileKey;
 if (!file) {
@@ -17,20 +19,28 @@ if (!file) {
 
 switch (figma.command) {
 	case 'lookup': {
-		dispatch("init", <Transfer.InitData> {
-			page: 'PageSelect',
-			fileId: file,
-			selection: packageCurrentSelection()
-		});
+		(async() => {
+			const language = await figma.clientStorage.getAsync("language");
+			dispatch("init", <Transfer.InitData> {
+				language: language ? language : "en",
+				page: 'PageSelect',
+				fileId: file,
+				selection: packageCurrentSelection()
+			});
+		})();
 		break;
 	}
 	case 'node':
 	default: {
-		dispatch("init", <Transfer.InitData> {
-			page: 'PageNode',
-			fileId: file,
-			selection: packageCurrentSelection()
-		});
+		(async() => {
+			const language = await figma.clientStorage.getAsync("language");
+			dispatch("init", <Transfer.InitData> {
+				language: language ? language : "en",
+				page: 'PageNode',
+				fileId: file,
+				selection: packageCurrentSelection()
+			});
+		})();
 		break;
 	}
 }

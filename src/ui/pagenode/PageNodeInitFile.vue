@@ -2,10 +2,12 @@
   <div class="page-node-init">
     <img :src="require('./resource/file-input.svg')" alt="file-input">
     <div class="page-node-init-input">
-      <FigInput v-model:val="fileUrl" :status="error ? 'error' : ''" placeholder="从录入文件URL开始" />
-      <p v-show="error" id="p-alert" style="margin-top: 8px"> 请确保输入的URL为该设计稿的分享链接 </p>
+      <FigInput v-model:val="fileUrl" :status="error ? 'error' : ''" :placeholder="$t('file_id.placeholder')" @submit="check" />
+      <p style="color: rgba(0, 0, 0, 0.25)"> {{ $t('file_id.help') }} </p>
+      <p v-show="error" style="color: #f24822"> {{ $t('file_id.error') }} </p>
     </div>
     <FigButton type="primary" style="width: 80px" @click="check"> GO </FigButton>
+    <p class="page-node-init-intro"> {{ $t('file_id.intro') }} </p>
   </div>
 </template>
 
@@ -48,6 +50,10 @@ export default {
 
 <style scoped>
 
+p {
+  user-select: none;
+}
+
 .page-node-init {
   display: flex;
   flex-direction: column;
@@ -82,11 +88,19 @@ export default {
 
 .page-node-init-input p {
   margin: 8px 0 0;
+  font-size: 12px;
 }
 
-#p-alert {
+.page-node-init-intro {
+  position: absolute;
+  margin: 16px 12px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: left;
   font-size: 12px;
-  color: #f24822;
+  line-height: 18px;
+  color: rgba(0, 0, 0, 0.25);
 }
 
 </style>

@@ -26,6 +26,7 @@ import * as Utils from "../../utils";
 import FigTag from "../FigTag.vue";
 import {PropType, ref} from "vue";
 import TagTreeEntryEdit from "./TagTreeEntryEdit.vue";
+import {useI18n} from "vue-i18n";
 
 export default {
   name: "TagTreeTypeListEntry",
@@ -41,6 +42,7 @@ export default {
       'selectTag', 'editTag', 'deleteTag',
   ],
   setup(props, context) {
+    const { t } = useI18n();
     const hover = ref(false);
     const editing = ref(false);
     const onSelectTag = () => {
@@ -54,7 +56,7 @@ export default {
         editing.value = false;
         return;  // Nothing changed!
       }
-      if (props.tag.isNew || confirm("Sure to save '" + newTagName + "' ?")) {
+      if (props.tag.isNew || confirm(t('tag.edit.confirm', [newTagName]))) {
         const newTag : Storage.Tag = {
           name: newTagName,
           color: color ? color.color : props.tag.color,
@@ -66,7 +68,7 @@ export default {
       editing.value = false;
     }
     const tryDelete = () => {
-      if (props.tag.isNew || confirm("Sure to delete '" + props.tag.name + "' ?")) {
+      if (props.tag.isNew || confirm(t('tag.delete.confirm', [props.tag.name]))) {
         context.emit('deleteTag', props.tag.name);
       }
       editing.value = false;

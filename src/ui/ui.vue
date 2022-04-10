@@ -6,16 +6,18 @@
 <script lang="ts">
 
 import { dispatch, handleEvent } from "./uiMessageHandler";
-import {onMounted, reactive, ref, watchEffect} from 'vue';
+import { onMounted, reactive, ref, watchEffect } from 'vue';
 import { DataProviderBlobSave } from "./provider/DataProviderBlobSave";
+import DataProvider from './provider/DataProvider';
 import BlobLocalProvider from "./provider/blob/BlobLocalProvider";
 import PageNode from "./pagenode/PageNode.vue";
-import DataProvider from './provider/DataProvider';
 import PageSelect from "./pageselect/PageSelect.vue";
+import { useI18n } from 'vue-i18n';
 
 export default {
   components: { PageSelect, PageNode },
   setup() {
+    const { locale, t } = useI18n();
     const page = ref<Transfer.Page>();
     const pageWindowSize = {
       PageNode: {
@@ -36,6 +38,8 @@ export default {
 
     onMounted(() => {
       handleEvent("init", (data: Transfer.InitData) => {
+        console.log("language set to: ", data.language);
+        locale.value = data.language;
         initData.value = data;
         page.value = data.page;
       })

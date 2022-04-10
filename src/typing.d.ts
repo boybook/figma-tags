@@ -34,6 +34,7 @@ declare namespace Transfer {
     type Page = 'PageNode' | 'PageSetting' | 'PageSelect'
 
     type InitData = {
+        language: string,
         page: Page,
         fileId?: string,
         selection: CurrentSelection,

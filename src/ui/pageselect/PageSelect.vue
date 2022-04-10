@@ -4,7 +4,7 @@
     <div class="page-select-wrapper-tree">
       <div v-if="backVisible" class="back-button" @click="togglePage('PageNode')">
         <img :src="require('../resource/back.svg')" alt="back">
-        <span style="margin-left: 4px">Back</span>
+        <span style="margin-left: 4px"> {{ $t('lookup.back') }} </span>
       </div>
       <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" />
     </div>

@@ -2,13 +2,13 @@
   <div class="add-tag-type">
     <div class="add-tag-type-button" @click="popup = !popup" :class="{ 'add-tag-type-button--focus': popup }">
       <img :src="require('../../resource/plus.svg')" alt="add">
-      <span style="margin-left: 4px">Add a type</span>
+      <span style="margin-left: 4px"> {{ $t('tag_type.add.button') }} </span>
     </div>
     <div v-if="popup" class="add-tag-type-popup">
       <div class="arrow-top" style="margin-left: 42px"></div>
       <div class="add-tag-type-popup-content">
-        <p>Add a new type: </p>
-        <TagTreeEntryEdit placeholder="Type name" @submit="submit" @cancel="popup = false" />
+        <p> {{ $t('tag_type.add.title') }} </p>
+        <TagTreeEntryEdit :placeholder="$t('tag_type.add.placeholder')" @submit="submit" @cancel="popup = false" />
       </div>
     </div>
 

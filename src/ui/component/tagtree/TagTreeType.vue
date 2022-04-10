@@ -14,12 +14,12 @@
   />
   <FigButton :v-if="operable" class="button-empty-add-tag" type="dashed" v-if="open && !addingTag && isTagTypeEmpty" @click="addingTag = true">
     <img :src="require('../../resource/plus.svg')" alt="add">
-    <span style="margin-left: 8px">New Tag</span>
+    <span style="margin-left: 8px"> {{ $t('tag.add.button') }} </span>
   </FigButton>
   <TagTreeEntryEdit
       class="tag-tree-type-add-tag"
       v-if="operable && addingTag"
-      placeholder="The tag name"
+      :placeholder="$t('tag.add.placeholder')"
       @submit="addTag"
       @cancel="addingTag = false"
       :color="Utils.randomTagColor()"

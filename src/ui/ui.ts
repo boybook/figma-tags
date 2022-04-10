@@ -1,6 +1,15 @@
-import { createApp } from 'vue'
+import { createApp } from 'vue';
+import { createI18n } from 'vue-i18n';
 //@ts-ignore
-import App from './ui.vue'
+import App from './ui.vue';
+import { messages } from "./I18n";
+
+const i18n = createI18n({
+    legacy: false,
+    locale: 'en',
+    fallbackLocale: 'en',
+    messages
+})
 
 const app = createApp(App);
 
@@ -12,5 +21,7 @@ app.directive('focus', {
         el.focus()
     }
 })
+
+app.use(i18n);
 
 app.mount('#app');

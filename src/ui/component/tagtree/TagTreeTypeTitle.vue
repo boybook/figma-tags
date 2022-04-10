@@ -32,6 +32,7 @@
 <script lang="ts">
 import { ref, watch } from "vue";
 import TagTreeEntryEdit from "./TagTreeEntryEdit.vue";
+import {useI18n} from "vue-i18n";
 
 export default {
 
@@ -58,6 +59,7 @@ export default {
   emits: [ 'update:open', 'editTypeName', 'extraAdd', 'extraLookup', 'deleteTagType' ],
 
   setup(props, context) {
+    const { t } = useI18n();
     const open = ref(props.open);
     const hover = ref(false);
     const editing = ref(false);
@@ -68,14 +70,14 @@ export default {
     }
 
     const editTypeName = (name: string) => {
-      if (confirm("Sure to rename?")) {
+      if (confirm(t('tag_type.edit.confirm', [name]))) {
         context.emit('editTypeName', name);
         editing.value = false;
       }
     }
 
     const deleteTagType = () => {
-      if (confirm("Sure to delete the Tag Type `" + props.typeName + "`?")) {
+      if (confirm(t('tag_type.delete.confirm', [props.typeName]))) {
         context.emit('deleteTagType', props.typeName);
         editing.value = false;
       }
