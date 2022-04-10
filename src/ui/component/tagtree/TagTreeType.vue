@@ -10,13 +10,28 @@
       @extra-add="addingTag = true"
       :extra-lookup="true"
       @extra-lookup="togglePage('PageSelect', tagType.type)"
+      @delete-tag-type="(typeName) => $emit('deleteTagType', typeName)"
   />
   <FigButton :v-if="operable" class="button-empty-add-tag" type="dashed" v-if="open && !addingTag && isTagTypeEmpty" @click="addingTag = true">
     <img :src="require('../../resource/plus.svg')" alt="add">
     <span style="margin-left: 8px">New Tag</span>
   </FigButton>
-  <TagTreeTypeAddTag class="tag-tree-type-add-tag" v-if="operable && addingTag" placeholder="The tag name" @submit="addTag" @cancel="addingTag = false" style="padding: 4px 5px 4px 24px" />
-  <TagTreeTypeList v-show="open" :operable="operable" :tag-type="tagType" @select-tag="onSelectTag" />
+  <TagTreeEntryEdit
+      class="tag-tree-type-add-tag"
+      v-if="operable && addingTag"
+      placeholder="The tag name"
+      @submit="addTag"
+      @cancel="addingTag = false"
+      :color="Utils.randomTagColor()"
+  />
+  <TagTreeTypeList
+      v-show="open"
+      :operable="operable"
+      :tag-type="tagType"
+      @select-tag="onSelectTag"
+      @edit-tag="(nameFrom, tag) => $emit('editTag', nameFrom, tag)"
+      @delete-tag="(tagName) => $emit('deleteTag', tagName)"
+  />
 </template>
 
 <script lang="ts">
@@ -25,12 +40,12 @@ import {computed, PropType, ref} from "vue";
 import * as Utils from "../../utils";
 import TagTreeTypeTitle from "./TagTreeTypeTitle.vue";
 import TagTreeTypeList from "./TagTreeTypeList.vue";
-import TagTreeTypeAddTag from "./TagTreeTypeAddTag.vue";
+import TagTreeEntryEdit from "./TagTreeEntryEdit.vue";
 import FigButton from "../FigButton.vue";
 
 export default {
   name: "TagTreeType",
-  components: { FigButton, TagTreeTypeAddTag, TagTreeTypeList, TagTreeTypeTitle },
+  components: { FigButton, TagTreeEntryEdit, TagTreeTypeList, TagTreeTypeTitle },
   props: {
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
     tagType: Object as PropType<Context.TagType>,
@@ -48,17 +63,25 @@ export default {
     }
   },
   emits: [
-      'selectTag',
-      'addTag',
-      'editTypeName'
+    'selectTag',
+    'addTag',
+    'editTag',
+    'deleteTag',
+    'editTypeName',
+    'deleteTagType'
   ],
   setup(props, context) {
     const addingTag = ref(false);
     // 一层层往外传，直到PageNode
-    const addTag = (text) => {
+    const addTag = (text: string, color?: Transfer.TagColor) => {
       if (text && text.length > 0) {
         addingTag.value = false;
-        context.emit('addTag', props.tagType.type, Utils.defaultTag(text, true));
+        if (!color) color = Utils.randomTagColor();
+        context.emit('addTag', {
+          name: text,
+          color: color.color,
+          background: color.background
+        });
       }
     }
     const onSelectTag = (tag, check) => {
@@ -70,7 +93,7 @@ export default {
     const editTypeName = (typeName: string) => {
       context.emit('editTypeName', typeName);
     }
-    return { addingTag, isTagTypeEmpty, addTag, onSelectTag, editTypeName }
+    return { Utils, addingTag, isTagTypeEmpty, addTag, onSelectTag, editTypeName }
   }
 }
 </script>
@@ -89,6 +112,7 @@ export default {
   flex: none;
   align-self: stretch;
   margin-bottom: 6px;
+  padding: 4px 5px 4px 4px;
 }
 
 </style>

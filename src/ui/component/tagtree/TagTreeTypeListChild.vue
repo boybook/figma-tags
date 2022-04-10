@@ -4,7 +4,13 @@
     <draggable :list="childTags" :disabled="!operable" animation="100" item-key="name" handle=".icon-drag" class="draggable-ul">
       <template #item="{ element }">
         <li :key="element.name">
-          <TagTreeTypeListEntry :tag="element" :checkable="operable" @selectTag="onSelectTag" />
+          <TagTreeTypeListEntry
+              :tag="element"
+              :checkable="operable"
+              @selectTag="onSelectTag"
+              @editTag="(nameFrom, tag) => $emit('editTag', nameFrom, tag)"
+              @deleteTag="(tagName) => $emit('deleteTag', tagName)"
+          />
         </li>
       </template>
     </draggable>
@@ -28,10 +34,8 @@ export default {
     childTagType: String,
     childTags: Object as PropType<Context.Tag[]>
   },
-  emits: [ 'update:childTags', 'selectTag' ],
+  emits: [ 'update:childTags', 'selectTag', 'editTag', 'deleteTag' ],
   setup(props, context) {
-    console.log("TagTreeTypeListChild.childTagType", props.childTagType);
-    console.log("TagTreeTypeListChild.childTags", props.childTags);
     watch(
         () => props.childTags,
         (newVal) => {

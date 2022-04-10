@@ -1,5 +1,24 @@
 import TagColor = Transfer.TagColor;
 
+export function newTagToTagTree(tagTree: Context.TagTree, tagTypeName: string, tag: Storage.Tag) {
+    const tagType = tagTree.find(type => type.type === tagTypeName);
+    if (tagType) {
+        const tagNameSubs = tag.name.replace(' ', '').split('/', 2);
+        const childTag = tagNameSubs.length > 1 ? tagNameSubs[0] : '';
+        if (!tagType.tags.has(childTag)) {
+            tagType.tags.set(childTag, []);
+        }
+        const treeTag: Context.Tag = {
+            isNew: true,
+            check: true,
+            name: tag.name,
+            color: tag.color,
+            background: tag.background
+        };
+        tagType.tags.get(childTag).unshift(treeTag);
+    }
+}
+
 export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGroup) : Context.ClassifiedTags {
     // type
     const tags : Context.ClassifiedTags = new Map();
@@ -11,6 +30,7 @@ export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGr
             tags.set(childTag, []);
         }
         const treeTag: Context.Tag = {
+            isNew: false,
             check: false,
             name: tag.name,
             color: tag.color,
@@ -84,7 +104,7 @@ export function contextNode2StorageNode(node : Context.Node) : Storage.Node {
     }
 }
 
-export function syncContextTagTree2ContextNode(tagTree: Context.TagTree, node: Context.Node) {
+export function contextTagTree2ContextNode(tagTree: Context.TagTree) : Storage.NodeTags {
     const nodeTags: Storage.NodeTags = {};
     for (let tagType of tagTree) {
         const tags = [...tagType.tags.values()].flat().filter(tag => tag.check).flatMap(tag => tag.name);
@@ -92,7 +112,7 @@ export function syncContextTagTree2ContextNode(tagTree: Context.TagTree, node: C
             nodeTags[tagType.type] = tags;
         }
     }
-    node.tags = nodeTags;
+    return nodeTags;
 }
 
 export function defaultTag(name: string, randomColor?: boolean) : Storage.Tag {
@@ -108,7 +128,7 @@ export function figmaURL(fileId: string, nodeId: string) : string {
     return "https://www.figma.com/file/" + fileId + "/?node-id=" + encodeURIComponent(nodeId);
 }
 
-const tagColors = {
+export const tagColors = {
     default: {
         background: { r: 227, g: 226, b: 224, a: 1 },
         color: { r: 50, g: 48, b: 44, a: 1 }
@@ -153,5 +173,7 @@ const tagColors = {
 
 export function randomTagColor() : TagColor {
     const index = Math.round(Math.random() * Object.values(tagColors).length);
-    return tagColors[Object.keys(tagColors)[index]];
+    const json = JSON.stringify(tagColors[Object.keys(tagColors)[index]]);
+    console.log("randomTagColor", json);
+    return JSON.parse(json);
 }

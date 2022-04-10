@@ -5,6 +5,9 @@
           :operable="operable"
           :child-tag-type="child[0]"
           v-model:child-tags="child[1]"
+          @edit-tag="editTag"
+          @delete-tag="deleteTag"
+          @select-tag="onSelectTag"
       />
     </li>
   </ul>
@@ -26,13 +29,23 @@ export default {
       default: true
     }
   },
-  emits: [ "selectTag" ],
+  emits: [ "selectTag", "editTag" ],
   setup(props, context) {
     const childList = computed(() => [...props.tagType.tags.entries()]);
     const onSelectTag = (tag, check) => {
-      context.emit('selectTag', tag, check)
+      context.emit('selectTag', tag, check);
     }
-    return { childList, onSelectTag }
+    const editTag = (nameFrom: string, tag: Storage.Tag) => {
+      if (nameFrom !== tag.name && childList.value.map(([_, v]) => v).flat().find(t => t.name === tag.name)) {
+        alert("Name already exists");
+      } else {
+        context.emit('editTag', nameFrom, tag);
+      }
+    }
+    const deleteTag = (tagName: string) => {
+      context.emit('deleteTag', tagName);
+    }
+    return { childList, onSelectTag, editTag, deleteTag }
   }
 }
 

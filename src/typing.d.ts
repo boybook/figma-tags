@@ -103,6 +103,7 @@ declare namespace Storage {
 declare namespace Context {
 
     type Tag = {
+        isNew: boolean,  // 是否为伪保存中新建的
         check: boolean,  // 是否勾选
         name: string,
         color: RGBA

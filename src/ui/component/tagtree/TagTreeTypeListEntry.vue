@@ -1,22 +1,35 @@
 <template>
   <div class="tag-entry" :class="{ 'selected': tag.check }" @click="onSelectTag" @mouseover="hover = true" @mouseleave="hover = false">
-    <div class="tag-entry-left">
-      <img class="icon-drag" :class="{ 'icon-drag-show': hover }" :src="require('../../resource/drag.svg')" alt="drag" >
-      <FigTag :tag="tag" :removable="false"></FigTag>
-      <img class="icon-edit" v-show="hover" :src="require('../../resource/edit.svg')" alt="edit" @click="">
+    <div class="tag-entry-left" v-if="!editing">
+      <img class="icon-drag" :class="{ 'icon-drag-show': checkable && hover }" :src="require('../../resource/drag.svg')" alt="drag" @click.stop >
+      <FigTag :tag="tag" :removable="false" />
+      <img class="icon-edit" v-if="checkable" v-show="hover" :src="require('../../resource/edit.svg')" alt="edit" @click="editing = true" @click.stop>
     </div>
-    <img v-if="checkable" v-show="tag.check" :src="require('../../resource/check.svg')" alt="check" >
+    <TagTreeEntryEdit
+        class="tag-entry-left"
+        v-if="editing"
+        :default-text="tag.name"
+        :show-delete="true"
+        placeholder="Tag"
+        @submit="tryEdit"
+        @cancel="editing = false"
+        @to-delete="tryDelete"
+        :color="{ color: tag.color, background: tag.background }"
+    />
+    <img v-if="checkable && !editing" v-show="tag.check" :src="require('../../resource/check.svg')" alt="check" >
   </div>
 </template>
 
 <script lang="ts">
 
+import * as Utils from "../../utils";
 import FigTag from "../FigTag.vue";
 import {PropType, ref} from "vue";
+import TagTreeEntryEdit from "./TagTreeEntryEdit.vue";
 
 export default {
   name: "TagTreeTypeListEntry",
-  components: { FigTag },
+  components: { TagTreeEntryEdit, FigTag },
   props: {
     tag: Object as PropType<Context.Tag>,
     checkable: {
@@ -25,17 +38,40 @@ export default {
     }
   },
   emits: [
-      'selectTag'
+      'selectTag', 'editTag', 'deleteTag',
   ],
   setup(props, context) {
     const hover = ref(false);
+    const editing = ref(false);
     const onSelectTag = () => {
-      if (props.checkable) {
+      if (props.checkable && !editing.value) {
         props.tag.check = !props.tag.check;
       }
       context.emit('selectTag', props.tag, props.tag.check);
     }
-    return { hover, onSelectTag }
+    const tryEdit = (newTagName: string, color?: Transfer.TagColor) => {
+      if (newTagName === props.tag.name && color?.color === props.tag.color && color?.background === props.tag.background) {
+        editing.value = false;
+        return;  // Nothing changed!
+      }
+      if (props.tag.isNew || confirm("Sure to save '" + newTagName + "' ?")) {
+        const newTag : Storage.Tag = {
+          name: newTagName,
+          color: color ? color.color : props.tag.color,
+          background: color ? color.background : props.tag.background,
+        };
+        const nameFrom = props.tag.name;
+        context.emit('editTag', nameFrom, newTag);
+      }
+      editing.value = false;
+    }
+    const tryDelete = () => {
+      if (props.tag.isNew || confirm("Sure to delete '" + props.tag.name + "' ?")) {
+        context.emit('deleteTag', props.tag.name);
+      }
+      editing.value = false;
+    }
+    return { hover, editing, onSelectTag, tryEdit, tryDelete }
   }
 }
 
@@ -84,7 +120,6 @@ export default {
   opacity: 0;
   padding: 0;
   transition: opacity 50ms ease-out;
-  cursor: move;
 }
 
 .icon-drag:hover {
@@ -93,6 +128,7 @@ export default {
 
 .icon-drag-show {
   opacity: 0.2;
+  cursor: move;
 }
 
 .icon-edit {

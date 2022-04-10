@@ -5,13 +5,17 @@
           :toggle-page="togglePage"
           :operable="operable"
           :tag-type="tagType"
-          @add-tag="addTag"
-          @select-tag="(tag, check) => selectTag(tagType.type, tag, check)"
-          @edit-type-name="(tagName) => editTypeName(tagType.type, tagName)"
+          @add-tag="(tag) => $emit('addTag', tagType.type, tag)"
+          @select-tag="(tag, check) => $emit('selectTag', tagType.type, tag, check)"
+          @edit-type-name="(tagName) => $emit('editTypeName', tagType.type, tagName)"
+          @delete-tag-type="(typeName) => $emit('deleteTagType', typeName)"
+          @edit-tag="(nameFrom, tag) => $emit('editTag', tagType.type, nameFrom, tag)"
+          @delete-tag="(tagName) => $emit('deleteTag', tagType.type, tagName)"
       />
     </li>
     <li v-if="operable">
-      <TagTreeAddType @submit="addTagType" />
+      <TagTreeAddType @submit="(tagType) => $emit('addTagType', tagType)"
+      />
     </li>
   </ul>
 </template>
@@ -33,22 +37,17 @@ export default {
       default: true
     }
   },
-  emits: [ 'selectTag', 'addTag', 'addTagType', 'editTypeName' ],
+  emits: [
+    'selectTag',
+    'addTagType',
+    'editTypeName',
+    'deleteTagType',
+    'addTag',
+    'editTag',
+    'deleteTag'
+  ],
   setup(props, context) {
-    console.log("rendering TagTree", props.tagTree);
-    const addTag = (tagType: string, tag: Storage.Tag) => {
-      context.emit('addTag', tagType, tag);
-    };
-    const addTagType = (tagType: string) => {
-      context.emit('addTagType', tagType);
-    }
-    const selectTag = (tagType: string, tag: Context.Tag, check: boolean) => {
-      context.emit('selectTag', tagType, tag, check);
-    }
-    const editTypeName = (type: string, typeName: string) => {
-      context.emit('editTypeName', type, typeName);
-    }
-    return { addTag, addTagType, selectTag, editTypeName }
+    return { }
   }
 }
 </script>

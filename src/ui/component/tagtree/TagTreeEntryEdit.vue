@@ -1,10 +1,21 @@
 <template>
   <div class="tag-adding">
-    <FigInput v-focus v-model:val="text" :status="error ? 'error' : ''" :placeholder="placeholder" @submit="submit" />
-    <FigButton @click="cancel">
+    <TagColorDropdown v-if="color" class="tag-adding-color" v-model:color="color" />
+    <FigInput
+        v-focus
+        v-model:val="text"
+        :status="error ? 'error' : ''"
+        :placeholder="placeholder"
+        @submit="submit"
+        @keydown.esc="cancel"
+    />
+    <FigButton v-if="showDelete" @click="toDelete" @click.stop>
+      <img :src="require('../../resource/delete.svg')" alt="delete">
+    </FigButton>
+    <FigButton @click="cancel" @click.stop>
       <img :src="require('../../resource/close-black.svg')" alt="close">
     </FigButton>
-    <FigButton type="primary" @click="submit">
+    <FigButton type="primary" @click="submit" @click.stop>
       <img :src="require('../../resource/check-white.svg')" alt="check">
     </FigButton>
   </div>
@@ -12,23 +23,31 @@
 
 <script lang="ts">
 
-import { ref, watch } from "vue";
+import {PropType, ref, watch} from "vue";
 import FigInput from "../FigInput.vue";
 import FigButton from "../FigButton.vue";
+import TagColorDropdown from "./TagColorDropdown.vue";
 
 export default {
-  name: "TagTreeTypeAddTag",
-  components: { FigButton, FigInput },
+  name: "TagTreeEntryEdit",
+  components: {TagColorDropdown, FigButton, FigInput },
   props: {
     placeholder: String,
     defaultText: {
       type: String,
       default: ""
+    },
+    showDelete: {
+      type: Boolean,
+      default: false
+    },
+    color: {
+      type: Object as PropType<Transfer.TagColor>
     }
   },
-  emits: [ 'submit', 'cancel' ],
+  emits: [ 'submit', 'cancel', 'toDelete' ],
   setup(props, context) {
-    const text = ref(props.defaultText);
+    const text = ref<string>(props.defaultText);
     const error = ref(false);
     watch(
         text,
@@ -43,12 +62,15 @@ export default {
         error.value = true;
         return;
       }
-      context.emit('submit', text.value);
+      context.emit('submit', text.value, props.color);
     }
     const cancel = () => {
       context.emit('cancel');
     }
-    return { text, error, submit, cancel };
+    const toDelete = () => {
+      context.emit('toDelete');
+    }
+    return { text, error, submit, cancel, toDelete };
   }
 }
 
@@ -80,6 +102,11 @@ export default {
   margin-left: 4px;
   padding: 6px;
   height: 26px;
+}
+
+.tag-adding-color {
+  width: 16px;
+  margin-right: 4px;
 }
 
 </style>

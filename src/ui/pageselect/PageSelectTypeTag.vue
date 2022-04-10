@@ -53,7 +53,7 @@ export default {
 <style scoped>
 
 .node-tag {
-  animation: ease-show 0.5s ease-out;
+  animation: ease-show 0.1s ease-out;
 }
 
 @keyframes ease-show {

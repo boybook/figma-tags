@@ -8,7 +8,7 @@
       <div class="arrow-top" style="margin-left: 42px"></div>
       <div class="add-tag-type-popup-content">
         <p>Add a new type: </p>
-        <TagTreeTypeAddTag placeholder="Type name" @submit="submit" @cancel="popup = false" />
+        <TagTreeEntryEdit placeholder="Type name" @submit="submit" @cancel="popup = false" />
       </div>
     </div>
 
@@ -19,12 +19,12 @@
 
 import FigInput from "../FigInput.vue";
 import FigButton from "../FigButton.vue";
-import TagTreeTypeAddTag from "./TagTreeTypeAddTag.vue";
+import TagTreeEntryEdit from "./TagTreeEntryEdit.vue";
 import { ref } from "vue";
 
 export default {
   name: "TagTreeAddType",
-  components: { TagTreeTypeAddTag, FigInput, FigButton },
+  components: { TagTreeEntryEdit, FigInput, FigButton },
   emits: ['submit'],
   setup(props, context) {
     const popup = ref(false);
