@@ -13,6 +13,11 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
             figma.getNodeById(tileNodeId)?.remove();
         }
 
+        if (Object.values(nodeData.tags).flat().length === 0) {
+            // 没有任何标签
+            return;
+        }
+
         figma.loadFontAsync({ family: "Inter", style: "Medium" }).then(() => {
             //const tagFrames = [];
             const root = figma.createFrame();

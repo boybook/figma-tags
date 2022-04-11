@@ -28,13 +28,15 @@ declare namespace Transfer {
     type CurrentSelection = {
         type: 'PAGE' | 'FRAME',
         id: string,
-        name: string
+        name: string,
+        width: number
     }
 
     type Page = 'PageNode' | 'PageSetting' | 'PageSelect'
 
     type InitData = {
         language: string,
+        accessToken?: string,
         page: Page,
         fileId?: string,
         selection: CurrentSelection,

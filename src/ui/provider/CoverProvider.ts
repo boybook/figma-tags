@@ -1,9 +1,31 @@
-import { dispatch, handleEvent } from "../uiMessageHandler";
-
-const exportCover = (nodeId: string) : Promise<string> => (
-    new Promise<string>((resolve, reject) => {
-        // TODO 导出并保存封面至云端
-        resolve("https://static.figma.com/uploads/28811d94ebbbeed985725e23e0a560215cc43f7b");
+const exportCover = (fileId: string, nodeId: string, nodeWidth: number, accessToken?: string) : Promise<string> => (
+    new Promise<string>(async (resolve, reject) => {
+        if (accessToken) {
+            try {
+                const scale = nodeWidth ? Math.min(4, 512 / nodeWidth) : 0.1;
+                const result = await fetch("https://api.figma.com/v1/images/" + fileId + "?ids=" + nodeId + "&scale=" + scale, {
+                    headers: {
+                        'X-FIGMA-TOKEN': accessToken
+                    }
+                });
+                if (result.ok) {
+                    const json = await result.json();
+                    if (json.err) {
+                        resolve("export cover failed: " + json.err);
+                    } else {
+                        const url = json.images[nodeId];
+                        resolve(url);
+                    }
+                } else {
+                    resolve(result.status + ": " + result.statusText);
+                }
+                console.log(result);
+            } catch (e) {
+                reject(e);
+            }
+        } else {
+            resolve("https://static.figma.com/uploads/28811d94ebbbeed985725e23e0a560215cc43f7b");
+        }
     })
 );
 

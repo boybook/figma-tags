@@ -44,6 +44,9 @@
       </div>
     </div>
   </LoadingWithContent>
+  <div class="node-token-access" v-if="accessModal">
+    <AccessTokenModal :callback="() => toSave(true)" @ignore="accessModalIgnore" @submit="accessModalSubmit" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -64,10 +67,12 @@ import PageNodeFooter from "./PageNodeFooter.vue";
 import LoadingWithContent from "../component/LoadingWithContent.vue";
 import {contextTagTree2StorageTags, newTagToTagTree} from "../utils";
 import {useI18n} from "vue-i18n";
+import AccessTokenModal from "./access/AccessTokenModal.vue";
 
 export default {
   name: "PageNode",
   components: {
+    AccessTokenModal,
     LoadingWithContent,
     PageNodeFooter, TagTree, PageNodeInitFile, FigButton, FigInput, FigTag, PageNodeTopBar },
   props: {
@@ -87,6 +92,8 @@ export default {
     const node = ref<Context.Node>();
     const tagTree = ref<Context.TagTree>();
 
+    const accessModal = ref(false);
+
     // 监听从插件传来的 selectionchange
     onMounted(() => {
       handleEvent("selectionchange", async (data: Transfer.CurrentSelection) => {
@@ -97,6 +104,7 @@ export default {
     const reloadNode = async (keepCheck: boolean) => {
       if (!currentSelection.value) return;
       console.log("PageNode.reloadNode", currentSelection.value);
+      accessModal.value = false;
       loading.value = 'loading.node';
       fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags()])));
       const originNodeData = await provider.getNode(fileId.value, currentSelection.value.id);
@@ -234,13 +242,20 @@ export default {
     }
 
     // 保存Node
-    const toSave = async () => {
+    const toSave = async (force: boolean = false) => {
       console.log("toSave", tagTree.value);
+      // 还没获取过accessKey
+      if (!force && !props.initData.accessToken) {
+        accessModal.value = true;
+        return;
+      }
+      accessModal.value = false;
+      const nodeWidth = currentSelection.value.width;
       loading.value = 'Saving Node... (collect)';
       node.value.tags = Utils.contextTagTree2ContextNode(tagTree.value);
       node.value.saved = true;
       loading.value = 'Saving Node... (cover)';
-      node.value.cover = await exportCover(node.value.node_id);
+      node.value.cover = await exportCover(node.value.file_id, node.value.node_id, nodeWidth, props.initData.accessToken);
       loading.value = 'Saving Node... (tags)';
       fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
       await provider.updateFullTags(fullTags.value, {});
@@ -268,9 +283,23 @@ export default {
       props.togglePage('PageSetting');
     }
 
+    const accessModalIgnore = (callback: Function) => {
+      accessModal.value = false;
+      callback();
+    }
+
+    const accessModalSubmit = (token: string, callback: Function) => {
+      props.initData.accessToken = token;
+      /*dispatch('client-storage-set', {
+        key: 'access-token',
+        data: token
+      });*/
+      callback();
+    }
+
     return {
-      provider, loading, fileId, currentSelection, fullTags, node, tagTree, collectTags,
-      reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, toSave, toDelete, openSettings
+      provider, loading, fileId, currentSelection, fullTags, node, tagTree, collectTags, accessModal,
+      reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, toSave, toDelete, openSettings, accessModalIgnore, accessModalSubmit
     }
 
   }
@@ -337,6 +366,26 @@ export default {
 .selected .tag svg {
   padding: 0 4px 0 2px;
   cursor: pointer;
+}
+
+.node-token-access {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.node-token-access > * {
+  flex: none;
+  align-self: stretch;
 }
 
 </style>

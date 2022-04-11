@@ -15,7 +15,9 @@ export const messages = {
         },
         button: {
             save: "Save",
-            cancel: "Cancel"
+            cancel: "Cancel",
+            ignore: "Ignore",
+            ok: "OK"
         },
         tag_type: {
             default: "Default",
@@ -55,6 +57,11 @@ export const messages = {
                 oss: "Custom OSS",
                 notion: "Notion"
             }
+        },
+        access: {
+            title: "License for Preview Images",
+            intro: "Authorization to Figma Access Token is required for display of preview images.",
+            placeholder: "Please input the token"
         }
     },
     ch: {
@@ -74,6 +81,8 @@ export const messages = {
         button: {
             save: "保 存",
             cancel: "取 消",
+            ignore: "忽 略",
+            ok: "确 定"
         },
         tag_type: {
             default: "默认分类",
@@ -113,6 +122,11 @@ export const messages = {
                 oss: "自定义OSS",
                 notion: "Notion"
             }
+        },
+        access: {
+            title: "授权预览图",
+            intro: "为了后续展示预览图，需要授权获取 Figma Token",
+            placeholder: "请点击网页中如图所示位置，获取token"
         }
     }
 }

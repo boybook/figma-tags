@@ -12,7 +12,11 @@
       @extra-lookup="togglePage('PageSelect', tagType.type)"
       @delete-tag-type="(typeName) => $emit('deleteTagType', typeName)"
   />
-  <FigButton :v-if="operable" class="button-empty-add-tag" type="dashed" v-if="open && !addingTag && isTagTypeEmpty" @click="addingTag = true">
+  <FigButton
+      class="button-empty-add-tag"
+      type="dashed"
+      v-if="operable && open && !addingTag && isTagTypeEmpty"
+      @click="addingTag = true">
     <img :src="require('../../resource/plus.svg')" alt="add">
     <span style="margin-left: 8px"> {{ $t('tag.add.button') }} </span>
   </FigButton>

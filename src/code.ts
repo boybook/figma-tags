@@ -21,8 +21,10 @@ switch (figma.command) {
 	case 'lookup': {
 		(async() => {
 			const language = await figma.clientStorage.getAsync("language");
+			const accessToken = await figma.clientStorage.getAsync("access-token");
 			dispatch("init", <Transfer.InitData> {
 				language: language ? language : "en",
+				accessToken: accessToken,
 				page: 'PageSelect',
 				fileId: file,
 				selection: packageCurrentSelection()
@@ -34,8 +36,10 @@ switch (figma.command) {
 	default: {
 		(async() => {
 			const language = await figma.clientStorage.getAsync("language");
+			const accessToken = await figma.clientStorage.getAsync("access-token");
 			dispatch("init", <Transfer.InitData> {
 				language: language ? language : "en",
+				accessToken: accessToken,
 				page: 'PageNode',
 				fileId: file,
 				selection: packageCurrentSelection()
@@ -103,17 +107,21 @@ figma.on("close", () => {
 function packageCurrentSelection() : SelectionChange {
 	try {
 		const node = figma.currentPage.selection.length > 0 ? getPageRootNode(figma.currentPage.selection[0]) : figma.currentPage;
+		const width = isEmbedNodeLike(node) ? node.width : undefined;
+		console.log("width", width)
 		return {
 			type: node.type === 'PAGE' ? 'PAGE' : 'FRAME',
 			id: node.id,
-			name: node.name
+			name: node.name,
+			width: width
 		};
 	} catch (e) {
 		console.log('packageCurrentSelection', e);
 		return {
 			type: 'PAGE',
 			id: figma.currentPage.id,
-			name: figma.currentPage.name
+			name: figma.currentPage.name,
+			width: -1
 		}
 	}
 }
