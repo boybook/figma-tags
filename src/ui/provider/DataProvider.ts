@@ -25,12 +25,6 @@ export default interface DataProvider {
      */
     updateFullTags: (fullTags: Storage.FullTags, tagRenames: Transfer.TagRenameGroup) => Promise<void>
 
-    /**
-     * 完整设置Tags（添加、删除、重新排序）
-     * @param fullTags
-     */
-    setFullTags: (fullTags: Storage.FullTags) => Promise<void>
-
     // Node =========================
 
     /**

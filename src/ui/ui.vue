@@ -1,6 +1,7 @@
 <template>
   <PageNode v-if="page==='PageNode'" :provider="provider" :init-data="initData" :toggle-page="togglePage"></PageNode>
   <PageSelect v-if="page==='PageSelect'" :provider="provider" :default-tag-type="defaultSelectType" :back-visible="selectPageBack" :toggle-page="togglePage"></PageSelect>
+  <PageSettings v-if="page==='PageSetting'" :provider="provider" :toggle-page="togglePage"></PageSettings>
 </template>
 
 <script lang="ts">
@@ -13,9 +14,10 @@ import BlobLocalProvider from "./provider/blob/BlobLocalProvider";
 import PageNode from "./pagenode/PageNode.vue";
 import PageSelect from "./pageselect/PageSelect.vue";
 import { useI18n } from 'vue-i18n';
+import PageSettings from "./pagesettings/PageSettings.vue";
 
 export default {
-  components: { PageSelect, PageNode },
+  components: {PageSettings, PageSelect, PageNode },
   setup() {
     const { locale, t } = useI18n();
     const page = ref<Transfer.Page>();

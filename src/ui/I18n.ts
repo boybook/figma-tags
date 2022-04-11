@@ -14,7 +14,8 @@ export const messages = {
             tag: "Saving Tag..."
         },
         button: {
-            save: "Save"
+            save: "Save",
+            cancel: "Cancel"
         },
         tag_type: {
             default: "Default",
@@ -42,9 +43,18 @@ export const messages = {
                 confirm: "Delete the tag \"{0}\"?"
             }
         },
-
         lookup: {
             back: "Back"
+        },
+        settings: {
+            title: "Settings",
+            provider: {
+                title: "Data Provider",
+                local: "Local",
+                cloud: "Cloud",
+                oss: "Custom OSS",
+                notion: "Notion"
+            }
         }
     },
     ch: {
@@ -62,7 +72,8 @@ export const messages = {
             tag: "保存Tag中..."
         },
         button: {
-            save: "保存",
+            save: "保 存",
+            cancel: "取 消",
         },
         tag_type: {
             default: "默认分类",
@@ -92,6 +103,16 @@ export const messages = {
         },
         lookup: {
             back: "返回"
+        },
+        settings: {
+            title: "设置",
+            provider: {
+                title: "数据源",
+                local: "本地",
+                cloud: "云端",
+                oss: "自定义OSS",
+                notion: "Notion"
+            }
         }
     }
 }

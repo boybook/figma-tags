@@ -150,6 +150,7 @@ export class DataProviderBlobSave implements DataProvider {
         await this.setFullTags(full);
     }
 
+    // BLOB SAVE ONLY
     setFullTags = async (fullTags: Storage.FullTags) => {
         await this.blob.storageSet('tags', JSON.stringify([...fullTags]));
         this.fullTags = fullTags;

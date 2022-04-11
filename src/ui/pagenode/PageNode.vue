@@ -77,7 +77,6 @@ export default {
   },
 
   setup(props) {
-    const { locale, t } = useI18n();
     const provider = <DataProvider> props.provider;
     const loading = ref<string|undefined>(undefined);
 
@@ -266,15 +265,7 @@ export default {
     }
 
     const openSettings = () => {
-      // TODO
-      dispatch('client-storage-set', {
-        key: 'tags',
-        data: undefined
-      });
-      dispatch('client-storage-set', {
-        key: 'nodes',
-        data: undefined
-      });
+      props.togglePage('PageSetting');
     }
 
     return {
