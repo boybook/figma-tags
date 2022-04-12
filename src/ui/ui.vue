@@ -1,7 +1,7 @@
 <template>
   <PageNode v-if="page==='PageNode'" :provider="provider" :init-data="initData" :toggle-page="togglePage"></PageNode>
   <PageSelect v-if="page==='PageSelect'" :provider="provider" :default-tag-type="defaultSelectType" :back-visible="selectPageBack" :toggle-page="togglePage"></PageSelect>
-  <PageSettings v-if="page==='PageSetting'" :provider="provider" :toggle-page="togglePage"></PageSettings>
+  <PageSettings v-if="page==='PageSetting'" :provider="provider" :init-data="initData" :toggle-page="togglePage"></PageSettings>
 </template>
 
 <script lang="ts">

@@ -9,6 +9,7 @@
       </div>
     </div>
     <div class="page-settings-content">
+      <p> {{ initData.fileId }} </p>
       <div class="page-settings-content-entry">
         <h3> {{ $t('settings.provider.title') }} </h3>
         <!-- <ToggleSelect> -->
@@ -27,12 +28,13 @@
 import FigButton from "../component/FigButton.vue";
 import { dispatch } from "../uiMessageHandler";
 import { useI18n } from "vue-i18n";
-import { computed } from "vue";
+import { computed, PropType } from "vue";
 
 export default {
   name: "PageSettings",
   components: { FigButton },
   props: {
+    initData: Object as PropType<Transfer.InitData>,
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
   },
   setup(props, context) {

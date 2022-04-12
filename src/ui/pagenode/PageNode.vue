@@ -142,6 +142,7 @@ export default {
     // 成功设置fileId的监听
     const onSetFileId = (file: string) => {
       fileId.value = file;
+      reloadNode(false);
     }
 
     // 手动添加Tag（伪保存）
@@ -254,6 +255,7 @@ export default {
       loading.value = 'Saving Node... (collect)';
       node.value.tags = Utils.contextTagTree2ContextNode(tagTree.value);
       node.value.saved = true;
+      node.value.file_id = fileId.value;
       loading.value = 'Saving Node... (cover)';
       node.value.cover = await exportCover(node.value.file_id, node.value.node_id, nodeWidth, props.initData.accessToken);
       loading.value = 'Saving Node... (tags)';
