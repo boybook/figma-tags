@@ -1,26 +1,27 @@
 <template>
-  <div class="node-tag">
+  <div class="node-tag" ref="target">
     <div class="node-tag-title">
-      <FigTag v-bind:tag="tag" :removable="false"></FigTag>
+      <FigTag :tag="tag" :removable="false"></FigTag>
     </div>
     <ul>
       <li class="node-tag-loading" v-if="loading">
         <LoadingIcon style="flex: none; order: 0; flex-grow: 0;" />
       </li>
-      <li class="node-tag-loading" v-if="!loading && list.length === 0">
+      <li class="node-tag-loading" v-if="!loading && (!result || result.length === 0)">
         <img :src="require('../resource/empty.svg')" alt="empty">
         <p>Empty</p>
       </li>
-      <li v-for="node in list">
-        <PageSelectTypeTagNode v-bind:node="node"></PageSelectTypeTagNode>
+      <li v-for="node in result">
+        <PageSelectTypeTagNode :access-token="accessToken" :node="node" @refresh-cover="refreshCover"></PageSelectTypeTagNode>
       </li>
     </ul>
   </div>
 </template>
 
 <script lang="ts">
-import {PropType, ref, watchEffect} from "vue";
+import {PropType, ref} from "vue";
 import DataProvider from "../provider/DataProvider";
+import {useLazyData} from "../hooks/useLazyData";
 import FigTag from "../component/FigTag.vue";
 import PageSelectTypeTagNode from "./PageSelectTypeTagNode.vue";
 import LoadingIcon from "../component/LoadingIcon.vue";
@@ -30,22 +31,28 @@ export default {
   components: {LoadingIcon, PageSelectTypeTagNode, FigTag},
   props: {
     provider: Object as PropType<DataProvider>,
+    accessToken: String,
     tagType: String,
     tag: Object as PropType<Storage.Tag>
   },
   setup(props) {
     const loading = ref(true);
-    const list = ref<Storage.Node[]>([]);
 
-    watchEffect(() => {
-      // TODO sort
-      props.provider.selectNodes(props.tagType, props.tag.name).then(result => {
-        list.value = result;
-        loading.value = false;
-      });
-    })
+    const { target, result } = useLazyData(
+        () => {
+          //TODO sort
+          return props.provider.selectNodes(props.tagType, props.tag.name);
+        },
+        () => loading.value = false
+    );
 
-    return { loading, list }
+    const refreshCover = (node: Storage.Node, cover: string) => {
+      console.log("refreshCover", cover);
+      node.cover = cover;
+      props.provider.saveNode(node.file_id, node.node_id, node);
+    }
+
+    return { loading, target, result, refreshCover }
   }
 }
 </script>

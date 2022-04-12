@@ -53,7 +53,7 @@
 
 import DataProvider from "../provider/DataProvider";
 import { exportCover } from "../provider/CoverProvider";
-import {computed, onMounted, PropType, ref, watch, watchEffect} from "vue";
+import { computed, onMounted, PropType, ref, watchEffect } from "vue";
 import { dispatch, handleEvent} from "../uiMessageHandler";
 import * as Utils from "../utils";
 
@@ -65,9 +65,8 @@ import PageNodeInitFile from "./PageNodeInitFile.vue";
 import TagTree from "../component/tagtree/TagTree.vue";
 import PageNodeFooter from "./PageNodeFooter.vue";
 import LoadingWithContent from "../component/LoadingWithContent.vue";
-import {contextTagTree2StorageTags, newTagToTagTree} from "../utils";
+import AccessTokenModal from "../access/AccessTokenModal.vue";
 import {useI18n} from "vue-i18n";
-import AccessTokenModal from "./access/AccessTokenModal.vue";
 
 export default {
   name: "PageNode",
@@ -82,6 +81,7 @@ export default {
   },
 
   setup(props) {
+    const { locale, t } = useI18n();
     const provider = <DataProvider> props.provider;
     const loading = ref<string|undefined>(undefined);
 
@@ -105,7 +105,7 @@ export default {
       if (!currentSelection.value) return;
       console.log("PageNode.reloadNode", currentSelection.value);
       accessModal.value = false;
-      loading.value = 'loading.node';
+      loading.value = t('loading.node');
       fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags()])));
       const originNodeData = await provider.getNode(fileId.value, currentSelection.value.id);
       const nodeData = <Storage.Node> originNodeData ? JSON.parse(JSON.stringify(originNodeData)) : undefined;
@@ -141,6 +141,7 @@ export default {
 
     // 成功设置fileId的监听
     const onSetFileId = (file: string) => {
+      props.initData.fileId = file;
       fileId.value = file;
       reloadNode(false);
     }
@@ -161,7 +162,7 @@ export default {
     const editTag = async (tagType: string, nameFrom: string, tag: Storage.Tag) => {
       console.log("editTag", tagType, nameFrom, tag);
       if (tagTree.value && fullTags.value) {
-        loading.value = 'saving.tag';
+        loading.value = t('saving.tag');
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         const target = fullTags.value.get(tagType)?.tags.find(t => t.name === nameFrom);
         target.name = tag.name;
@@ -184,7 +185,7 @@ export default {
     const deleteTag = async (tagType: string, tagName: string) => {
       console.log("deleteTag", tagType, tagName);
       if (tagTree.value && fullTags.value) {
-        loading.value = 'saving.tag';
+        loading.value = t('saving.tag');
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         const tags = fullTags.value.get(tagType)?.tags;
         for (let i = 0; i < tags.length; i++) {
@@ -204,7 +205,7 @@ export default {
     const addTagType = async (tagType: string) => {
       console.log("addTagType", tagType);
       if (fullTags.value && !fullTags.value.has(tagType)) {
-        loading.value = 'saving.tag';
+        loading.value = t('saving.tag');
         fullTags.value.set(tagType, {
           name: tagType,
           tags: []
@@ -237,7 +238,7 @@ export default {
         alert("Name already exists");
         return;
       }
-      loading.value = "saving.tag";
+      loading.value = t("saving.tag");
       await provider.renameTagType(oldName, newName);
       await reloadNode(false);
     }
@@ -252,16 +253,17 @@ export default {
       }
       accessModal.value = false;
       const nodeWidth = currentSelection.value.width;
-      loading.value = 'Saving Node... (collect)';
+      loading.value = t('saving.node', [' (collect)']);
+      node.value.width = nodeWidth;
       node.value.tags = Utils.contextTagTree2ContextNode(tagTree.value);
       node.value.saved = true;
       node.value.file_id = fileId.value;
-      loading.value = 'Saving Node... (cover)';
+      loading.value = t('saving.node', [' (cover)']);
       node.value.cover = await exportCover(node.value.file_id, node.value.node_id, nodeWidth, props.initData.accessToken);
-      loading.value = 'Saving Node... (tags)';
+      loading.value = t('saving.node', [' (tags)']);
       fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
       await provider.updateFullTags(fullTags.value, {});
-      loading.value = 'Saving Node... (storage)';
+      loading.value = t('saving.node', [' (storage)']);
       await provider.saveNode(fileId.value, node.value.node_id, node.value);
       loading.value = undefined;
       dispatch('canvas-mark-node', <Transfer.CanvasSignNode> {
@@ -273,10 +275,10 @@ export default {
     // 删除Node
     const toDelete = async () => {
       const nodeId = currentSelection.value.id;
-      loading.value = 'Deleting Node...';
+      loading.value = t('delete.node');
       await provider.deleteNode(fileId.value, nodeId);
       dispatch('canvas-unmark-node', nodeId);
-      loading.value = 'Reloading Node...';
+      loading.value = t('loading.node');
       await reloadNode(false);
       loading.value = undefined;
     }
@@ -292,10 +294,10 @@ export default {
 
     const accessModalSubmit = (token: string, callback: Function) => {
       props.initData.accessToken = token;
-      /*dispatch('client-storage-set', {
+      dispatch('client-storage-set', {
         key: 'access-token',
         data: token
-      });*/
+      });
       callback();
     }
 

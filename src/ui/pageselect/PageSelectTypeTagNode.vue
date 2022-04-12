@@ -1,21 +1,46 @@
 <template>
   <a class="node" :href="Utils.figmaURL(node.file_id, node.node_id)" target="_blank">
-    <div class="node-img" v-bind:style="{ background: 'url(' + node.cover + ')'}"></div>
+    <div class="node-img">
+      <div v-if="loading" class="node-img-loading">
+        <LoadingIcon />
+      </div>
+      <img :src="node.cover" @load="imageLoad" @error.once="imageError" :alt="node.title">
+    </div>
     <p> {{ node.title }} </p>
   </a>
 </template>
 
 <script lang="ts">
-import {PropType} from "vue";
+import {PropType, ref} from "vue";
 import * as Utils from "../utils";
+import LoadingIcon from "../component/LoadingIcon.vue";
+import reloadCover from "../hooks/reloadCover";
 
 export default {
   name: "PageSelectTypeTagNode",
+  components: {LoadingIcon},
   props: {
+    accessToken: String,
     node: Object as PropType<Storage.Node>
   },
-  setup() {
-    return { Utils }
+  emits: [ 'refreshCover' ],
+  setup(props, context) {
+    const loading = ref(true);
+    const imageLoad = () => {
+      loading.value = false;
+    }
+    const imageError = (event) => {
+      loading.value = true;
+      reloadCover(props.node.file_id, props.node.node_id, props.node.width, props.accessToken)
+          .then(entry => {
+            event.target.src = entry.cover;
+            context.emit('refreshCover', props.node, entry.cover);
+          })
+          .catch(_ => {
+            loading.value = false;
+          });
+    }
+    return { Utils, loading, imageLoad, imageError }
   }
 }
 </script>
@@ -34,6 +59,7 @@ export default {
   text-decoration: none;
   transition: box-shadow 300ms ease;
   flex: 1;
+  user-select: none;
 }
 
 .node:hover {
@@ -41,18 +67,41 @@ export default {
 }
 
 .node .node-img {
+  position: relative;
   flex: none;
   order: 0;
   align-self: stretch;
   flex-grow: 0;
   margin: 0 0;
   height: 144px;
-
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  background-color: #fafafa;
+}
 
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
+.node .node-img > img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  /*max-height: 100%;*/
+}
+
+.node-img-loading {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
 }
 
 .node p {

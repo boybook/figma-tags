@@ -25,6 +25,12 @@ module.exports = (env, argv) => ({
 				}
 			},
 
+			{
+				test: /\.mjsx?$/,
+				include: /node_modules/,
+				type: 'javascript/auto',
+			},
+
 			// Enables including CSS by doing "import './file.css'" in your TypeScript code
 			{ test: /\.css$/, loader: [{ loader: 'style-loader' }, { loader: 'css-loader' }] },
 			{

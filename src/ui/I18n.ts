@@ -10,8 +10,11 @@ export const messages = {
             node: "Loading Node...",
         },
         saving: {
-            node: "Saving Node...",
+            node: "Saving Node...{0}",
             tag: "Saving Tag..."
+        },
+        delete: {
+            node: "Deleting Node..."
         },
         button: {
             save: "Save",
@@ -50,18 +53,34 @@ export const messages = {
         },
         settings: {
             title: "Settings",
+            unset: "Not set",
+            current_file: {
+                title: "File ID",
+                reset: "Reset"
+            },
+            access_token: {
+                title: "Figma Access Token",
+                set: "Edit"
+            },
             provider: {
                 title: "Data Provider",
                 local: "Local",
                 cloud: "Cloud",
                 oss: "Custom OSS",
-                notion: "Notion"
+                notion: "Notion",
+                local_title: "Congratulations, no configuration required",
+                local_content: "Data is stored locally, but only for personal use. If multiple people collaborate, switch data sources.",
+                cloud_title: "Coming soon!",
+                cloud_content: "It is possible that data hosting services will be provided in the future, and you will be able to exchange tags across Figma accounts simply by logging in."
             }
         },
         access: {
             title: "License for Preview Images",
             intro: "Authorization to Figma Access Token is required for display of preview images.",
-            placeholder: "Please input the token"
+            step1: "Step1: Open the URL.",
+            step2: "Step2：Click and paste the Access Token to the Input below.",
+            placeholder: "Please input the token",
+            error: "Maybe the token is incorrect?"
         }
     },
     ch: {
@@ -72,11 +91,14 @@ export const messages = {
             error: "似乎你输入的不是Figma链接"
         },
         loading: {
-            node: "加载Node中...",
+            node: "加载 Node 中...",
         },
         saving: {
-            node: "保存Node中...",
-            tag: "保存Tag中..."
+            node: "保存 Node 中...{0}",
+            tag: "保存 Tag 中..."
+        },
+        delete: {
+            node: "删除 Node 中..."
         },
         button: {
             save: "保 存",
@@ -115,18 +137,34 @@ export const messages = {
         },
         settings: {
             title: "设置",
+            unset: "未设置",
+            current_file: {
+                title: "当前文件FileID",
+                reset: "重新输入"
+            },
+            access_token: {
+                title: "Figma Access Token",
+                set: "修改"
+            },
             provider: {
                 title: "数据源",
                 local: "本地",
                 cloud: "云端",
                 oss: "自定义OSS",
-                notion: "Notion"
+                notion: "Notion",
+                local_title: "恭喜，无需配置",
+                local_content: "数据保存在本地，但是只能个人本地使用。\n如需多人互通数据，需要切换数据源。",
+                cloud_title: "敬请期待！",
+                cloud_content: "后续可能将提供数据托管服务，只需登录，即可跨Figma账号互通标签。"
             }
         },
         access: {
             title: "授权预览图",
             intro: "为了后续展示预览图，需要授权获取 Figma Token",
-            placeholder: "请点击网页中如图所示位置，获取token"
+            step1: "第1步：点击打开网页",
+            step2: "第2步：点击如图所示位置，复制生成的 access token 到下方输入框中",
+            placeholder: "请点击网页中如图所示位置，获取token",
+            error: "似乎你输入的token不正确？"
         }
     }
 }

@@ -8,7 +8,16 @@
       </div>
       <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" />
     </div>
-    <PageSelectType v-if="currentType" :provider="provider" :tag-type="currentType" :tags="collectTags"></PageSelectType>
+    <div v-for="type in tagTree">
+      <PageSelectType
+          v-if="currentType === type.type"
+          :provider="provider"
+          :tag-type="type.type"
+          :tags="collectTags"
+          :access-token="initData.accessToken"
+      />
+    </div>
+
   </div>
 </template>
 
@@ -25,6 +34,7 @@ export default {
   name: "PageSelect",
   components: { PageSelectBar, PageSelectType, TagTree },
   props: {
+    initData: Object as PropType<Transfer.InitData>,
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
     provider: Object as PropType<DataProvider>,
     defaultTagType: String,
@@ -49,7 +59,7 @@ export default {
           .flat();
     });
 
-    const selectTag = (tagType: string, tag: Context.Tag, check: boolean) => {
+    const selectTag = (tagType: string, tag: Context.Tag, _check: boolean) => {
       currentType.value = tagType;
       setTimeout(() => {
         const el = document.getElementById('anchor-' + tag.name);

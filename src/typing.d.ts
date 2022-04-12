@@ -91,6 +91,7 @@ declare namespace Storage {
         title: string,
         file_id: string,
         node_id: string,
+        width?: number,
         cover?: string,
         tags: NodeTags
     }
@@ -128,6 +129,7 @@ declare namespace Context {
         title: string,
         file_id: string,
         node_id: string,
+        width?: number,
         cover?: string,
         tags: Storage.NodeTags
     }

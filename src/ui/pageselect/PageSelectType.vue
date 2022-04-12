@@ -1,7 +1,7 @@
 <template>
   <ul class="page-select-wrapper-blocks">
     <li :id="'anchor-' + tag.name" v-for="tag in tags">
-      <PageSelectTypeTag :provider="provider" :tag-type="tagType" v-bind:tag="tag" />
+      <PageSelectTypeTag :provider="provider" :access-token="accessToken" :tag-type="tagType" :tag="tag" />
     </li>
   </ul>
 </template>
@@ -16,6 +16,7 @@ export default {
   components: { PageSelectTypeTag },
   props: {
     provider: Object as PropType<DataProvider>,
+    accessToken: String,
     tagType: String,
     tags: Array as PropType<Storage.Tag[]>
   }

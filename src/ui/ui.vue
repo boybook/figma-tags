@@ -1,7 +1,24 @@
 <template>
-  <PageNode v-if="page==='PageNode'" :provider="provider" :init-data="initData" :toggle-page="togglePage"></PageNode>
-  <PageSelect v-if="page==='PageSelect'" :provider="provider" :default-tag-type="defaultSelectType" :back-visible="selectPageBack" :toggle-page="togglePage"></PageSelect>
-  <PageSettings v-if="page==='PageSetting'" :provider="provider" :init-data="initData" :toggle-page="togglePage"></PageSettings>
+  <PageNode
+      v-if="page==='PageNode'"
+      :provider="provider"
+      :init-data="initData"
+      :toggle-page="togglePage"
+  />
+  <PageSelect
+      v-if="page==='PageSelect'"
+      :provider="provider"
+      :init-data="initData"
+      :default-tag-type="defaultSelectType"
+      :back-visible="selectPageBack"
+      :toggle-page="togglePage"
+  />
+  <PageSettings
+      v-if="page==='PageSetting'"
+      :provider="provider"
+      :init-data="initData"
+      :toggle-page="togglePage"
+  />
 </template>
 
 <script lang="ts">
@@ -19,7 +36,7 @@ import PageSettings from "./pagesettings/PageSettings.vue";
 export default {
   components: {PageSettings, PageSelect, PageNode },
   setup() {
-    const { locale, t } = useI18n();
+    const { locale } = useI18n();
     const page = ref<Transfer.Page>();
     const pageWindowSize = {
       PageNode: {

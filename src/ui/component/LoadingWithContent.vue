@@ -3,7 +3,7 @@
     <slot></slot>
     <div v-if="loading" class="loading-wrapper">
       <LoadingIcon />
-      <p style="padding-bottom: 16px"> {{ $t(msg) }} </p>
+      <p style="padding-bottom: 16px"> {{ msg }} </p>
     </div>
   </div>
 </template>

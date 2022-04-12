@@ -38,11 +38,6 @@ export default {
   },
   emits: [ "update:val", "submit" ],
   setup(props, context) {
-    /*onMounted(() => {
-      // 聚焦元素
-      console.log(context);
-      context.value.focus();
-    });*/
     watch(
         () => props.val,
         (newVal) => {
