@@ -70,6 +70,8 @@ export const messages = {
                 notion: "Notion",
                 local_title: "Congratulations, no configuration required",
                 local_content: "Data is stored locally, but only for personal use. If multiple people collaborate, switch data sources.",
+                export_json: "Export JSON",
+                import_json: "Import JSON",
                 cloud_title: "Coming soon!",
                 cloud_content: "It is possible that data hosting services will be provided in the future, and you will be able to exchange tags across Figma accounts simply by logging in."
             }
@@ -80,7 +82,8 @@ export const messages = {
             step1: "Step1: Open the URL.",
             step2: "Step2：Click and paste the Access Token to the Input below.",
             placeholder: "Please input the token",
-            error: "Maybe the token is incorrect?"
+            error: "Maybe the token is incorrect?",
+            demo: "Sample"
         }
     },
     ch: {
@@ -153,7 +156,9 @@ export const messages = {
                 oss: "自定义OSS",
                 notion: "Notion",
                 local_title: "恭喜，无需配置",
-                local_content: "数据保存在本地，但是只能个人本地使用。\n如需多人互通数据，需要切换数据源。",
+                local_content: "数据保存在本地，但是只能个人本机使用。\n如需多人协作，请切换数据源。",
+                export_json: "导出JSON",
+                import_json: "导入JSON",
                 cloud_title: "敬请期待！",
                 cloud_content: "后续可能将提供数据托管服务，只需登录，即可跨Figma账号互通标签。"
             }
@@ -164,7 +169,8 @@ export const messages = {
             step1: "第1步：点击打开网页",
             step2: "第2步：点击如图所示位置，复制生成的 access token 到下方输入框中",
             placeholder: "请点击网页中如图所示位置，获取token",
-            error: "似乎你输入的token不正确？"
+            error: "似乎你输入的token不正确？",
+            demo: "示例图"
         }
     }
 }

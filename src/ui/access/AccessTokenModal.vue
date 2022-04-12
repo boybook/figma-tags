@@ -8,7 +8,10 @@
       <span> Figma REST API </span>
     </a>
     <p style="margin-top: 8px"> {{ $t('access.step2') }} </p>
-    <img :src="require('../resource/access-token.png')" alt="access-token" style="width: 100%">
+    <div class="access-modal-sample-img">
+      <img :src="require('../resource/access-token.png')" alt="access-token" style="width: 100%">
+      <span> {{ $t('access.demo') }} </span>
+    </div>
     <FigInput
         size="small"
         v-model:val="input"
@@ -139,6 +142,21 @@ export default {
 .access-modal-url:hover {
   background-color: #f0f0f0;
   color: #0083d5;
+}
+
+.access-modal-sample-img {
+  position: relative;
+  align-self: stretch;
+}
+
+.access-modal-sample-img span {
+  position: absolute;
+  right: 4px;
+  top: 8px;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  transform: rotate(30deg);
 }
 
 </style>

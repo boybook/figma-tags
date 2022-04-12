@@ -72,7 +72,7 @@ button {
 
 .button--link {
   padding: 6px 8px;
-  background: #fff;
+  background: transparent;
   color: #18A0FB;
 }
 

@@ -32,6 +32,10 @@
         <div class="provider-card" v-if="providerCurrent === 0">
           <h3> {{ $t('settings.provider.local_title') }} </h3>
           <p> {{ $t('settings.provider.local_content') }} </p>
+          <div class="page-settings-buttons" style="margin-top: 8px;">
+            <FigButton type="link" @click="" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.export_json') }} </FigButton>
+            <FigButton type="link" @click="" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.import_json') }} </FigButton>
+          </div>
         </div>
         <div class="provider-card" v-if="providerCurrent === 1">
           <h3> {{ $t('settings.provider.cloud_title') }} </h3>
