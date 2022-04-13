@@ -52,7 +52,8 @@ export const messages = {
         },
         lookup: {
             back: "Back",
-            refresh: "{0} covers refreshing..."
+            refresh: "{0} covers refreshing...",
+            sort: "Sort"
         },
         settings: {
             title: "Settings",
@@ -143,7 +144,8 @@ export const messages = {
         },
         lookup: {
             back: "返回",
-            refresh: "{0}个封面刷新中..."
+            refresh: "{0}个封面刷新中...",
+            sort: "排序"
         },
         settings: {
             title: "设置",

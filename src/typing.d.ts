@@ -77,6 +77,7 @@ declare namespace Storage {
 
     type TagGroup = {
         name: string,
+        view_sort?: ViewSort,
         tags: Storage.Tag[]
     }
 
@@ -101,6 +102,11 @@ declare namespace Storage {
         [index: string]: Storage.Node
     }
 
+    type ViewSort = {
+        type: string,
+        order: 'ASC' | "DESC"
+    }
+
 }
 
 // 定义UI运行时的数据结构
@@ -119,6 +125,7 @@ declare namespace Context {
 
     type TagType = {
         type: string,  // 类型名称
+        view_sort?: Storage.ViewSort,
         tags: ClassifiedTags
     }
 

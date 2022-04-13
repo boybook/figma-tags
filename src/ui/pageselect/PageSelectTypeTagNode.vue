@@ -66,6 +66,10 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.node:hover .node-img {
+  transform: scale(1.03);
+}
+
 .node .node-img {
   position: relative;
   flex: none;
@@ -81,6 +85,7 @@ export default {
   align-items: center;
   padding: 0;
   background-color: #fafafa;
+  transition: all 300ms ease-out;
 }
 
 .node .node-img > img {

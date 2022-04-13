@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import {PropType, ref} from "vue";
+import {PropType, ref, watch, watchEffect} from "vue";
 import DataProvider from "../provider/DataProvider";
 import {useLazyData} from "../hooks/useLazyData";
 import FigTag from "../component/FigTag.vue";
@@ -33,6 +33,7 @@ export default {
     provider: Object as PropType<DataProvider>,
     accessToken: String,
     tagType: String,
+    viewSort: Object as PropType<Storage.ViewSort>,
     tag: Object as PropType<Storage.Tag>
   },
   setup(props) {
@@ -40,8 +41,7 @@ export default {
 
     const { target, result } = useLazyData(
         () => {
-          //TODO sort
-          return props.provider.selectNodes(props.tagType, props.tag.name);
+          return props.provider.selectNodes(props.tagType, props.tag.name, props.viewSort);
         },
         () => loading.value = false
     );

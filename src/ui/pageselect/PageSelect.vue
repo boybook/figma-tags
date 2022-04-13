@@ -10,15 +10,18 @@
     <div v-for="type in tagTree">
       <PageSelectBar
           v-if="currentType === type.type"
-          :typeName="currentType"
+          :provider="provider"
+          :type-name="currentType"
+          :view-sort="type.view_sort"
           :back-visible="backVisible"
+          @change-sort="(sort) => type.view_sort = sort"
           style="left: 177px"
-          
       />
       <PageSelectType
           v-if="currentType === type.type"
           :provider="provider"
           :tag-type="type.type"
+          :view-sort="type.view_sort"
           :tags="collectTags"
           :access-token="initData.accessToken"
       />
