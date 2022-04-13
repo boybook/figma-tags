@@ -33,8 +33,10 @@
           <h3> {{ $t('settings.provider.local_title') }} </h3>
           <p> {{ $t('settings.provider.local_content') }} </p>
           <div class="page-settings-buttons" style="margin-top: 8px;">
-            <FigButton type="link" @click="" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.export_json') }} </FigButton>
-            <FigButton type="link" @click="" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.import_json') }} </FigButton>
+            <FigButton type="link" @click="localExport" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.export_json') }} </FigButton>
+            <a style="display: none" target="_blank" download="tags-export.json" ref="alink"></a>
+            <FigButton type="link" @click="localImport" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.import_json') }} </FigButton>
+            <input type="file" accept="application/json" style="display: none" ref="afile" @change="onLocalImport" >
           </div>
         </div>
         <div class="provider-card" v-if="providerCurrent === 1">
@@ -56,19 +58,24 @@
 import FigButton from "../component/FigButton.vue";
 import { dispatch } from "../uiMessageHandler";
 import { useI18n } from "vue-i18n";
-import {computed, PropType, ref} from "vue";
+import { computed, PropType, ref } from "vue";
 import ToggleRadio from "../component/ToggleRadio.vue";
 import FigInput from "../component/FigInput.vue";
+import DataProvider from "../provider/DataProvider";
+import { DataProviderBlobSave } from "../provider/DataProviderBlobSave";
+import { downloadJson } from "../hooks/downloadJson";
+import * as Utils from "../utils";
 
 export default {
   name: "PageSettings",
   components: { FigInput, ToggleRadio, FigButton },
   props: {
     initData: Object as PropType<Transfer.InitData>,
+    provider: Object as PropType<DataProvider>,
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
   },
   setup(props, context) {
-    const { locale } = useI18n();
+    const { t, locale } = useI18n();
     const displayLocale = computed(() => {
       switch (locale.value) {
         case "en":
@@ -117,7 +124,52 @@ export default {
 
     }
 
-    return { displayLocale, providerCurrent, save, cancel, test, switchLanguage, resetFileId, setAccessToken }
+    const alink = ref<HTMLLinkElement>();
+    const afile = ref<HTMLInputElement>();
+
+    const localExport = async () => {
+      if (props.provider.type === 'local') {
+        const blobProvider = <DataProviderBlobSave> props.provider;
+        const fullTags = await blobProvider.getFullTags();
+        const fullNodes = await blobProvider.getFullNodes();
+        const json = {
+          tags: [...fullTags],
+          nodes: fullNodes
+        }
+        if (!downloadJson(alink.value, JSON.stringify(json, null, '\t'))) {
+          //TODO
+        }
+      }
+    }
+
+    const localImport = () => {
+      afile.value.click();
+    }
+
+    const onLocalImport = async () => {
+      if (afile.value.files.length) {
+        const file = afile.value.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (props.provider.type === 'local') {
+            const blobProvider = <DataProviderBlobSave>props.provider;
+            const decode = JSON.parse(<string>reader.result);
+            const tags: Storage.FullTags = new Map(decode.tags);
+            const nodes: Storage.FullNodes = decode.nodes;
+            console.log(tags);
+            console.log(nodes);
+            if (Utils.checkDataFullTags(tags) && Utils.checkDataFullNodes(nodes)) {
+              blobProvider.setFullTags(tags);
+              blobProvider.setFullNodes(nodes);
+              dispatch('notify', t('settings.provider.import_json_suc'));
+            }
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    return { displayLocale, providerCurrent, alink, afile, save, cancel, test, switchLanguage, resetFileId, setAccessToken, localExport, localImport, onLocalImport }
   }
 }
 

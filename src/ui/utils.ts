@@ -177,3 +177,11 @@ export function randomTagColor() : TagColor {
     console.log("randomTagColor", json);
     return JSON.parse(json);
 }
+
+export function checkDataFullTags(tags: Storage.FullTags) : boolean {
+    return true;
+}
+
+export function checkDataFullNodes(nodes: Storage.FullNodes) : boolean {
+    return true;
+}

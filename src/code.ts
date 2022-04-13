@@ -83,6 +83,10 @@ handleEvent('document-plugin-data-set', (data: Transfer.DocumentPluginData) => {
 	figma.root.setPluginData(data.key, data.value);
 });
 
+handleEvent('notify', (msg) => {
+	figma.notify(msg);
+});
+
 handleEvent('canvas-mark-node', (data: Transfer.CanvasSignNode) => {
 	markNode(new Map<string, Storage.TagGroup>(JSON.parse(data.fullTags)), JSON.parse(data.node));
 });

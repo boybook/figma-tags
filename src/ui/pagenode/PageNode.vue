@@ -269,7 +269,8 @@ export default {
       dispatch('canvas-mark-node', <Transfer.CanvasSignNode> {
         fullTags: JSON.stringify([...fullTags.value]),
         node: JSON.stringify(node.value)
-      })
+      });
+      dispatch('notify', t('saving.notify', [node.value.title]));
     }
 
     // 删除Node
@@ -281,6 +282,7 @@ export default {
       loading.value = t('loading.node');
       await reloadNode(false);
       loading.value = undefined;
+      dispatch('notify', t('delete.notify', [node.value.title]));
     }
 
     const openSettings = () => {

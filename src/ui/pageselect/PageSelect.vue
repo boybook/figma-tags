@@ -1,6 +1,5 @@
 <template>
   <div class="page-select">
-    <PageSelectBar :typeName="currentType" :back-visible="backVisible" style="left: 177px" />
     <div class="page-select-wrapper-tree">
       <div v-if="backVisible" class="back-button" @click="togglePage('PageNode')">
         <img :src="require('../resource/back.svg')" alt="back">
@@ -9,6 +8,13 @@
       <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" />
     </div>
     <div v-for="type in tagTree">
+      <PageSelectBar
+          v-if="currentType === type.type"
+          :typeName="currentType"
+          :back-visible="backVisible"
+          style="left: 177px"
+          
+      />
       <PageSelectType
           v-if="currentType === type.type"
           :provider="provider"

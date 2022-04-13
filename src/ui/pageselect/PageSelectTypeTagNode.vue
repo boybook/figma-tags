@@ -14,7 +14,7 @@
 import {PropType, ref} from "vue";
 import * as Utils from "../utils";
 import LoadingIcon from "../component/LoadingIcon.vue";
-import reloadCover from "../hooks/reloadCover";
+import { reloadCover } from "../hooks/reloadCover";
 
 export default {
   name: "PageSelectTypeTagNode",

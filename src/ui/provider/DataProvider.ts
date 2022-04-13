@@ -1,5 +1,7 @@
 export default interface DataProvider {
 
+    type: string
+
     // Tag ==========================
 
     /**

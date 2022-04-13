@@ -1,17 +1,25 @@
 <template>
   <div class="page-select-bar">
     <p> {{ typeName }} </p>
+    <span class="page-select-bar-cover-reloading" v-if="requestCount > 0">
+      <LoadingIcon width="10" style="margin-right: 6px;" />
+      {{ $t('lookup.refresh', [requestCount]) }}
+    </span>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { requestCount } from "../hooks/reloadCover";
+import LoadingIcon from "../component/LoadingIcon.vue";
+
 export default {
   name: "PageSelectBar",
+  components: { LoadingIcon },
   props: {
-    typeName: String
+    typeName: String,
   },
-  setup() {
-
+  setup(props, context) {
+    return { requestCount }
   }
 }
 </script>
@@ -65,6 +73,27 @@ export default {
   text-overflow:ellipsis;
   white-space: nowrap;
   width: 0;
+}
+
+.page-select-bar-cover-reloading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  margin: 0 8px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  line-height: 18px;
+  animation: ease-show 0.1s ease-out;
+}
+
+@keyframes ease-show {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 </style>

@@ -11,10 +11,12 @@ export const messages = {
         },
         saving: {
             node: "Saving Node...{0}",
-            tag: "Saving Tag..."
+            tag: "Saving Tag...",
+            notify: "✅ {0} Saved"
         },
         delete: {
-            node: "Deleting Node..."
+            node: "Deleting Node...",
+            notify: "🗑 {0} Deleted"
         },
         button: {
             save: "Save",
@@ -49,7 +51,8 @@ export const messages = {
             }
         },
         lookup: {
-            back: "Back"
+            back: "Back",
+            refresh: "{0} covers refreshing..."
         },
         settings: {
             title: "Settings",
@@ -72,6 +75,7 @@ export const messages = {
                 local_content: "Data is stored locally, but only for personal use. If multiple people collaborate, switch data sources.",
                 export_json: "Export JSON",
                 import_json: "Import JSON",
+                import_json_suc: "✅ Import success!",
                 cloud_title: "Coming soon!",
                 cloud_content: "It is possible that data hosting services will be provided in the future, and you will be able to exchange tags across Figma accounts simply by logging in."
             }
@@ -98,10 +102,12 @@ export const messages = {
         },
         saving: {
             node: "保存 Node 中...{0}",
-            tag: "保存 Tag 中..."
+            tag: "保存 Tag 中...",
+            notify: "✅ {0} 已保存"
         },
         delete: {
-            node: "删除 Node 中..."
+            node: "删除 Node 中...",
+            notify: "🗑 {0} 已删除"
         },
         button: {
             save: "保 存",
@@ -136,7 +142,8 @@ export const messages = {
             }
         },
         lookup: {
-            back: "返回"
+            back: "返回",
+            refresh: "{0}个封面刷新中..."
         },
         settings: {
             title: "设置",
@@ -159,6 +166,7 @@ export const messages = {
                 local_content: "数据保存在本地，但是只能个人本机使用。\n如需多人协作，请切换数据源。",
                 export_json: "导出JSON",
                 import_json: "导入JSON",
+                import_json_suc: "✅ 导入成功!",
                 cloud_title: "敬请期待！",
                 cloud_content: "后续可能将提供数据托管服务，只需登录，即可跨Figma账号互通标签。"
             }

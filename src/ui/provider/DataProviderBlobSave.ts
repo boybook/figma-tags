@@ -9,6 +9,8 @@ export interface BlobProvider {
 
 export class DataProviderBlobSave implements DataProvider {
 
+    type = 'local';
+
     private blob: BlobProvider;
 
     private fullTags?: Storage.FullTags;
@@ -101,15 +103,20 @@ export class DataProviderBlobSave implements DataProvider {
                             }
                         }
                     }
-
                 }
             }
         }
         await this.setFullNodes(fullNodes);
     }
 
-    handleTagDelete = async (type: string, tags: Storage.Tag[]) => {
-
+    handleTagDelete = async (type: string, tags: string[]) => {
+        const full = await this.getFullNodes();
+        for (let key in full) {
+            if (full[key].tags[type]) {
+                full[key].tags[type] = full[key].tags[type].filter(t => !tags.find(t0 => t === t0))
+            }
+        }
+        await this.setFullNodes(full);
     }
 
     updateFullTags = async (full: Storage.FullTags, tagRenames: Transfer.TagRenameGroup) => {
@@ -139,7 +146,7 @@ export class DataProviderBlobSave implements DataProvider {
         for (let [t, obj] of full.entries()) {
             const oldTagType = oldRename.get(t);
             if (oldTagType) {
-                const missingTag = oldTagType.tags.filter(tag => !obj.tags.find(t => t.name === tag.name));
+                const missingTag = oldTagType.tags.filter(tag => !obj.tags.find(t => t.name === tag.name)).map(t => t.name);
                 if (missingTag.length > 0) {
                     console.log("missingTag", t, missingType);
                     await this.handleTagDelete(t, missingTag);
@@ -147,7 +154,20 @@ export class DataProviderBlobSave implements DataProvider {
             }
         }
 
-        await this.setFullTags(full);
+        // 使用Storage.Tag重新组装FullTags
+        const newTags = new Map();
+        for (let [t, obj] of full.entries()) {
+            newTags.set(t, {
+                name: obj.name,
+                tags: obj.tags.map(tag => ({
+                    name: tag.name,
+                    color: tag.color,
+                    background: tag.background
+                }))
+            })
+        }
+
+        await this.setFullTags(newTags);
     }
 
     // BLOB SAVE ONLY
@@ -183,7 +203,14 @@ export class DataProviderBlobSave implements DataProvider {
 
     saveNode = async (fileId: string, nodeId: string, node: Storage.Node) => {
         const full = await this.getFullNodes();
-        full[fileId + "#" + nodeId] = node;
+        full[fileId + "#" + nodeId] = {
+            title: node.title,
+            file_id: node.file_id,
+            node_id: node.node_id,
+            width: node.width,
+            cover: node.cover,
+            tags: node.tags
+        };
 
         await this.setFullNodes(full);
     }
