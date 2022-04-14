@@ -22,31 +22,42 @@
           {{ initData.accessToken ? initData.accessToken : $t('settings.unset') }}
           <FigButton type="link" size="small" @click="setAccessToken" style="padding: 0; margin-top: 8px;"> {{ $t('settings.access_token.set') }} </FigButton>
         </p>
+        <div class="node-token-access" v-if="accessModal">
+          <AccessTokenModal @ignore="accessModal=false" @submit="accessModalSubmit" />
+        </div>
       </div>
       <div class="page-settings-content-entry">
         <h3> {{ $t('settings.provider.title') }} </h3>
         <ToggleRadio
-            :entries="[$t('settings.provider.local'), $t('settings.provider.cloud')]"
+            :entries="[$t('settings.provider.local.name'), $t('settings.provider.notion.name'), $t('settings.provider.cloud.name')]"
             v-model:current="providerCurrent"
         />
         <div class="provider-card" v-if="providerCurrent === 0">
-          <h3> {{ $t('settings.provider.local_title') }} </h3>
-          <p> {{ $t('settings.provider.local_content') }} </p>
+          <h3> {{ $t('settings.provider.local.title') }} </h3>
+          <p> {{ $t('settings.provider.local.content') }} </p>
           <div class="page-settings-buttons" style="margin-top: 8px;">
-            <FigButton type="link" @click="localExport" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.export_json') }} </FigButton>
+            <FigButton type="link" @click="localExport" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.local.export_json') }} </FigButton>
             <a style="display: none" target="_blank" download="tags-export.json" ref="alink"></a>
-            <FigButton type="link" @click="localImport" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.import_json') }} </FigButton>
+            <FigButton type="link" @click="localImport" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.local.import_json') }} </FigButton>
             <input type="file" accept="application/json" style="display: none" ref="afile" @change="onLocalImport" >
           </div>
         </div>
         <div class="provider-card" v-if="providerCurrent === 1">
-          <h3> {{ $t('settings.provider.cloud_title') }} </h3>
-          <p> {{ $t('settings.provider.cloud_content') }} </p>
+          <h3> {{ $t('settings.provider.notion.name') }} </h3>
+          <p style="margin-bottom: 8px"> {{ $t('settings.provider.notion.content') }} </p>
+          <p style="margin-bottom: 4px"> {{ $t('settings.provider.notion.token') }} </p>
+          <FigInput v-model:val="providerConfigs.notion.token" size="small" :status="providerNotionInputError ? 'error' : ''" @keydown="providerNotionInputError = false" />
+          <p style="margin-top: 8px; margin-bottom: 4px"> {{ $t('settings.provider.notion.database') }} </p>
+          <FigInput v-model:val="providerConfigs.notion.database" size="small" :status="providerNotionInputError ? 'error' : ''" @keydown="providerNotionInputError = false" />
+        </div>
+        <div class="provider-card" v-if="providerCurrent === 2">
+          <h3> {{ $t('settings.provider.cloud.title') }} </h3>
+          <p> {{ $t('settings.provider.cloud.content') }} </p>
         </div>
       </div>
     </div>
     <div class="page-settings-buttons">
-      <FigButton type="primary" @click="save"> {{ $t('button.save') }} </FigButton>
+      <FigButton type="primary" @click="save" :status="saving ? 'loading' : 'normal'"> {{ $t('button.save') }} </FigButton>
       <FigButton @click="cancel"> {{ $t('button.cancel') }} </FigButton>
       <FigButton type="link" @click="test"> CLEAR DATA </FigButton>
     </div>
@@ -65,15 +76,18 @@ import DataProvider from "../provider/DataProvider";
 import { DataProviderBlobSave } from "../provider/DataProviderBlobSave";
 import { downloadJson } from "../hooks/downloadJson";
 import * as Utils from "../utils";
+import AccessTokenModal from "../access/AccessTokenModal.vue";
+import initProvider from "../provider/initProvider";
 
 export default {
   name: "PageSettings",
-  components: { FigInput, ToggleRadio, FigButton },
+  components: { FigInput, ToggleRadio, FigButton, AccessTokenModal },
   props: {
     initData: Object as PropType<Transfer.InitData>,
     provider: Object as PropType<DataProvider>,
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
   },
+  emits: [ 'setProvider' ],
   setup(props, context) {
     const { t, locale } = useI18n();
     const displayLocale = computed(() => {
@@ -86,10 +100,8 @@ export default {
           return locale.value.toUpperCase();
       }
     });
-    const save = () => {
-      //TODO
-      props.togglePage('PageNode');
-    }
+    const saving = ref(false);
+    const accessModal = ref(false);
     const cancel = () => {
       props.togglePage('PageNode');
     }
@@ -114,14 +126,21 @@ export default {
         data: locale.value
       });
     }
-    // TODO 默认值
-    const providerCurrent = ref(0);
+
     const resetFileId = () => {
       props.initData.fileId = undefined;
       props.togglePage('PageNode');
     }
     const setAccessToken = () => {
-
+      accessModal.value = true;
+    }
+    const accessModalSubmit = (token: string, callback: Function) => {
+      props.initData.accessToken = token;
+      dispatch('client-storage-set', {
+        key: 'access-token',
+        data: token
+      });
+      dispatch('notify', t(''))
     }
 
     const alink = ref<HTMLLinkElement>();
@@ -130,14 +149,14 @@ export default {
     const localExport = async () => {
       if (props.provider.type === 'local') {
         const blobProvider = <DataProviderBlobSave> props.provider;
-        const fullTags = await blobProvider.getFullTags();
+        const fullTags = await blobProvider.getFullTags(true);
         const fullNodes = await blobProvider.getFullNodes();
         const json = {
           tags: [...fullTags],
           nodes: fullNodes
         }
         if (!downloadJson(alink.value, JSON.stringify(json, null, '\t'))) {
-          //TODO
+          dispatch('notify', t('settings.provider.local.export_json_fail'));
         }
       }
     }
@@ -169,7 +188,72 @@ export default {
       }
     }
 
-    return { displayLocale, providerCurrent, alink, afile, save, cancel, test, switchLanguage, resetFileId, setAccessToken, localExport, localImport, onLocalImport }
+    let providerIndex : number;
+    console.log("PageSettings", props.provider)
+    switch (props.provider?.type) {
+      case 'local':
+      default:
+        providerIndex = 0;
+        break;
+      case 'notion':
+        providerIndex = 1;
+        break;
+    }
+    // TODO 默认值
+    const providerCurrent = ref(providerIndex);
+    const providerConfig : Transfer.ProviderConfig = JSON.parse(props.initData.provider);
+    const providerConfigs = ref({
+      local: {
+        type: 'local'
+      },
+      notion: {
+        type: 'notion',
+        token: providerConfig.type === 'notion' ? providerConfig.token : '',
+        database: providerConfig.type === 'notion' ? providerConfig.database : '',
+      },
+    });
+    const providerNotionInputError = ref(false);
+
+    const save = async () => {
+      saving.value = true;
+      console.log("PageSettings.save", providerCurrent.value, providerConfigs.value);
+      try {
+        let config;
+        switch (providerCurrent.value) {
+          case 0:
+          default:
+            config = providerConfigs.value.local;
+            break;
+          case 1:
+            config = providerConfigs.value.notion;
+        }
+        const prv : DataProvider = initProvider(config);
+
+        const prvError = await prv.testError();
+        if (!prvError) {
+          providerNotionInputError.value = false;
+          dispatch('client-storage-set', {
+            key: 'provider',
+            data: JSON.stringify(config)
+          });
+          context.emit('setProvider', prv);
+          props.togglePage('PageNode');
+        } else {
+          providerNotionInputError.value = true;
+          console.log("[PageSettings] Provider init failed!", prvError);
+          dispatch('notify-err', t('settings.provider.init_failed'));
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        saving.value = false;
+      }
+    }
+
+    return {
+      displayLocale, saving, providerCurrent, providerConfigs, providerNotionInputError, alink, afile, accessModal,
+      save, cancel, test, switchLanguage, resetFileId, setAccessToken, accessModalSubmit, localExport, localImport, onLocalImport
+    }
   }
 }
 
@@ -315,6 +399,26 @@ export default {
   line-height: 18px;
   margin: 0;
   color: rgba(0, 0, 0, 0.65);
+}
+
+.node-token-access {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.node-token-access > * {
+  flex: none;
+  align-self: stretch;
 }
 
 </style>

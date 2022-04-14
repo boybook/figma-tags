@@ -1,23 +1,48 @@
 <template>
-  <button :class="'button--' + type">
+  <button :class="'button--' + type" :disabled="disable">
+    <LoadingIcon v-if="loadingShow" :color="loadingColor" width="12" class="button-loading" />
     <slot></slot>
   </button>
 </template>
 
-<script>
+<script lang="ts">
+import {computed, PropType} from "vue";
+import LoadingIcon from "./LoadingIcon.vue";
+
 export default {
   name: "FigButton",
+  components: {LoadingIcon},
   props: {
     type: {
-      type: String,
+      type: String as PropType<'primary' | 'secondary' | 'link' | 'dashed'>,
       validator(value) {
         return ['primary', 'secondary', 'link', 'dashed'].includes(value)
       },
       default: 'secondary'
     },
+    status: {
+      type: String as PropType< 'normal' | 'loading' | 'disable' >,
+      validator(value) {
+        return ['normal', 'loading', 'disable'].includes(value)
+      },
+      default: 'normal'
+    }
   },
-  setup() {
-
+  setup(props) {
+    const disable = computed(() => {
+      return ['loading', 'disable'].includes(props.status)
+    });
+    const loadingShow = computed(() => {
+      return props.status === 'loading';
+    });
+    const loadingColor = computed(() => {
+      if (props.type === 'primary') {
+        return 'white';
+      } else {
+        return 'black';
+      }
+    });
+    return { disable, loadingShow, loadingColor }
   }
 }
 </script>
@@ -98,6 +123,10 @@ button {
 .button--dashed:active {
   color: #0468a4;
   border: dashed 1px rgba(4, 104, 164, 0.8);
+}
+
+.button-loading {
+  margin-right: 8px;
 }
 
 </style>

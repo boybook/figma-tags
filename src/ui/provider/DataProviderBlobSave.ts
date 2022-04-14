@@ -20,11 +20,13 @@ export class DataProviderBlobSave implements DataProvider {
         this.blob = helper;
     }
 
-    getFullTags = async () => {
-        return this.fullTags ? this.fullTags : this.reloadFullTags();
-    }
+    // 本地数据始终验证通过
+    testError = () => undefined;
 
-    reloadFullTags = async () => {
+    getFullTags = async (reload: boolean) => {
+        if (!reload && this.fullTags) {
+            return this.fullTags;
+        }
         const { t } = useI18n();
         let result = await this.blob.storageGet('tags');
         if (!result) result = "[]";
@@ -45,7 +47,7 @@ export class DataProviderBlobSave implements DataProvider {
     }
 
     renameTagType = async (from: string, to: string) => {
-        const old = await this.getFullTags();
+        const old = await this.getFullTags(false);
         const newMap: (Map<string, Storage.TagGroup>) = new Map<string, Storage.TagGroup>();
 
         for (let [t, obj] of old.entries()) {
@@ -120,7 +122,7 @@ export class DataProviderBlobSave implements DataProvider {
     }
 
     updateFullTags = async (full: Storage.FullTags, tagRenames: Transfer.TagRenameGroup) => {
-        const old = await this.getFullTags();
+        const old = await this.getFullTags(false);
         const oldRename: (Map<string, Storage.TagGroup>) = new Map<string, Storage.TagGroup>();
 
         // 对old进行重命名，用于后续比对（等于服务端先模拟跑重命名，然后才能验证删除等信息）
@@ -227,7 +229,7 @@ export class DataProviderBlobSave implements DataProvider {
             .filter(n => n.tags[tagType])
             .filter(n => n.tags[tagType]?.find(t => t === tag));
         if (viewSort) {
-            const fullTags = await this.getFullTags();
+            const fullTags = await this.getFullTags(false);
             const sortBase = fullTags.get(viewSort.type)?.tags;
             if (sortBase) {
                 return filter.sort((n1, n2) => {

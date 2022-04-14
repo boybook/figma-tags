@@ -17,14 +17,24 @@ if (!file) {
 	file = figma.root.getPluginData('file-id');
 }
 
+const storageInit = async () : Promise<[string, string, string]> => {
+	return await Promise.all(
+		[
+			figma.clientStorage.getAsync("language"),
+			figma.clientStorage.getAsync("access-token"),
+			figma.clientStorage.getAsync("provider"),
+		]
+	);
+}
+
 switch (figma.command) {
 	case 'lookup': {
 		(async() => {
-			const language = await figma.clientStorage.getAsync("language");
-			const accessToken = await figma.clientStorage.getAsync("access-token");
+			const [language, accessToken, provider] = await storageInit();
 			dispatch("init", <Transfer.InitData> {
 				language: language ? language : "en",
 				accessToken: accessToken,
+				provider: provider,
 				page: 'PageSelect',
 				fileId: file,
 				selection: packageCurrentSelection()
@@ -35,11 +45,11 @@ switch (figma.command) {
 	case 'node':
 	default: {
 		(async() => {
-			const language = await figma.clientStorage.getAsync("language");
-			const accessToken = await figma.clientStorage.getAsync("access-token");
+			const [language, accessToken, provider] = await storageInit();
 			dispatch("init", <Transfer.InitData> {
 				language: language ? language : "en",
 				accessToken: accessToken,
+				provider: provider,
 				page: 'PageNode',
 				fileId: file,
 				selection: packageCurrentSelection()
@@ -85,6 +95,10 @@ handleEvent('document-plugin-data-set', (data: Transfer.DocumentPluginData) => {
 
 handleEvent('notify', (msg) => {
 	figma.notify(msg);
+});
+
+handleEvent('notify-err', (msg) => {
+	figma.notify(msg, { error: true });
 });
 
 handleEvent('canvas-mark-node', (data: Transfer.CanvasSignNode) => {

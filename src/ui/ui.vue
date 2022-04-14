@@ -1,12 +1,12 @@
 <template>
   <PageNode
-      v-if="page==='PageNode'"
+      v-if="provider && page==='PageNode'"
       :provider="provider"
       :init-data="initData"
       :toggle-page="togglePage"
   />
   <PageSelect
-      v-if="page==='PageSelect'"
+      v-if="provider && page==='PageSelect'"
       :provider="provider"
       :init-data="initData"
       :default-tag-type="defaultSelectType"
@@ -14,10 +14,11 @@
       :toggle-page="togglePage"
   />
   <PageSettings
-      v-if="page==='PageSetting'"
+      v-if="provider && page==='PageSetting'"
       :provider="provider"
       :init-data="initData"
       :toggle-page="togglePage"
+      @setProvider="setProvider"
   />
 </template>
 
@@ -32,11 +33,13 @@ import PageNode from "./pagenode/PageNode.vue";
 import PageSelect from "./pageselect/PageSelect.vue";
 import { useI18n } from 'vue-i18n';
 import PageSettings from "./pagesettings/PageSettings.vue";
+import {NotionProvider} from "./provider/NotionProvider";
+import initProvider from "./provider/initProvider";
 
 export default {
   components: {PageSettings, PageSelect, PageNode },
   setup() {
-    const { locale } = useI18n();
+    const { locale, t } = useI18n();
     const page = ref<Transfer.Page>();
     const pageWindowSize = {
       PageNode: {
@@ -52,15 +55,30 @@ export default {
         height: 600
       }
     };
-    const provider = reactive<DataProvider>(new DataProviderBlobSave(BlobLocalProvider));
+    const provider = ref<DataProvider>();
     const initData = ref<Transfer.InitData>();
 
+    const setProvider = (prv: DataProvider) => {
+      provider.value = prv;
+    }
+
     onMounted(() => {
-      handleEvent("init", (data: Transfer.InitData) => {
+      handleEvent("init", async (data: Transfer.InitData) => {
         console.log("language set to: ", data.language);
         locale.value = data.language;
         initData.value = data;
         page.value = data.page;
+        if (!initData.value.provider) initData.value.provider = JSON.stringify({ type: 'local' });
+        const prv: DataProvider = initProvider(JSON.parse(initData.value.provider));
+        const prvError = await prv.testError();
+        if (!prvError) {
+          setProvider(prv);
+        } else {
+          console.log("Provider init failed!", prvError);
+          dispatch('notify-err', t('settings.provider.init_failed'));
+          //initData.value.provider = { type: 'local' };
+          //setProvider(initProvider({ type: 'local' }));
+        }
       })
     });
 
@@ -83,7 +101,7 @@ export default {
       }
     }
 
-    return { page, provider, initData, defaultSelectType, selectPageBack, togglePage }
+    return { page, provider, initData, defaultSelectType, selectPageBack, togglePage, setProvider }
   }
 }
 </script>

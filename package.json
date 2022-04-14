@@ -9,6 +9,7 @@
 		"preview": "live-server --entry-file='livepreview.html'"
 	},
 	"dependencies": {
+		"@notionhq/client": "^1.0.4",
 		"@vue/compiler-sfc": "^3.0.2",
 		"@vueuse/core": "^8.2.5",
 		"figma-plugin-ds": "^0.1.8",

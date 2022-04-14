@@ -3,7 +3,7 @@
   <PageNodeTopBar
       v-if="fileId"
       :current="currentSelection"
-      @refresh="reloadNode"
+      @refresh="reloadNode(false, true)"
       @page-settings="openSettings"
   />
   <PageNodeFooter
@@ -101,12 +101,12 @@ export default {
       });
     });
 
-    const reloadNode = async (keepCheck: boolean) => {
+    const reloadNode = async (keepCheck: boolean, reloadTags: boolean) => {
       if (!currentSelection.value) return;
       console.log("PageNode.reloadNode", currentSelection.value);
       accessModal.value = false;
       loading.value = t('loading.node');
-      fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags()])));
+      fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags(reloadTags)])));
       const originNodeData = await provider.getNode(fileId.value, currentSelection.value.id);
       const nodeData = <Storage.Node> originNodeData ? JSON.parse(JSON.stringify(originNodeData)) : undefined;
       if (keepCheck && nodeData) {
@@ -129,7 +129,7 @@ export default {
     }
 
     // selection改变时，自动刷新当前已选中的frame
-    watchEffect(() => reloadNode(false));
+    watchEffect(() => reloadNode(false, false));
 
     // flat出所有已选Tag
     const collectTags = computed(() => {
@@ -143,7 +143,7 @@ export default {
     const onSetFileId = (file: string) => {
       props.initData.fileId = file;
       fileId.value = file;
-      reloadNode(false);
+      reloadNode(false, false);
     }
 
     // 手动添加Tag（伪保存）
@@ -174,7 +174,7 @@ export default {
           }
         };
         await provider.updateFullTags(fullTags.value, tagRenames);
-        await reloadNode(true);
+        await reloadNode(true, true);
         loading.value = undefined;
       } else {
         throw "Missing tagTree & fullTags";
@@ -194,7 +194,7 @@ export default {
           }
         }
         await provider.updateFullTags(fullTags.value, {});
-        await reloadNode(true);
+        await reloadNode(true, true);
         loading.value = undefined;
       } else {
         throw "Missing tagTree & fullTags";
@@ -211,7 +211,7 @@ export default {
           tags: []
         });
         await provider.updateFullTags(fullTags.value, {});
-        await reloadNode(true);
+        await reloadNode(true, true);
         //tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
       } else {
         throw "FullTags is undefined";
@@ -224,7 +224,7 @@ export default {
       if (fullTags.value && fullTags.value.has(tagType)) {
         fullTags.value.delete(tagType);
         await provider.updateFullTags(fullTags.value, {});
-        await reloadNode(true);
+        await reloadNode(true, true);
       } else {
         throw "FullTags is undefined";
       }
@@ -240,7 +240,7 @@ export default {
       }
       loading.value = t("saving.tag");
       await provider.renameTagType(oldName, newName);
-      await reloadNode(false);
+      await reloadNode(false, true);
     }
 
     // 保存Node
@@ -280,7 +280,7 @@ export default {
       await provider.deleteNode(fileId.value, nodeId);
       dispatch('canvas-unmark-node', nodeId);
       loading.value = t('loading.node');
-      await reloadNode(false);
+      await reloadNode(false, false);
       loading.value = undefined;
       dispatch('notify', t('delete.notify', [node.value.title]));
     }

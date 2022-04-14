@@ -93,7 +93,18 @@ export default {
   height: auto;
   max-width: 100%;
   /*max-height: 100%;*/
+  animation: ease-show 0.5s ease-out;
 }
+
+@keyframes ease-show {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 
 .node-img-loading {
   position: absolute;

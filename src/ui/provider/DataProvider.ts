@@ -2,17 +2,17 @@ export default interface DataProvider {
 
     type: string
 
+    /**
+     * 验证Provider的配置是否正确，能连上数据
+     */
+    testError: () => Promise<any>
+
     // Tag ==========================
 
     /**
      * 获取所有 Tag（将会缓存）
      */
-    getFullTags: () => Promise<Storage.FullTags>
-
-    /**
-     * 重新加载所有 Tag（将会刷新缓存）
-     */
-    reloadFullTags: () => Promise<Storage.FullTags>
+    getFullTags: (reload: boolean) => Promise<Storage.FullTags>
 
     /**
      * 重命名某些TagType

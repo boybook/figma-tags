@@ -37,6 +37,7 @@ declare namespace Transfer {
     type InitData = {
         language: string,
         accessToken?: string,
+        provider: string
         page: Page,
         fileId?: string,
         selection: CurrentSelection,
@@ -64,6 +65,17 @@ declare namespace Transfer {
     type TagRenameGroup = {
         [type: string]: TagRename
     }
+
+    type ProviderConfig =
+        {
+            type: 'local'
+        } |
+        {
+            type: 'notion',
+            token: string,
+            database: string
+        }
+
 }
 
 // 定义Tag、Node相关的数据储存的数据结构
@@ -94,6 +106,7 @@ declare namespace Storage {
         node_id: string,
         width?: number,
         cover?: string,
+        url?: string,
         tags: NodeTags
     }
 
@@ -138,6 +151,7 @@ declare namespace Context {
         node_id: string,
         width?: number,
         cover?: string,
+        url?: string,
         tags: Storage.NodeTags
     }
 

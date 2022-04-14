@@ -47,29 +47,27 @@ export default {
     const input = ref("");
     const error = ref(false);
     const submit = () => {
-      if (input.value) {
-        // 检查有效性
-        if (input.value.length !== 43) {
-          error.value = true;
-        } else {
-          fetch('https://api.figma.com/v1/me', {
-            headers: {
-              'X-FIGMA-TOKEN': input.value
-            }
-          })
-          .then(re => {
-            if (re.ok) {
-              re.json().then(r => console.log(r));
-              error.value = false;
-              context.emit('submit', input.value, props.callback);
-            } else {
+      // 检查有效性
+      if (!input.value || input.value.length !== 43) {
+        error.value = true;
+      } else {
+        fetch('https://api.figma.com/v1/me', {
+          headers: {
+            'X-FIGMA-TOKEN': input.value
+          }
+        })
+            .then(re => {
+              if (re.ok) {
+                re.json().then(r => console.log(r));
+                error.value = false;
+                context.emit('submit', input.value, props.callback);
+              } else {
+                error.value = true;
+              }
+            })
+            .catch(() => {
               error.value = true;
-            }
-          })
-          .catch(() => {
-            error.value = true;
-          });
-        }
+            });
       }
     }
     return { input, error, submit }

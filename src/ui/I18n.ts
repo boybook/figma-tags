@@ -68,17 +68,30 @@ export const messages = {
             },
             provider: {
                 title: "Data Provider",
-                local: "Local",
-                cloud: "Cloud",
-                oss: "Custom OSS",
-                notion: "Notion",
-                local_title: "Congratulations, no configuration required",
-                local_content: "Data is stored locally, but only for personal use. If multiple people collaborate, switch data sources.",
-                export_json: "Export JSON",
-                import_json: "Import JSON",
-                import_json_suc: "✅ Import success!",
-                cloud_title: "Coming soon!",
-                cloud_content: "It is possible that data hosting services will be provided in the future, and you will be able to exchange tags across Figma accounts simply by logging in."
+                init_failed: "😵 Data Provider connect failed!",
+                local: {
+                    name: "Local",
+                    title: "Congratulations, no configuration required",
+                    content: "Data is stored locally, but only for personal use. If multiple people collaborate, switch data sources.",
+                    export_json: "Export JSON",
+                    export_json_fail: "JSON export failed!",
+                    import_json: "Import JSON",
+                    import_json_suc: "✅ Import success!",
+                },
+                cloud: {
+                    name: "Cloud",
+                    title: "Coming soon!",
+                    content: "It is possible that data hosting services will be provided in the future, and you will be able to teamwork across Figma accounts."
+                },
+                oss: {
+                    name: "Custom OSS"
+                },
+                notion: {
+                    name: "Notion",
+                    content: "Connect to your Notion database",
+                    token: "Notion token",
+                    database: "Notion database"
+                },
             }
         },
         access: {
@@ -88,7 +101,8 @@ export const messages = {
             step2: "Step2：Click and paste the Access Token to the Input below.",
             placeholder: "Please input the token",
             error: "Maybe the token is incorrect?",
-            demo: "Sample"
+            demo: "Sample",
+            suc: "✅ Figma Token saved!"
         }
     },
     ch: {
@@ -160,17 +174,30 @@ export const messages = {
             },
             provider: {
                 title: "数据源",
-                local: "本地",
-                cloud: "云端",
-                oss: "自定义OSS",
-                notion: "Notion",
-                local_title: "恭喜，无需配置",
-                local_content: "数据保存在本地，但是只能个人本机使用。\n如需多人协作，请切换数据源。",
-                export_json: "导出JSON",
-                import_json: "导入JSON",
-                import_json_suc: "✅ 导入成功!",
-                cloud_title: "敬请期待！",
-                cloud_content: "后续可能将提供数据托管服务，只需登录，即可跨Figma账号互通标签。"
+                init_failed: "😵 似乎连不上数据源呀！",
+                local: {
+                    name: "本地",
+                    title: "恭喜，无需配置",
+                    content: "数据保存在本地，但是只能个人本机使用。\n如需多人协作，请切换数据源。",
+                    export_json: "导出JSON",
+                    export_json_fail: "JSON导出失败！",
+                    import_json: "导入JSON",
+                    import_json_suc: "✅ 导入成功!"
+                },
+                cloud: {
+                    name: "云端",
+                    title: "敬请期待！",
+                    content: "后续可能将提供数据托管服务，只需登录，即可跨Figma账号互通标签。"
+                },
+                oss: {
+                    name: "自定义OSS"
+                },
+                notion: {
+                    name: "Notion",
+                    content: "连接到你的Notion database",
+                    token: "Notion token",
+                    database: "Notion database"
+                },
             }
         },
         access: {
@@ -180,7 +207,8 @@ export const messages = {
             step2: "第2步：点击如图所示位置，复制生成的 access token 到下方输入框中",
             placeholder: "请点击网页中如图所示位置，获取token",
             error: "似乎你输入的token不正确？",
-            demo: "示例图"
+            demo: "示例图",
+            suc: "✅ Figma Token 已保存"
         }
     }
 }

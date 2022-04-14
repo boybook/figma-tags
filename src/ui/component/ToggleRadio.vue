@@ -18,14 +18,14 @@ export default {
   name: "ToggleRadio",
   props: {
     entries: Array,
-    defaultCurrent: {
+    current: {
       type: Number,
       default: 0
     }
   },
   emits: ['update:current'],
   setup(props, context) {
-    const current = ref(props.defaultCurrent);
+    const current = ref(props.current);
     watch(
         current,
         (newVal) => {

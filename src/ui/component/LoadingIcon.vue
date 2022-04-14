@@ -1,10 +1,18 @@
 <template>
-  <img class="loading-icon" :src="require('../resource/loading.svg')" alt="loading">
+  <img class="loading-icon" :src="require('../resource/loading-' + color + '.svg')" alt="loading">
 </template>
 
 <script lang="ts">
+import {PropType} from "vue";
+
 export default {
-  name: "LoadingIcon"
+  name: "LoadingIcon",
+  props: {
+    color: {
+      type: String as PropType<'white'|'black'>,
+      default: 'black'
+    }
+  }
 }
 </script>
 
