@@ -1,31 +1,73 @@
 <template>
-  <div class="tag-color" :style="{ 'background-color': 'rgba(' + color.background.r + ',' + color.background.g + ',' + color.background.b + ',' + color.background.a + ')' }">
-    <span :style="{ 'color': 'rgba(' + color.color.r + ',' + color.color.g + ',' + color.color.b + ',' + color.color.a + ')' }">A</span>
-  </div>
+  <tk-select class="tag-color-dropdown" :selected="colorName" v-model="colorName" :min-width="64">
+    <template #selectButton>
+      <div class="tag-color" :style="{ 'background-color': 'rgba(' + color.background.r + ',' + color.background.g + ',' + color.background.b + ',' + color.background.a + ')' }">
+        <span :style="{ 'color': 'rgba(' + color.color.r + ',' + color.color.g + ',' + color.color.b + ',' + color.color.a + ')' }">A</span>
+      </div>
+    </template>
+    <template #selectDropDown>
+      <tk-select-item v-for="c in Utils.tagColors" :value="c.name">
+        <FigTag :tag="{ name: 'Tag', color: c.color, background: c.background}"/>
+      </tk-select-item>
+    </template>
+  </tk-select>
+
 </template>
 
 <script lang="ts">
-import {watch, PropType} from "vue";
+import {watch, PropType, ref} from "vue";
 import * as Utils from "../../utils";
+import FigTag from "../FigTag.vue";
+import TkSelect from "../select/TkSelect.vue";
+import TkSelectItem from "../select/TkSelectItem.vue";
 
 export default {
   name: "TagColorDropdown",
+  components: { TkSelectItem, TkSelect, FigTag },
   props: {
     color: Object as PropType<Transfer.TagColor>
   },
   emits: [ 'update:color' ],
   setup(props, context) {
+    const colorName = ref<string>();
+    const color = ref<Transfer.TagColor>(props.color);
+    // 根据color，选择一个colorName
+    for (let key in Utils.tagColors) {
+      if (Utils.equalsRGBA(color.value.color, Utils.tagColors[key].color) && Utils.equalsRGBA(color.value.background, Utils.tagColors[key].background)) {
+        colorName.value = Utils.tagColors[key].name;
+        console.log("TagColorDropdown.colorName", colorName.value);
+        break;
+      }
+    }
     watch(
-        () => props.color,
+        colorName,
+        (newVal) => {
+          color.value = Utils.tagColors[newVal];
+          console.log("TagColorDropdown.switchColorName", newVal);
+        }
+    );
+    watch(
+        color,
         (newVal) => {
           context.emit('update:color', newVal);
         }
-    )
+    );
+    return { colorName, color, Utils }
   }
 }
 </script>
 
 <style scoped>
+
+.tag-color-dropdown {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: none;
+  align-self: stretch;
+  flex-grow: 1;
+}
 
 .tag-color {
   display: flex;
@@ -35,15 +77,16 @@ export default {
   padding: 0;
   flex: none;
   align-self: stretch;
-  flex-grow: 0;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-grow: 1;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
   border-radius: 2px;
   transition: all 100ms ease-out;
+  cursor: pointer;
 }
 
 .tag-color:hover {
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 .tag-color span {

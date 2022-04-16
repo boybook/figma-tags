@@ -106,6 +106,7 @@ export default {
 
 .tag-adding-color {
   width: 16px;
+  max-width: 16px;
   margin-right: 4px;
 }
 

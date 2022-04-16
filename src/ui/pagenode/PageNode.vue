@@ -45,7 +45,7 @@
     </div>
   </LoadingWithContent>
   <div class="node-token-access" v-if="accessModal">
-    <AccessTokenModal :callback="() => toSave(true)" @ignore="accessModalIgnore" @submit="accessModalSubmit" />
+    <AccessTokenModal :show-ignore="true" :callback="() => toSave(true)" @ignore="accessModalIgnore" @submit="accessModalSubmit" />
   </div>
 </template>
 
@@ -103,29 +103,35 @@ export default {
 
     const reloadNode = async (keepCheck: boolean, reloadTags: boolean) => {
       if (!currentSelection.value) return;
-      console.log("PageNode.reloadNode", currentSelection.value);
-      accessModal.value = false;
-      loading.value = t('loading.node');
-      fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags(reloadTags)])));
-      const originNodeData = await provider.getNode(fileId.value, currentSelection.value.id);
-      const nodeData = <Storage.Node> originNodeData ? JSON.parse(JSON.stringify(originNodeData)) : undefined;
-      if (keepCheck && nodeData) {
-        nodeData.tags = Utils.contextTagTree2ContextNode(tagTree.value);
-      }
-
-      node.value = Utils.storageNode2ContextNode(nodeData);
-      // Node为空时，初始化一个缺省的Node
-      if (!node.value) {
-        node.value = {
-          saved: false,
-          title: currentSelection.value.name,
-          file_id: fileId.value,
-          node_id: currentSelection.value.id,
-          tags: {}
+      try {
+        console.log("PageNode.reloadNode", currentSelection.value);
+        accessModal.value = false;
+        loading.value = t('loading.node');
+        fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags(reloadTags)])));
+        const originNodeData = await provider.getNode(fileId.value, currentSelection.value.id);
+        const nodeData = <Storage.Node> originNodeData ? JSON.parse(JSON.stringify(originNodeData)) : undefined;
+        if (keepCheck && nodeData) {
+          nodeData.tags = Utils.contextTagTree2ContextNode(tagTree.value);
         }
+
+        node.value = Utils.storageNode2ContextNode(nodeData);
+        // Node为空时，初始化一个缺省的Node
+        if (!node.value) {
+          node.value = {
+            saved: false,
+            title: currentSelection.value.name,
+            file_id: fileId.value,
+            node_id: currentSelection.value.id,
+            tags: {}
+          }
+        }
+        tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
+        loading.value = undefined;
+      } catch (e) {
+        loading.value = t('loading.error');
+        console.error(e);
+        dispatch('notify-err', e);
       }
-      tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
-      loading.value = undefined;
     }
 
     // selection改变时，自动刷新当前已选中的frame
@@ -161,7 +167,7 @@ export default {
     // 手动修改Tag（直接生效）
     const editTag = async (tagType: string, nameFrom: string, tag: Storage.Tag) => {
       console.log("editTag", tagType, nameFrom, tag);
-      if (tagTree.value && fullTags.value) {
+      try {
         loading.value = t('saving.tag');
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         const target = fullTags.value.get(tagType)?.tags.find(t => t.name === nameFrom);
@@ -176,15 +182,17 @@ export default {
         await provider.updateFullTags(fullTags.value, tagRenames);
         await reloadNode(true, true);
         loading.value = undefined;
-      } else {
-        throw "Missing tagTree & fullTags";
+      } catch (e) {
+        loading.value = t('loading.error');
+        console.error(e);
+        dispatch('notify-err', e);
       }
     }
 
     // 手动删除Tag（直接生效）
     const deleteTag = async (tagType: string, tagName: string) => {
       console.log("deleteTag", tagType, tagName);
-      if (tagTree.value && fullTags.value) {
+      try {
         loading.value = t('saving.tag');
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         const tags = fullTags.value.get(tagType)?.tags;
@@ -196,15 +204,17 @@ export default {
         await provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
         loading.value = undefined;
-      } else {
-        throw "Missing tagTree & fullTags";
+      } catch (e) {
+        loading.value = t('loading.error');
+        console.error(e);
+        dispatch('notify-err', e);
       }
     }
 
     // 手动添加 Tag Type（Tag大分类）（直接生效）
     const addTagType = async (tagType: string) => {
       console.log("addTagType", tagType);
-      if (fullTags.value && !fullTags.value.has(tagType)) {
+      try {
         loading.value = t('saving.tag');
         fullTags.value.set(tagType, {
           name: tagType,
@@ -213,76 +223,96 @@ export default {
         await provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
         //tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
-      } else {
-        throw "FullTags is undefined";
+      } catch (e) {
+        loading.value = t('loading.error') + e;
+        console.error(e);
       }
     }
 
     // 删除某一TagType大分类（危险，直接生效）
     const deleteTagType = async (tagType: string) => {
       console.log("deleteTagType", tagType);
-      if (fullTags.value && fullTags.value.has(tagType)) {
+      try {
         fullTags.value.delete(tagType);
         await provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
-      } else {
-        throw "FullTags is undefined";
+      } catch (e) {
+        loading.value = t('loading.error');
+        console.error(e);
+        dispatch('notify-err', e);
       }
     }
 
     // 手动修改TagType的名称（直接生效）
     const editTypeName = async (oldName: string, newName: string) => {
       console.log("editTypeName", oldName, newName);
-      if (oldName === newName) return;
-      if (fullTags.value.has(newName)) {
-        alert("Name already exists");
-        return;
+      try {
+        if (oldName === newName) return;
+        if (fullTags.value.has(newName)) {
+          alert("Name already exists");
+          return;
+        }
+        loading.value = t("saving.tag");
+        await provider.renameTagType(oldName, newName);
+        await reloadNode(false, true);
+      } catch (e) {
+        loading.value = t('loading.error');
+        console.error(e);
+        dispatch('notify-err', e);
       }
-      loading.value = t("saving.tag");
-      await provider.renameTagType(oldName, newName);
-      await reloadNode(false, true);
     }
 
     // 保存Node
     const toSave = async (force: boolean = false) => {
       console.log("toSave", tagTree.value);
-      // 还没获取过accessKey
-      if (!force && !props.initData.accessToken) {
-        accessModal.value = true;
-        return;
+      try {
+        // 还没获取过accessKey
+        if (!force && !props.initData.accessToken) {
+          accessModal.value = true;
+          return;
+        }
+        accessModal.value = false;
+        const nodeWidth = currentSelection.value.width;
+        loading.value = t('saving.node', [' (collect)']);
+        node.value.width = nodeWidth;
+        node.value.tags = Utils.contextTagTree2ContextNode(tagTree.value);
+        node.value.saved = true;
+        node.value.file_id = fileId.value;
+        loading.value = t('saving.node', [' (cover)']);
+        node.value.cover = await exportCover(node.value.file_id, node.value.node_id, nodeWidth, props.initData.accessToken);
+        loading.value = t('saving.node', [' (tags)']);
+        fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
+        await provider.updateFullTags(fullTags.value, {});
+        loading.value = t('saving.node', [' (storage)']);
+        await provider.saveNode(fileId.value, node.value.node_id, node.value);
+        loading.value = undefined;
+        dispatch('canvas-mark-node', <Transfer.CanvasSignNode> {
+          fullTags: JSON.stringify([...fullTags.value]),
+          node: JSON.stringify(node.value)
+        });
+        dispatch('notify', t('saving.notify', [node.value.title]));
+      } catch (e) {
+        loading.value = t('loading.error');
+        console.error(e);
+        dispatch('notify-err', e);
       }
-      accessModal.value = false;
-      const nodeWidth = currentSelection.value.width;
-      loading.value = t('saving.node', [' (collect)']);
-      node.value.width = nodeWidth;
-      node.value.tags = Utils.contextTagTree2ContextNode(tagTree.value);
-      node.value.saved = true;
-      node.value.file_id = fileId.value;
-      loading.value = t('saving.node', [' (cover)']);
-      node.value.cover = await exportCover(node.value.file_id, node.value.node_id, nodeWidth, props.initData.accessToken);
-      loading.value = t('saving.node', [' (tags)']);
-      fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
-      await provider.updateFullTags(fullTags.value, {});
-      loading.value = t('saving.node', [' (storage)']);
-      await provider.saveNode(fileId.value, node.value.node_id, node.value);
-      loading.value = undefined;
-      dispatch('canvas-mark-node', <Transfer.CanvasSignNode> {
-        fullTags: JSON.stringify([...fullTags.value]),
-        node: JSON.stringify(node.value)
-      });
-      dispatch('notify', t('saving.notify', [node.value.title]));
     }
 
     // 删除Node
     const toDelete = async () => {
-      const nodeId = currentSelection.value.id;
-      loading.value = t('delete.node');
-      await provider.deleteNode(fileId.value, nodeId);
-      dispatch('canvas-unmark-node', nodeId);
-      loading.value = t('loading.node');
-      await reloadNode(false, false);
-      loading.value = undefined;
-      dispatch('notify', t('delete.notify', [node.value.title]));
+      try {
+        const nodeId = currentSelection.value.id;
+        loading.value = t('delete.node');
+        await provider.deleteNode(fileId.value, nodeId);
+        dispatch('canvas-unmark-node', nodeId);
+        loading.value = t('loading.node');
+        await reloadNode(false, false);
+        loading.value = undefined;
+        dispatch('notify', t('delete.notify', [node.value.title]));
+      } catch (e) {
+        loading.value = t('loading.error') + e;
+        console.error(e);
+      }
     }
 
     const openSettings = () => {

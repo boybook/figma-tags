@@ -29,7 +29,6 @@ export default {
     watch(
         current,
         (newVal) => {
-          console.log("onSwitch", newVal);
           context.emit('update:current', newVal);
         }
     );

@@ -24,7 +24,7 @@
       {{ $t('access.error') }}
     </p>
     <div class="button-group">
-      <FigButton @click="$emit('ignore', callback)"> {{ $t('button.ignore') }} </FigButton>
+      <FigButton @click="$emit('ignore', callback)"> {{ showIgnore ? $t('button.ignore') : $t('button.cancel') }} </FigButton>
       <FigButton type="primary" @click="submit"> {{ $t('button.ok') }} </FigButton>
     </div>
   </div>
@@ -40,6 +40,10 @@ export default {
   name: "AccessTokenModal",
   components: { FigButton, FigInput },
   props: {
+    showIgnore: {
+      type: Boolean,
+      default: false
+    },
     callback: Function
   },
   emits: [ 'ignore', 'submit' ],
@@ -87,6 +91,19 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   user-select: none;
+  animation: modal-show 300ms cubic-bezier(0, 0, 0, 1);
+}
+
+@keyframes modal-show
+{
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .access-modal > * {

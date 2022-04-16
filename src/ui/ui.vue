@@ -1,4 +1,9 @@
 <template>
+  <LoadingWithContent
+      v-if="!provider || !page"
+      :loading="true"
+      :msg="$t('loading.init')"
+  />
   <PageNode
       v-if="provider && page==='PageNode'"
       :provider="provider"
@@ -35,9 +40,10 @@ import { useI18n } from 'vue-i18n';
 import PageSettings from "./pagesettings/PageSettings.vue";
 import {NotionProvider} from "./provider/NotionProvider";
 import initProvider from "./provider/initProvider";
+import LoadingWithContent from "./component/LoadingWithContent.vue";
 
 export default {
-  components: {PageSettings, PageSelect, PageNode },
+  components: {LoadingWithContent, PageSettings, PageSelect, PageNode },
   setup() {
     const { locale, t } = useI18n();
     const page = ref<Transfer.Page>();
@@ -106,6 +112,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+
+a {
+  text-decoration: none;
+  color: #18a0fb;
+}
+
+a:hover {
+  color: #0677bd;
+}
 
 </style>

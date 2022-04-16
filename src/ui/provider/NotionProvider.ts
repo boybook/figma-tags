@@ -6,12 +6,14 @@ export class NotionProvider implements DataProvider {
 
     type: string = 'notion';
 
+    private token: string;
     private notion : Client;
     private readonly database: string;
 
     private fullTags?: Storage.FullTags;
 
     constructor(token: string, database: string) {
+        this.token = token;
         this.notion = new Client({
             baseUrl: "https://notion.boybook.workers.dev/https://api.notion.com",
             auth: token,
@@ -21,10 +23,57 @@ export class NotionProvider implements DataProvider {
 
     testError = async () => {
         try {
-            await this.notion.databases.retrieve({ database_id: this.database });
+            const result = await this.notion.databases.retrieve({ database_id: this.database });
+            // 如果没有URL这个字段，则自动创建（很奇怪，这边用NotionClient库反而没法正常请求
+            if (!result.properties['URL'] || result.properties['URL'].type !== "url") {
+                const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': this.token,
+                        'Content-Type': 'application/json',
+                        'notion-version': '2022-02-22'
+                    },
+                    body: "{\n" +
+                        "    \"properties\": {\n" +
+                        "        \"URL\": {\n" +
+                        "            \"url\": {}\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        "}"
+                });
+                console.log(update);
+                /*await this.notion.databases.update({
+                    database_id: this.database,
+                    properties: {
+                        "URL": {
+                            url: {}
+                        }
+                    }
+                });*/
+            }
+            return undefined;
         } catch (e) {
             return e;
         }
+    }
+
+    listAllDatabase = async () => {
+        const response = await this.notion.search({
+            filter: {
+                property: "object",
+                value: "database"
+            }
+        });
+        return response.results
+            .filter(r => r.object === 'database')
+            .map(r => {
+                const name = r['title'].length > 0 ? r['title'].map(t => t.plain_text).join() : "";
+                const id: string = r['id'];
+                return {
+                    name: name,
+                    databaseId: id
+                }
+            });
     }
 
     getFullTags = async (reload: boolean) : Promise<Storage.FullTags> => {
@@ -139,7 +188,7 @@ export class NotionProvider implements DataProvider {
                 page_id: nodeId,
                 cover: {
                     type: "external",
-                    external: node.cover?.endsWith(".png") ? {
+                    external: node.cover ? {
                         url: node.cover
                     } : undefined
                 },
@@ -179,7 +228,7 @@ export class NotionProvider implements DataProvider {
                 },
                 cover: {
                     type: "external",
-                    external: node.cover?.endsWith(".png") ? {
+                    external: node.cover ? {
                         url: node.cover
                     } : undefined
                 },

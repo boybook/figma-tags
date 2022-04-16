@@ -7,7 +7,9 @@ export const messages = {
             error: "The URL is not a Figma file link"
         },
         loading: {
+            init: "Initializing...",
             node: "Loading Node...",
+            error: "Something wrong happened! Try to restart the plugin?"
         },
         saving: {
             node: "Saving Node...{0}",
@@ -77,11 +79,12 @@ export const messages = {
                     export_json_fail: "JSON export failed!",
                     import_json: "Import JSON",
                     import_json_suc: "✅ Import success!",
+                    import_json_error: "Import failed, something missing in the file?"
                 },
                 cloud: {
                     name: "Cloud",
                     title: "Coming soon!",
-                    content: "It is possible that data hosting services will be provided in the future, and you will be able to teamwork across Figma accounts."
+                    content: "Data hosting services will be provided in the future, and you will be able to teamwork across Figma accounts."
                 },
                 oss: {
                     name: "Custom OSS"
@@ -89,17 +92,24 @@ export const messages = {
                 notion: {
                     name: "Notion",
                     content: "Connect to your Notion database",
+                    link_token: "Get",
                     token: "Notion token",
-                    database: "Notion database"
+                    database: "Notion database",
+                    token_placeholder: "Notion token here",
+                    query_database: "List Databases",
+                    query_select: "Please select",
+                    query_error: "The token is incorrect",
+                    query_empty: "Empty database",
+                    database_empty: "Select your database first!"
                 },
             }
         },
         access: {
-            title: "License for Preview Images",
+            title: "License for Figma Token",
             intro: "Authorization to Figma Access Token is required for display of preview images.",
             step1: "Step1: Open the URL.",
-            step2: "Step2：Click and paste the Access Token to the Input below.",
-            placeholder: "Please input the token",
+            step2: "Step2：Click and paste the Access Token below.",
+            placeholder: "Paste the token here",
             error: "Maybe the token is incorrect?",
             demo: "Sample",
             suc: "✅ Figma Token saved!"
@@ -113,7 +123,9 @@ export const messages = {
             error: "似乎你输入的不是Figma链接"
         },
         loading: {
+            init: "加载中...",
             node: "加载 Node 中...",
+            error: "发生了一些错误！尝试重启一下插件？"
         },
         saving: {
             node: "保存 Node 中...{0}",
@@ -127,7 +139,7 @@ export const messages = {
         button: {
             save: "保 存",
             cancel: "取 消",
-            ignore: "忽 略",
+            ignore: "跳 过",
             ok: "确 定"
         },
         tag_type: {
@@ -182,12 +194,13 @@ export const messages = {
                     export_json: "导出JSON",
                     export_json_fail: "JSON导出失败！",
                     import_json: "导入JSON",
-                    import_json_suc: "✅ 导入成功!"
+                    import_json_suc: "✅ 导入成功!",
+                    import_json_error: "导入失败，可能是文件中缺少了部分内容！"
                 },
                 cloud: {
-                    name: "云端",
-                    title: "敬请期待！",
-                    content: "后续可能将提供数据托管服务，只需登录，即可跨Figma账号互通标签。"
+                    name: "云储存",
+                    title: "暂未提供",
+                    content: "支持完整功能的云储存，只需登录，即可跨Figma账号互通标签。"
                 },
                 oss: {
                     name: "自定义OSS"
@@ -195,8 +208,15 @@ export const messages = {
                 notion: {
                     name: "Notion",
                     content: "连接到你的Notion database",
+                    link_token: "获取token",
                     token: "Notion token",
-                    database: "Notion database"
+                    database: "Notion database",
+                    token_placeholder: "请获取 token 后输入",
+                    query_database: "列出并选择 Database",
+                    query_select: "请选择",
+                    query_error: "你输入的 token 似乎不正确？",
+                    query_empty: "你的 Notion 账号下没有可选择的 database",
+                    database_empty: "请先选择你的 database"
                 },
             }
         },

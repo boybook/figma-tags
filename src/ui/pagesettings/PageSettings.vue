@@ -26,12 +26,14 @@
           <AccessTokenModal @ignore="accessModal=false" @submit="accessModalSubmit" />
         </div>
       </div>
+      <!-- Provider -->
       <div class="page-settings-content-entry">
         <h3> {{ $t('settings.provider.title') }} </h3>
         <ToggleRadio
             :entries="[$t('settings.provider.local.name'), $t('settings.provider.notion.name'), $t('settings.provider.cloud.name')]"
             v-model:current="providerCurrent"
         />
+        <!-- Provider.Local -->
         <div class="provider-card" v-if="providerCurrent === 0">
           <h3> {{ $t('settings.provider.local.title') }} </h3>
           <p> {{ $t('settings.provider.local.content') }} </p>
@@ -42,14 +44,41 @@
             <input type="file" accept="application/json" style="display: none" ref="afile" @change="onLocalImport" >
           </div>
         </div>
+        <!-- Provider.Notion -->
         <div class="provider-card" v-if="providerCurrent === 1">
           <h3> {{ $t('settings.provider.notion.name') }} </h3>
           <p style="margin-bottom: 8px"> {{ $t('settings.provider.notion.content') }} </p>
-          <p style="margin-bottom: 4px"> {{ $t('settings.provider.notion.token') }} </p>
-          <FigInput v-model:val="providerConfigs.notion.token" size="small" :status="providerNotionInputError ? 'error' : ''" @keydown="providerNotionInputError = false" />
+          <p style="margin-bottom: 4px">
+            {{ $t('settings.provider.notion.token') }}
+            <a href="https://www.notion.so/my-integrations" target="_blank"> {{ $t('settings.provider.notion.link_token') }} </a>
+          </p>
+          <FigInput
+              v-model:val="providerConfigs.notion.token"
+              size="small"
+              :placeholder="$t('settings.provider.notion.token_placeholder')"
+              :status="providerNotionInputError ? 'error' : ''"
+              @keydown="providerNotionInputError = false; notionDatabases.length = 0;"
+              @submit="queryNotionDatabase"
+          />
           <p style="margin-top: 8px; margin-bottom: 4px"> {{ $t('settings.provider.notion.database') }} </p>
-          <FigInput v-model:val="providerConfigs.notion.database" size="small" :status="providerNotionInputError ? 'error' : ''" @keydown="providerNotionInputError = false" />
+<!--          <FigInput v-model:val="providerConfigs.notion.database" size="small" :status="providerNotionInputError ? 'error' : ''" @keydown="providerNotionInputError = false" />-->
+          <FigButton v-if="notionDatabases.length === 0" type="dashed" :status="notionDatabasesQuerying ? 'loading' : 'normal'" @click="queryNotionDatabase">
+            {{ $t('settings.provider.notion.query_database') }}
+          </FigButton>
+          <tk-select
+              v-if="notionDatabases.length > 0"
+              size="small"
+              :selected="selectedNotionDatabase"
+              v-model="selectedNotionDatabase"
+              :value-display="valueDisplay"
+              :max-height="100"
+          >
+            <template #selectDropDown>
+              <tk-select-item size="small" v-for="db in notionDatabases" :value="db.databaseId"> {{ db.name }} </tk-select-item>
+            </template>
+          </tk-select>
         </div>
+        <!-- Provider.Cloud -->
         <div class="provider-card" v-if="providerCurrent === 2">
           <h3> {{ $t('settings.provider.cloud.title') }} </h3>
           <p> {{ $t('settings.provider.cloud.content') }} </p>
@@ -69,7 +98,7 @@
 import FigButton from "../component/FigButton.vue";
 import { dispatch } from "../uiMessageHandler";
 import { useI18n } from "vue-i18n";
-import { computed, PropType, ref } from "vue";
+import { computed, PropType, ref, watch } from "vue";
 import ToggleRadio from "../component/ToggleRadio.vue";
 import FigInput from "../component/FigInput.vue";
 import DataProvider from "../provider/DataProvider";
@@ -78,10 +107,13 @@ import { downloadJson } from "../hooks/downloadJson";
 import * as Utils from "../utils";
 import AccessTokenModal from "../access/AccessTokenModal.vue";
 import initProvider from "../provider/initProvider";
+import {NotionProvider} from "../provider/NotionProvider";
+import TkSelect from "../component/select/TkSelect.vue";
+import TkSelectItem from "../component/select/TkSelectItem.vue";
 
 export default {
   name: "PageSettings",
-  components: { FigInput, ToggleRadio, FigButton, AccessTokenModal },
+  components: {FigInput, ToggleRadio, FigButton, AccessTokenModal, TkSelect, TkSelectItem },
   props: {
     initData: Object as PropType<Transfer.InitData>,
     provider: Object as PropType<DataProvider>,
@@ -140,7 +172,7 @@ export default {
         key: 'access-token',
         data: token
       });
-      dispatch('notify', t(''))
+      dispatch('notify', t('access.suc'));
     }
 
     const alink = ref<HTMLLinkElement>();
@@ -180,7 +212,9 @@ export default {
             if (Utils.checkDataFullTags(tags) && Utils.checkDataFullNodes(nodes)) {
               blobProvider.setFullTags(tags);
               blobProvider.setFullNodes(nodes);
-              dispatch('notify', t('settings.provider.import_json_suc'));
+              dispatch('notify', t('settings.provider.local.import_json_suc'));
+            } else {
+              dispatch('notify-err', t('settings.provider.local.import_json_error'));
             }
           }
         };
@@ -214,6 +248,48 @@ export default {
     });
     const providerNotionInputError = ref(false);
 
+    const notionDatabases = ref<{name: any, databaseId: string}[]>([]);
+    const notionDatabasesQuerying = ref(false);
+
+    const queryNotionDatabase = async () => {
+      const token = providerConfigs.value.notion.token;
+      if (token.startsWith("secret_") && token.length === 50) {
+        notionDatabasesQuerying.value = true;
+        try {
+          const notion = new NotionProvider(token, "");
+          const databases = await notion.listAllDatabase();
+          if (databases.length > 0) {
+            notionDatabases.value = databases;
+          } else {
+            dispatch('notify-err', t('settings.provider.notion.query_empty'));
+          }
+        } finally {
+          notionDatabasesQuerying.value = false;
+        }
+      } else {
+        dispatch('notify-err', t('settings.provider.notion.query_error'));
+      }
+    }
+
+    const selectedNotionDatabase = ref<string>('');
+
+    if (providerConfig.type === 'notion') {
+      selectedNotionDatabase.value = providerConfig.database;
+      queryNotionDatabase().then();
+    }
+
+    watch(
+        selectedNotionDatabase,
+        (newVal) => {
+          providerConfigs.value.notion.database = newVal;
+        }
+    );
+
+    const valueDisplay = (value) => {
+      if (!value) return t('settings.provider.notion.query_select');
+      return notionDatabases.value.find(db => db.databaseId === value)?.name;
+    }
+
     const save = async () => {
       saving.value = true;
       console.log("PageSettings.save", providerCurrent.value, providerConfigs.value);
@@ -227,8 +303,12 @@ export default {
           case 1:
             config = providerConfigs.value.notion;
         }
+        if (config.type === 'notion' && (!config.database || config.database.length === 0)) {
+          dispatch('notify-err', t('settings.provider.notion.database_empty'));
+          return;
+        }
         const prv : DataProvider = initProvider(config);
-
+        console.log(prv);
         const prvError = await prv.testError();
         if (!prvError) {
           providerNotionInputError.value = false;
@@ -236,6 +316,7 @@ export default {
             key: 'provider',
             data: JSON.stringify(config)
           });
+          props.initData.provider = JSON.stringify(config);
           context.emit('setProvider', prv);
           props.togglePage('PageNode');
         } else {
@@ -251,8 +332,8 @@ export default {
     }
 
     return {
-      displayLocale, saving, providerCurrent, providerConfigs, providerNotionInputError, alink, afile, accessModal,
-      save, cancel, test, switchLanguage, resetFileId, setAccessToken, accessModalSubmit, localExport, localImport, onLocalImport
+      displayLocale, saving, providerCurrent, providerConfigs, providerNotionInputError, alink, afile, accessModal, selectedNotionDatabase, notionDatabases, notionDatabasesQuerying,
+      save, cancel, test, switchLanguage, resetFileId, setAccessToken, accessModalSubmit, localExport, localImport, onLocalImport, queryNotionDatabase, valueDisplay
     }
   }
 }

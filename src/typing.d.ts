@@ -54,6 +54,7 @@ declare namespace Transfer {
     }
 
     type TagColor = {
+        name?: string,
         color: RGBA,
         background: RGBA
     }

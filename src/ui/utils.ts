@@ -130,45 +130,59 @@ export function figmaURL(fileId: string, nodeId: string) : string {
 
 export const tagColors = {
     default: {
+        name: 'default',
         background: { r: 227, g: 226, b: 224, a: 1 },
         color: { r: 50, g: 48, b: 44, a: 1 }
     },
     gray: {
+        name: 'gray',
         background: { r: 227, g: 226, b: 224, a: 1 },
         color: { r: 50, g: 48, b: 44, a: 1 }
     },
     brown: {
+        name: 'brown',
         background: { r: 238, g: 224, b: 218, a: 1 },
         color: { r: 68, g: 42, b: 30, a: 1 }
     },
     orange: {
+        name: 'orange',
         background: { r: 250, g: 222, b: 201, a: 1 },
         color: { r: 73, g: 41, b: 14, a: 1 }
     },
     yellow: {
+        name: 'yellow',
         background: { r: 253, g: 236, b: 200, a: 1 },
         color: { r: 64, g: 44, b: 27, a: 1 }
     },
     green: {
+        name: 'green',
         background: { r: 219, g: 237, b: 219, a: 1 },
         color: { r: 28, g: 56, b: 41, a: 1 }
     },
     blue: {
+        name: 'blue',
         background: { r: 211, g: 229, b: 239, a: 1 },
         color: { r: 24, g: 51, b: 71, a: 1 }
     },
     purple: {
+        name: 'purple',
         background: { r: 232, g: 222, b: 238, a: 1 },
         color: { r: 65, g: 36, b: 84, a: 1 }
     },
     pink: {
+        name: 'pink',
         background: { r: 245, g: 224, b: 233, a: 1 },
         color: { r: 76, g: 35, b: 55, a: 1 }
     },
     red: {
+        name: 'red',
         background: { r: 255, g: 226, b: 221, a: 1 },
         color: { r: 93, g: 23, b: 21, a: 1 }
     }
+}
+
+export function equalsRGBA(obj1: RGBA, obj2: RGBA) {
+    return obj1.r === obj2.r && obj1.g === obj2.g && obj1.b === obj2.b && obj1.a === obj2.a;
 }
 
 export function randomTagColor() : TagColor {
@@ -179,9 +193,25 @@ export function randomTagColor() : TagColor {
 }
 
 export function checkDataFullTags(tags: Storage.FullTags) : boolean {
+    for (let tagGroup of [...tags.values()]) {
+        if (!tagGroup.name || !tagGroup.tags) {
+            return false;
+        }
+        for (let tag of tagGroup.tags) {
+            if (!tag.name || !tag.color || !tag.background) {
+                return false;
+            }
+        }
+    }
     return true;
 }
 
 export function checkDataFullNodes(nodes: Storage.FullNodes) : boolean {
+    for (let key in nodes) {
+        const node = nodes[key];
+        if (!node.title || !node.file_id || !node.node_id || !node.tags) {
+            return false;
+        }
+    }
     return true;
 }

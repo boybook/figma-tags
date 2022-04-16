@@ -11,8 +11,6 @@ handleEvent('client-storage-get', (data: Transfer.ClientStorageGetResult) => {
     if (result) {
         result.got = true;
         result.result = data.result
-    } else {
-        throw "client-storage-get: unable to find storage-get key";
     }
 });
 
@@ -21,8 +19,6 @@ handleEvent('client-storage-set', (data: Transfer.ClientStorageSetResult) => {
     if (result) {
         result.got = true;
         result.result = data.suc
-    } else {
-        throw "client-storage-set: unable to find storage-set key";
     }
 });
 

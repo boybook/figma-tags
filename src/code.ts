@@ -10,6 +10,7 @@ let uiShowed = false;
 //figma.clientStorage.setAsync("tags", undefined).then();
 //figma.clientStorage.setAsync("nodes", undefined).then();
 //figma.clientStorage.setAsync("language", "ch").then();
+//figma.clientStorage.setAsync("provider", undefined).then();
 //figma.root.setPluginData("file-id", "");
 
 let file = figma.fileKey;

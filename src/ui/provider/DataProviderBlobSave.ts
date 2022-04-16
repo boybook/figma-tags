@@ -27,12 +27,12 @@ export class DataProviderBlobSave implements DataProvider {
         if (!reload && this.fullTags) {
             return this.fullTags;
         }
-        const { t } = useI18n();
         let result = await this.blob.storageGet('tags');
         if (!result) result = "[]";
         this.fullTags = <Storage.FullTags> new Map(JSON.parse(result));
         // 如果没有取到，那么会返回默认的tags
         if (this.fullTags.size === 0) {
+            const { t } = useI18n();
             const defaultName = t('tag_type.default');
             this.fullTags.set(defaultName,
                 {
