@@ -1,5 +1,6 @@
 <template>
   <div class="page-node-init">
+    <PageSettingsLanguage class="language" />
     <img :src="require('./resource/file-input.svg')" alt="file-input">
     <div class="page-node-init-input">
       <FigInput v-model:val="fileUrl" :status="error ? 'error' : ''" :placeholder="$t('file_id.placeholder')" @submit="check" />
@@ -17,10 +18,11 @@ import { ref } from "vue";
 import FigInput from "../component/FigInput.vue";
 import FigButton from "../component/FigButton.vue";
 import { dispatch } from "../uiMessageHandler";
+import PageSettingsLanguage from "../pagesettings/PageSettingsLanguage.vue";
 
 export default {
   name: "PageNodeInitFile",
-  components: { FigButton, FigInput },
+  components: {PageSettingsLanguage, FigButton, FigInput },
   emits: [ 'set-file-id' ],
   setup(_, context) {
     const fileUrl = ref('');
@@ -49,6 +51,12 @@ export default {
 </script>
 
 <style scoped>
+
+.language {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
 
 p {
   user-select: none;

@@ -95,11 +95,19 @@ handleEvent('document-plugin-data-set', (data: Transfer.DocumentPluginData) => {
 });
 
 handleEvent('notify', (msg) => {
-	figma.notify(msg);
+	if (typeof msg === 'string') {
+		figma.notify(msg);
+	} else {
+		figma.notify(JSON.stringify(msg));
+	}
 });
 
 handleEvent('notify-err', (msg) => {
-	figma.notify(msg, { error: true });
+	if (typeof msg === 'string') {
+		figma.notify(msg, { error: true });
+	} else {
+		figma.notify(JSON.stringify(msg), { error: true });
+	}
 });
 
 handleEvent('canvas-mark-node', (data: Transfer.CanvasSignNode) => {

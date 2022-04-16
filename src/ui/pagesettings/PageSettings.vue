@@ -2,11 +2,7 @@
   <div class="page-settings">
     <div class="page-settings-title">
       <h1> {{ $t('settings.title') }} </h1>
-      <div class="page-settings-title-language" @click="switchLanguage">
-        <img width="14" :src="require('../resource/earth.svg')" alt="language">
-        <span> {{ displayLocale }} </span>
-        <img :src="require('../resource/swap.svg')" alt="down" style="opacity: 0.5">
-      </div>
+      <PageSettingsLanguage />
     </div>
     <div class="page-settings-content">
       <div class="page-settings-content-entry">
@@ -113,10 +109,11 @@ import initProvider from "../provider/initProvider";
 import {NotionProvider} from "../provider/NotionProvider";
 import TkSelect from "../component/select/TkSelect.vue";
 import TkSelectItem from "../component/select/TkSelectItem.vue";
+import PageSettingsLanguage from "./PageSettingsLanguage.vue";
 
 export default {
   name: "PageSettings",
-  components: {FigInput, ToggleRadio, FigButton, AccessTokenModal, TkSelect, TkSelectItem },
+  components: {PageSettingsLanguage, FigInput, ToggleRadio, FigButton, AccessTokenModal, TkSelect, TkSelectItem },
   props: {
     initData: Object as PropType<Transfer.InitData>,
     provider: Object as PropType<DataProvider>,
@@ -125,16 +122,6 @@ export default {
   emits: [ 'setProvider' ],
   setup(props, context) {
     const { t, locale } = useI18n();
-    const displayLocale = computed(() => {
-      switch (locale.value) {
-        case "en":
-          return "English";
-        case "ch":
-          return "中文";
-        default:
-          return locale.value.toUpperCase();
-      }
-    });
     const saving = ref(false);
     const accessModal = ref(false);
     const cancel = () => {
@@ -152,13 +139,6 @@ export default {
       dispatch('client-storage-set', {
         key: 'access-token',
         data: undefined
-      });
-    }
-    const switchLanguage = () => {
-      locale.value = locale.value ==='en' ? 'ch' : 'en';
-      dispatch('client-storage-set', {
-        key: 'language',
-        data: locale.value
       });
     }
 
@@ -335,8 +315,8 @@ export default {
     }
 
     return {
-      displayLocale, saving, providerCurrent, providerConfigs, providerNotionInputError, alink, afile, accessModal, selectedNotionDatabase, notionDatabases, notionDatabasesQuerying,
-      save, cancel, test, switchLanguage, resetFileId, setAccessToken, accessModalSubmit, localExport, localImport, onLocalImport, queryNotionDatabase, valueDisplay
+      saving, providerCurrent, providerConfigs, providerNotionInputError, alink, afile, accessModal, selectedNotionDatabase, notionDatabases, notionDatabasesQuerying,
+      save, cancel, test, resetFileId, setAccessToken, accessModalSubmit, localExport, localImport, onLocalImport, queryNotionDatabase, valueDisplay
     }
   }
 }
@@ -372,29 +352,6 @@ export default {
   font-size: 24px;
   line-height: 1.5;
   margin: 0;
-}
-
-.page-settings-title-language {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 4px 8px;
-  color: rgba(0, 0, 0, 0.85);
-  background-color: white;
-  border-radius: 2px;
-  transition: all 200ms ease-out;
-  flex-grow: 0;
-}
-
-.page-settings-title-language:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.page-settings-title-language span {
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 20px;
-  margin: 0 4px;
 }
 
 .page-settings-content {

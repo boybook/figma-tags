@@ -108,6 +108,25 @@ export default {
         accessModal.value = false;
         loading.value = t('loading.node');
         fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags(reloadTags)])));
+        // 如果没有取到，那么会返回默认的tags
+        if (fullTags.value.size === 0) {
+          const defaultName = t('default_tag.type');
+          fullTags.value.set(defaultName,
+              {
+                name: defaultName,
+                tags: [
+                  Utils.genTag(t('default_tag.draft'), Utils.tagColors.default),
+                  Utils.genTag(t('default_tag.approved'), Utils.tagColors.brown),
+                  Utils.genTag(t('default_tag.work_in_progress'), Utils.tagColors.blue),
+                  Utils.genTag(t('default_tag.revised'), Utils.tagColors.yellow),
+                  Utils.genTag(t('default_tag.complete'), Utils.tagColors.green),
+                  Utils.genTag(t('default_tag.on_hold'), Utils.tagColors.gray),
+                  Utils.genTag(t('default_tag.ready_for_review'), Utils.tagColors.purple),
+                  Utils.genTag(t('default_tag.ready_for_dev'), Utils.tagColors.pink),
+                ]
+              }
+          )
+        }
         const originNodeData = await provider.getNode(fileId.value, currentSelection.value.id);
         const nodeData = <Storage.Node> originNodeData ? JSON.parse(JSON.stringify(originNodeData)) : undefined;
         if (keepCheck && nodeData) {

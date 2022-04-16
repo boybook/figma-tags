@@ -58,6 +58,7 @@ export function storageTags2ContextTagTree(storageTags: Storage.NodeTags, fullTa
     for (let typeName of fullTags.keys()) {
         const entry: Context.TagType = {
             type: typeName,
+            view_sort: fullTags.get(typeName).view_sort,
             tags: storageTagType2ContextClassifiedTags(fullTags.get(typeName))
         };
         if (Object.keys(storageTags).length > 0) {
@@ -117,6 +118,10 @@ export function contextTagTree2ContextNode(tagTree: Context.TagTree) : Storage.N
 
 export function defaultTag(name: string, randomColor?: boolean) : Storage.Tag {
     const color: Transfer.TagColor = randomColor ? randomTagColor() : tagColors.default;
+    return genTag(name, color);
+}
+
+export function genTag(name: string, color: Transfer.TagColor) : Storage.Tag {
     return {
         name: name,
         color: color.color,

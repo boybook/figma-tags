@@ -7,10 +7,18 @@
         {{ $t('lookup.refresh', [requestCount]) }}
       </span>
     </div>
-    <div class="page-select-bar-sort" @click="changeSort" :class="{ 'page-select-bar-sort--normal': !sort, 'page-select-bar-sort--sorting': sort }">
-      <img :src="require('../resource/sort' + (sort ? '-blue' : '') + '.svg')" alt="sort" style="margin-right: 4px">
-      {{ sort ? sort.type : $t('lookup.sort') }}
-    </div>
+    <tk-select class="page-select-bar-sort-select" :selected="sortType" v-model="sortType" :allow-clear-selection="true" :min-width="120" align="right">
+      <template #selectButton>
+        <div class="page-select-bar-sort" :class="{ 'page-select-bar-sort--normal': !sort, 'page-select-bar-sort--sorting': sort }">
+          <img :src="require('../resource/sort' + (sort ? '-blue' : '') + '.svg')" alt="sort" style="margin-right: 4px">
+          {{ sort ? sort.type : $t('lookup.sort') }}
+        </div>
+      </template>
+      <template #selectDropDown>
+        <tk-select-item size="small" v-for="tagType in fullTypes" v-show="typeName !== tagType" :value="tagType"> {{ tagType }} </tk-select-item>
+      </template>
+    </tk-select>
+
   </div>
 </template>
 
@@ -19,10 +27,12 @@ import { requestCount } from "../hooks/reloadCover";
 import LoadingIcon from "../component/LoadingIcon.vue";
 import {PropType, ref, watch} from "vue";
 import DataProvider from "../provider/DataProvider";
+import TkSelect from "../component/select/TkSelect.vue";
+import TkSelectItem from "../component/select/TkSelectItem.vue";
 
 export default {
   name: "PageSelectBar",
-  components: { LoadingIcon },
+  components: { TkSelectItem, TkSelect, LoadingIcon },
   props: {
     provider: Object as PropType<DataProvider>,
     typeName: String,
@@ -36,26 +46,19 @@ export default {
 
     // 加载排序
     const sort = ref<Storage.ViewSort>(props.viewSort);
+    const sortType = ref<string>(props.viewSort?.type);
+    console.log("PageSelectBar.setup.viewSort", props.viewSort, sortType.value);
 
-    const changeSort = () => {
-      console.log("PageSelectBar.changeSort");
-      if (sort.value) {
-        sort.value = undefined;
-      } else {
-        sort.value = {
-          type: props.typeName,
-          order: 'ASC'
-        };
-      }
-    }
-    watch(
-        sort,
-        (newVal) => {
-          context.emit('changeSort', newVal);
-        }
-    )
+    watch(sortType, (newVal) => {
+      sort.value = newVal ? {
+        type: newVal,
+        order: "ASC"
+      } : undefined;
+      console.log("PageSelectBar.sortChange", sort.value);
+      context.emit('changeSort', sort.value);
+    });
 
-    return { sort, requestCount, changeSort }
+    return { sort, sortType, fullTypes, requestCount }
   }
 }
 </script>
@@ -123,13 +126,16 @@ export default {
   }
 }
 
+.page-select-bar-sort-select {
+  margin-right: 8px;
+}
+
 .page-select-bar-sort {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   padding: 4px 8px;
-  margin-right: 8px;
   border-radius: 2px;
   transition: all 200ms ease-out;
   font-size: 12px;

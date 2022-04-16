@@ -14,11 +14,11 @@ export const messages = {
         saving: {
             node: "Saving Node...{0}",
             tag: "Saving Tag...",
-            notify: "✅ {0} Saved"
+            notify: "✅  {0} Saved"
         },
         delete: {
             node: "Deleting Node...",
-            notify: "🗑 {0} Deleted"
+            notify: "🗑  {0} Deleted"
         },
         button: {
             save: "Save",
@@ -26,8 +26,18 @@ export const messages = {
             ignore: "Ignore",
             ok: "OK"
         },
+        default_tag: {
+            type: "Status",
+            draft: "Draft",
+            approved: "Approved",
+            work_in_progress: "Work in progress",
+            revised: "Revised",
+            complete: "Complete",
+            on_hold: "On hold",
+            ready_for_review: "Ready for review",
+            ready_for_dev: "Ready for dev"
+        },
         tag_type: {
-            default: "Default",
             add: {
                 button: "Add a type",
                 title: "Add a new type: ",
@@ -70,7 +80,7 @@ export const messages = {
             },
             provider: {
                 title: "Data Provider",
-                init_failed: "😵 Data Provider connect failed!",
+                init_failed: "😵  Data Provider connect failed!",
                 local: {
                     name: "Local",
                     title: "Congratulations, no configuration required",
@@ -78,7 +88,7 @@ export const messages = {
                     export_json: "Export JSON",
                     export_json_fail: "JSON export failed!",
                     import_json: "Import JSON",
-                    import_json_suc: "✅ Import success!",
+                    import_json_suc: "✅  Import success!",
                     import_json_error: "Import failed, something missing in the file?"
                 },
                 cloud: {
@@ -112,15 +122,15 @@ export const messages = {
             placeholder: "Paste the token here",
             error: "Maybe the token is incorrect?",
             demo: "Sample",
-            suc: "✅ Figma Token saved!"
+            suc: "✅  Figma Token saved!"
         }
     },
     ch: {
         file_id: {
             placeholder: "从录入文件 URL 开始",
-            help: "在画布上 ⌘ + L 复制URL",
+            help: "在画布上 ⌘ + L 复制 URL",
             intro: "为何要录入？由于插件API限制，需要手动填写该文件URL，这样才能跨文件定位到你的设计 :)",
-            error: "似乎你输入的不是Figma链接"
+            error: "似乎你输入的不是 Figma 链接"
         },
         loading: {
             init: "加载中...",
@@ -130,11 +140,11 @@ export const messages = {
         saving: {
             node: "保存 Node 中...{0}",
             tag: "保存 Tag 中...",
-            notify: "✅ {0} 已保存"
+            notify: "✅  {0} 已保存"
         },
         delete: {
             node: "删除 Node 中...",
-            notify: "🗑 {0} 已删除"
+            notify: "🗑  {0} 已删除"
         },
         button: {
             save: "保 存",
@@ -142,8 +152,18 @@ export const messages = {
             ignore: "跳 过",
             ok: "确 定"
         },
+        default_tag: {
+            type: "设计状态",
+            draft: "草稿",
+            approved: "已评审",
+            work_in_progress: "正在进行",
+            revised: "修改中",
+            complete: "已完成",
+            on_hold: "挂起",
+            ready_for_review: "待评审",
+            ready_for_dev: "待开发"
+        },
         tag_type: {
-            default: "默认分类",
             add: {
                 button: '新建分类',
                 title: '新建分类：',
@@ -171,13 +191,16 @@ export const messages = {
         lookup: {
             back: "返回",
             refresh: "{0}个封面刷新中...",
-            sort: "排序"
+            sort: "排序",
+            empty_title: "这里看起来空空如也",
+            empty_intro: "你将在此方便地「跨文件」管理所有内容",
+            empty_button: "从打标签开始"
         },
         settings: {
             title: "设置",
             unset: "未设置",
             current_file: {
-                title: "当前文件FileID",
+                title: "当前文件 FileID",
                 reset: "重新输入"
             },
             access_token: {
@@ -186,7 +209,7 @@ export const messages = {
             },
             provider: {
                 title: "数据源",
-                init_failed: "😵 似乎连不上数据源呀！",
+                init_failed: "😵  似乎连不上数据源呀！",
                 local: {
                     name: "本地",
                     title: "恭喜，无需配置",
@@ -194,7 +217,7 @@ export const messages = {
                     export_json: "导出JSON",
                     export_json_fail: "JSON导出失败！",
                     import_json: "导入JSON",
-                    import_json_suc: "✅ 导入成功!",
+                    import_json_suc: "✅  导入成功!",
                     import_json_error: "导入失败，可能是文件中缺少了部分内容！"
                 },
                 cloud: {
@@ -208,7 +231,7 @@ export const messages = {
                 notion: {
                     name: "Notion",
                     content: "连接到你的Notion database",
-                    link_token: "获取token",
+                    link_token: "获取",
                     token: "Notion token",
                     database: "Notion database",
                     token_placeholder: "请获取 token 后输入",

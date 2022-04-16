@@ -25,10 +25,10 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import {tokenFun} from '../../utils/token';
 import Bus from './selectBus';
-import {ref, onMounted, computed, watch, onDeactivated, provide, getCurrentInstance} from 'vue';
+import {ref, onMounted, computed, watch, onDeactivated, provide, getCurrentInstance, PropType} from 'vue';
 
 export default {
   name: 'TkSelect',
@@ -36,12 +36,20 @@ export default {
     selected: {},
     minWidth: Number,
     maxHeight: Number,
+    align: {
+      type: String as PropType<'left' | 'right'>,
+      default: "left"
+    },
     size: {
       type: String,
       default: 'normal'
     },
     valueDisplay: {
       type: Function
+    },
+    allowClearSelection: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props, ctx) {
@@ -83,10 +91,16 @@ export default {
 
     // 计算位置
     function calculateLocation() {
-      const select_button_dom = select_button.value.getBoundingClientRect();
-      dropdownPosition.value.w = select_button_dom.width
-      dropdownPosition.value.x = select_button_dom.left
-      dropdownPosition.value.y = select_button_dom.top + select_button_dom.height + 2
+      if (select_button.value) {
+        const select_button_dom = select_button.value.getBoundingClientRect();
+        dropdownPosition.value.w = props.minWidth ? Math.max(props.minWidth, select_button_dom.width) : select_button_dom.width;
+        if (props.align === "left") {
+          dropdownPosition.value.x = select_button_dom.left;
+        } else {
+          dropdownPosition.value.x = select_button_dom.left + select_button_dom.width - dropdownPosition.value.w;
+        }
+        dropdownPosition.value.y = select_button_dom.top + select_button_dom.height + 2;
+      }
     }
 
     window.addEventListener('click', (event) => {
@@ -114,27 +128,38 @@ export default {
     })
 
     onDeactivated(() => {
-      window.removeEventListener('resize')
-      window.removeEventListener('scroll')
-      window.removeEventListener('click')
-      window.removeEventListener('touchstart')
+      //@ts-ignore
+      window.removeEventListener('resize');
+      //@ts-ignore
+      window.removeEventListener('scroll');
+      //@ts-ignore
+      window.removeEventListener('click');
+      //@ts-ignore
+      window.removeEventListener('touchstart');
       Bus.$off('chooseSelectItem');
     })
 
     const token = 'select-' + tokenFun();
     // 获取生成的token
-    page.token = token
+    //@ts-ignore
+    page.token = token;
     // 给子元素派发token
-    provide('token', token)
+    provide('token', token);
 
     onMounted(() => {
       Bus.$on('chooseSelectItem', (res) => {
+        //@ts-ignore
         if (res.token === page.token) {
-          selectValue.value = res.value
-          selectOpen.value = false
-          Bus.$emit('chooseActive', {token: token, value: selectValue.value})
+          if (selectValue.value === res.value && props.allowClearSelection) {
+            selectValue.value = undefined;
+          } else {
+            selectValue.value = res.value;
+          }
+          selectOpen.value = false;
+          Bus.$emit('chooseActive', {token: token, value: selectValue.value});
         }
       })
+      console.log("TkSelect.onMounted", props.selected);
       if (props.selected) {
         selectValue.value = props.selected
         Bus.$emit('chooseActive', {token: token, value: selectValue.value})
@@ -245,6 +270,7 @@ export default {
   border-radius: 2px;
   padding: 4px 0;
   overflow: scroll;
+  z-index: 999;
 }
 
 .select-enter-from, .select-leave-to {

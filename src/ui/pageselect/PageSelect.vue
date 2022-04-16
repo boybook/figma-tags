@@ -1,20 +1,26 @@
 <template>
   <div class="page-select">
-    <div class="page-select-wrapper-tree">
+    <div v-if="tagTree?.length === 0" class="page-select-empty">
+      <img :src="require('../resource/empty.svg')" alt="empty">
+      <p style="margin: 4px 0 0 0"> {{ $t('lookup.empty_title') }} </p>
+      <p style="margin: 4px 0 16px 0"> {{ $t('lookup.empty_intro') }} </p>
+      <FigButton type="primary" @click="togglePage('PageNode')"> {{ $t('lookup.empty_button') }} </FigButton>
+    </div>
+    <div class="page-select-wrapper-tree" v-if="tagTree?.length > 0">
       <div v-if="backVisible" class="back-button" @click="togglePage('PageNode')">
         <img :src="require('../resource/back.svg')" alt="back">
         <span style="margin-left: 4px"> {{ $t('lookup.back') }} </span>
       </div>
       <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" />
     </div>
-    <div v-for="type in tagTree">
+    <div v-if="tagTree?.length > 0" v-for="type in tagTree">
       <PageSelectBar
           v-if="currentType === type.type"
           :provider="provider"
           :type-name="currentType"
           :view-sort="type.view_sort"
           :back-visible="backVisible"
-          @change-sort="(sort) => type.view_sort = sort"
+          @change-sort="(sort) => changeSort(type, sort)"
           style="left: 177px"
       />
       <PageSelectType
@@ -38,10 +44,11 @@ import * as Utils from "../utils";
 import DataProvider from "../provider/DataProvider";
 import PageSelectType from "./PageSelectType.vue";
 import PageSelectBar from "./PageSelectBar.vue";
+import FigButton from "../component/FigButton.vue";
 
 export default {
   name: "PageSelect",
-  components: { PageSelectBar, PageSelectType, TagTree },
+  components: {FigButton, PageSelectBar, PageSelectType, TagTree },
   props: {
     initData: Object as PropType<Transfer.InitData>,
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
@@ -81,13 +88,36 @@ export default {
       }, 1);
     }
 
-    return { tagTree, currentType, collectTags, selectTag }
+    const changeSort = (tagType: Context.TagType, sort: Storage.ViewSort) => {
+      console.log("PageSelect.changeSort", tagType, sort);
+      tagType.view_sort = sort;
+      props.provider.setViewSort(tagType.type, sort);
+    }
+
+    return { tagTree, currentType, collectTags, selectTag, changeSort }
   }
 }
 
 </script>
 
 <style scoped>
+
+.page-select-empty {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0 32px;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgba(0, 0, 0, 0.45);
+  user-select: none;
+}
 
 .page-select {
   min-height: 100vh;

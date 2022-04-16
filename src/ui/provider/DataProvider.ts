@@ -60,4 +60,11 @@ export default interface DataProvider {
      */
     selectNodes: (tagType: string, tag: string, viewSort?: Storage.ViewSort) => Promise<Storage.Node[]>
 
+    /**
+     * 设置视图的排序方式
+     * @param tagType
+     * @param sort
+     */
+    setViewSort: (tagType: string, sort?: Storage.ViewSort) => Promise<void>
+
 }

@@ -29,20 +29,8 @@ export class DataProviderBlobSave implements DataProvider {
         }
         let result = await this.blob.storageGet('tags');
         if (!result) result = "[]";
+        console.log("getFullTags", result);
         this.fullTags = <Storage.FullTags> new Map(JSON.parse(result));
-        // 如果没有取到，那么会返回默认的tags
-        if (this.fullTags.size === 0) {
-            const { t } = useI18n();
-            const defaultName = t('tag_type.default');
-            this.fullTags.set(defaultName,
-                {
-                    name: defaultName,
-                    tags: [
-                        Utils.defaultTag("Tag", false)
-                    ]
-                }
-            )
-        }
         return this.fullTags;
     }
 
@@ -161,6 +149,7 @@ export class DataProviderBlobSave implements DataProvider {
         for (let [t, obj] of full.entries()) {
             newTags.set(t, {
                 name: obj.name,
+                view_sort: obj.view_sort,
                 tags: obj.tags.map(tag => ({
                     name: tag.name,
                     color: tag.color,
@@ -244,6 +233,19 @@ export class DataProviderBlobSave implements DataProvider {
             }
         } else {
             return filter;
+        }
+    }
+
+    setViewSort = async (tagType: string, sort?: Storage.ViewSort) : Promise<void> => {
+        const fullTags = await this.getFullTags(false);
+        if (fullTags.has(tagType)) {
+            console.log("setViewSort", tagType, sort);
+            if (sort) {
+                fullTags.get(tagType).view_sort = sort;
+            } else {
+                delete fullTags.get(tagType).view_sort;
+            }
+            await this.updateFullTags(fullTags, {});
         }
     }
 

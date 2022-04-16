@@ -414,4 +414,9 @@ export class NotionProvider implements DataProvider {
         }
     }
 
+    setViewSort = async (tagType: string, sort?: Storage.ViewSort) : Promise<void> => {
+        // Notion中不支持设置视图
+        // Not support in Notion
+    }
+
 }
