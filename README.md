@@ -1,8 +1,6 @@
 # Figma Tags
 
-Helps you manage design content through tags
-
----
+Helps you manage design contents through tags.
 
 ## Setup
 
