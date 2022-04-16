@@ -84,6 +84,9 @@
           <p> {{ $t('settings.provider.cloud.content') }} </p>
         </div>
       </div>
+      <a href="https://www.buymeacoffee.com/boybook" target="_blank" style="margin-bottom: 24px">
+        <img class="bmc-button" width="120" :src="require('../resource/bmc-button.svg')" alt="bmc">
+      </a>
     </div>
     <div class="page-settings-buttons">
       <FigButton type="primary" @click="save" :status="saving ? 'loading' : 'normal'"> {{ $t('button.save') }} </FigButton>
@@ -346,9 +349,9 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 12px;
+  padding: 12px 12px 0;
   user-select: none;
-  height: 96vh;
+  height: 98vh;
 }
 
 .page-settings-title {
@@ -434,7 +437,7 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 0;
+  padding: 0 0 12px 0;
   flex: none;
   order: 2;
   align-self: stretch;
@@ -500,6 +503,15 @@ export default {
 .node-token-access > * {
   flex: none;
   align-self: stretch;
+}
+
+.bmc-button {
+  filter: brightness(100%);
+  transition: all 200ms ease-out;
+}
+
+.bmc-button:hover {
+  filter: brightness(95%);
 }
 
 </style>

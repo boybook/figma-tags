@@ -26,30 +26,21 @@ export class NotionProvider implements DataProvider {
             const result = await this.notion.databases.retrieve({ database_id: this.database });
             // 如果没有URL这个字段，则自动创建（很奇怪，这边用NotionClient库反而没法正常请求
             if (!result.properties['URL'] || result.properties['URL'].type !== "url") {
-                const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
+                await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': this.token,
                         'Content-Type': 'application/json',
                         'notion-version': '2022-02-22'
                     },
-                    body: "{\n" +
-                        "    \"properties\": {\n" +
-                        "        \"URL\": {\n" +
-                        "            \"url\": {}\n" +
-                        "        }\n" +
-                        "    }\n" +
-                        "}"
-                });
-                console.log(update);
-                /*await this.notion.databases.update({
-                    database_id: this.database,
-                    properties: {
-                        "URL": {
-                            url: {}
+                    body: JSON.stringify({
+                        properties: {
+                            "URL": {
+                                url: {}
+                            }
                         }
-                    }
-                });*/
+                    })
+                });
             }
             return undefined;
         } catch (e) {
@@ -144,11 +135,24 @@ export class NotionProvider implements DataProvider {
     }
 
     renameTagType = async (from: string, to: string): Promise<void> => {
-        return Promise.resolve(undefined);
+        const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': this.token,
+                'Content-Type': 'application/json',
+                'notion-version': '2022-02-22'
+            },
+            body: JSON.stringify({
+                properties: {
+                    [from]: {
+                        name: to
+                    }
+                }
+            })
+        });
     }
 
     saveNode = async (fileId: string, nodeId: string, node: Storage.Node): Promise<void> => {
-        return;
         const url = 'https://www.figma.com/file/' + fileId + '/?node-id=' + encodeURIComponent(nodeId);
         const response = await this.notion.databases.query({
             database_id: this.database,
@@ -184,8 +188,28 @@ export class NotionProvider implements DataProvider {
         }
         if (response.results.length > 0) {
             // 保存
-            await this.notion.pages.update({
-                page_id: nodeId,
+            const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/pages/" + response.results[0].id, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': this.token,
+                    'Content-Type': 'application/json',
+                    'notion-version': '2022-02-22'
+                },
+                body: JSON.stringify({
+                    cover: {
+                        type: "external",
+                        external: node.cover ? {
+                            url: node.cover
+                        } : undefined
+                    },
+                    properties: properties
+                })
+            });
+            if (!update.ok) {
+                throw "update page failed! " + update.statusText;
+            }
+            /*await this.notion.pages.update({
+                page_id: response.results[0].id,
                 cover: {
                     type: "external",
                     external: node.cover ? {
@@ -193,7 +217,7 @@ export class NotionProvider implements DataProvider {
                     } : undefined
                 },
                 properties: properties
-            });
+            });*/
             const childList = await this.notion.blocks.children.list({
                 block_id: response.results[0].id,
                 page_size: 50,
@@ -201,19 +225,51 @@ export class NotionProvider implements DataProvider {
             for (let child of childList.results) {
                 if (child['type'] === 'embed') {
                     if (child['embed']['url'].startsWith("https://www.figma.com/embed")) {
-                        await this.notion.blocks.update({
-                            block_id: child.id,
-                            embed: {
-                                url: 'https://www.figma.com/embed?embed_host=notion&url=' + encodeURIComponent(url)
-                            }
+                        const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/blocks/" + child.id, {
+                            method: 'PATCH',
+                            headers: {
+                                'Authorization': this.token,
+                                'Content-Type': 'application/json',
+                                'notion-version': '2022-02-22'
+                            },
+                            body: JSON.stringify({
+                                embed: {
+                                    url: 'https://www.figma.com/embed?embed_host=notion&url=' + encodeURIComponent(url)
+                                }
+                            })
                         });
+                        if (!update.ok) {
+                            throw "update block failed! " + update.statusText;
+                        }
+                        // await this.notion.blocks.update({
+                        //     block_id: child.id,
+                        //     embed: {
+                        //         url: 'https://www.figma.com/embed?embed_host=notion&url=' + encodeURIComponent(url)
+                        //     }
+                        // });
                     } else if (child['embed']['url'].includes("amazonaws.com")) {
-                        await this.notion.blocks.update({
-                            block_id: child.id,
-                            embed: {
-                                url: node.cover
-                            }
+                        const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/blocks/" + child.id, {
+                            method: 'PATCH',
+                            headers: {
+                                'Authorization': this.token,
+                                'Content-Type': 'application/json',
+                                'notion-version': '2022-02-22'
+                            },
+                            body: JSON.stringify({
+                                embed: {
+                                    url: node.cover
+                                }
+                            })
                         });
+                        if (!update.ok) {
+                            throw "update block failed! " + update.statusText;
+                        }
+                        // await this.notion.blocks.update({
+                        //     block_id: child.id,
+                        //     embed: {
+                        //         url: node.cover
+                        //     }
+                        // });
                     }
                 }
             }
@@ -308,7 +364,33 @@ export class NotionProvider implements DataProvider {
     }
 
     updateFullTags = async (fullTags: Storage.FullTags, tagRenames: Transfer.TagRenameGroup): Promise<void> => {
-
+        // Notion这边似乎本身就不支持重命名？重命名会导致之前设置这项的被删除
+        const body = {
+            properties: {}
+        };
+        fullTags.forEach((v, k) => {
+            body.properties[k] = {
+                multi_select: {
+                    options: v.tags.map(tag => ({
+                        name: tag.name,
+                        color: Utils.findColorName(tag)
+                    }))
+                }
+            }
+        });
+        console.log("NotionProvider.updateFullTags", body);
+        const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': this.token,
+                'Content-Type': 'application/json',
+                'notion-version': '2022-02-22'
+            },
+            body: JSON.stringify(body)
+        });
+        if (!update.ok) {
+            throw "updateFullTags failed! " + update.statusText;
+        }
     }
 
     deleteNode = async (fileId: string, nodeId: string): Promise<void> => {

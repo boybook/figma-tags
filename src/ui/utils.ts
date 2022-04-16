@@ -185,6 +185,15 @@ export function equalsRGBA(obj1: RGBA, obj2: RGBA) {
     return obj1.r === obj2.r && obj1.g === obj2.g && obj1.b === obj2.b && obj1.a === obj2.a;
 }
 
+export function findColorName(color: Transfer.TagColor) {
+    for (let key in tagColors) {
+        if (equalsRGBA(color.color, tagColors[key].color) && equalsRGBA(color.background, tagColors[key].background)) {
+            return key;
+        }
+    }
+    return "default";
+}
+
 export function randomTagColor() : TagColor {
     const index = Math.round(Math.random() * Object.values(tagColors).length);
     const json = JSON.stringify(tagColors[Object.keys(tagColors)[index]]);

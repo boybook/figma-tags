@@ -32,13 +32,8 @@ export default {
     const colorName = ref<string>();
     const color = ref<Transfer.TagColor>(props.color);
     // 根据color，选择一个colorName
-    for (let key in Utils.tagColors) {
-      if (Utils.equalsRGBA(color.value.color, Utils.tagColors[key].color) && Utils.equalsRGBA(color.value.background, Utils.tagColors[key].background)) {
-        colorName.value = Utils.tagColors[key].name;
-        console.log("TagColorDropdown.colorName", colorName.value);
-        break;
-      }
-    }
+    colorName.value = Utils.findColorName(color.value);
+
     watch(
         colorName,
         (newVal) => {
