@@ -25,7 +25,7 @@
     </p>
     <div class="button-group">
       <FigButton @click="$emit('ignore', callback)"> {{ showIgnore ? $t('button.ignore') : $t('button.cancel') }} </FigButton>
-      <FigButton type="primary" @click="submit"> {{ $t('button.ok') }} </FigButton>
+      <FigButton type="primary" :status="loading ? 'loading' : 'normal'" @click="submit"> {{ $t('button.ok') }} </FigButton>
     </div>
   </div>
 </template>
@@ -49,32 +49,36 @@ export default {
   emits: [ 'ignore', 'submit' ],
   setup(props, context) {
     const input = ref("");
+    const loading = ref(false);
     const error = ref(false);
-    const submit = () => {
+    const submit = async () => {
       // 检查有效性
       if (!input.value || input.value.length !== 43) {
         error.value = true;
       } else {
-        fetch('https://api.figma.com/v1/me', {
-          headers: {
-            'X-FIGMA-TOKEN': input.value
+        loading.value = true;
+        try {
+          const re = await fetch('https://api.figma.com/v1/me', {
+            headers: {
+              'X-FIGMA-TOKEN': input.value
+            }
+          })
+          if (re.ok) {
+            re.json().then(r => console.log(r));
+            error.value = false;
+            context.emit('submit', input.value, props.callback);
+          } else {
+            error.value = true;
           }
-        })
-            .then(re => {
-              if (re.ok) {
-                re.json().then(r => console.log(r));
-                error.value = false;
-                context.emit('submit', input.value, props.callback);
-              } else {
-                error.value = true;
-              }
-            })
-            .catch(() => {
-              error.value = true;
-            });
+        } catch (e) {
+          console.error(e);
+          error.value = true;
+        } finally {
+          loading.value = false;
+        }
       }
     }
-    return { input, error, submit }
+    return { input, loading, error, submit }
   }
 }
 

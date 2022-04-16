@@ -65,7 +65,10 @@ export const messages = {
         lookup: {
             back: "Back",
             refresh: "{0} covers refreshing...",
-            sort: "Sort"
+            sort: "Sort",
+            empty_title: "Empty",
+            empty_intro: "You can easily manage everything across files",
+            empty_button: "Start Now"
         },
         settings: {
             title: "Settings",
@@ -230,7 +233,7 @@ export const messages = {
                 },
                 notion: {
                     name: "Notion",
-                    content: "连接到你的Notion database",
+                    content: "连接到你的 Notion database，但是由于 Notion API 限制，部分排序、重命名、删除等功能无法正常使用。",
                     link_token: "获取",
                     token: "Notion token",
                     database: "Notion database",
@@ -251,7 +254,7 @@ export const messages = {
             placeholder: "请点击网页中如图所示位置，获取token",
             error: "似乎你输入的token不正确？",
             demo: "示例图",
-            suc: "✅ Figma Token 已保存"
+            suc: "✅  Figma Token 已保存"
         }
     }
 }

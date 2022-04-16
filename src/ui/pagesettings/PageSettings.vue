@@ -156,6 +156,7 @@ export default {
         data: token
       });
       dispatch('notify', t('access.suc'));
+      accessModal.value = false;
     }
 
     const alink = ref<HTMLLinkElement>();
