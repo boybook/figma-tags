@@ -30,17 +30,15 @@
 <script lang="ts">
 
 import { dispatch, handleEvent } from "./uiMessageHandler";
-import { onMounted, reactive, ref, watchEffect } from 'vue';
-import { DataProviderBlobSave } from "./provider/DataProviderBlobSave";
+import { onMounted, ref, watchEffect } from 'vue';
 import DataProvider from './provider/DataProvider';
-import BlobLocalProvider from "./provider/blob/BlobLocalProvider";
 import PageNode from "./pagenode/PageNode.vue";
 import PageSelect from "./pageselect/PageSelect.vue";
 import { useI18n } from 'vue-i18n';
 import PageSettings from "./pagesettings/PageSettings.vue";
-import {NotionProvider} from "./provider/NotionProvider";
 import initProvider from "./provider/initProvider";
 import LoadingWithContent from "./component/LoadingWithContent.vue";
+import { event } from 'vue-gtag'
 
 export default {
   components: {LoadingWithContent, PageSettings, PageSelect, PageNode },
@@ -85,7 +83,8 @@ export default {
           //initData.value.provider = { type: 'local' };
           //setProvider(initProvider({ type: 'local' }));
         }
-      })
+      });
+      event('setup');
     });
 
     watchEffect(() => {

@@ -9,7 +9,7 @@
 		{"command": "node", "name": "Figma Tags"}
 	],
 	"menu": [
-		{"name": "Node", "command": "node"},
-		{"name": "Lookup", "command": "lookup"}
+		{"name": "Tag", "command": "node"},
+		{"name": "Search", "command": "lookup"}
 	]
 }

@@ -80,14 +80,21 @@
           <p> {{ $t('settings.provider.cloud.content') }} </p>
         </div>
       </div>
-      <a href="https://www.buymeacoffee.com/boybook" target="_blank" style="margin-bottom: 24px">
-        <img class="bmc-button" width="120" :src="require('../resource/bmc-button.svg')" alt="bmc">
-      </a>
+      <div class="page-settings-about">
+        <a href="https://www.buymeacoffee.com/boybook" target="_blank">
+          <img class="bmc-button" width="120" :src="require('../resource/bmc-button.svg')" alt="bmc">
+        </a>
+        <a href="https://github.com/boybook/figma-tags/issues" target="_blank" style="margin: 8px 4px">
+          <img :src="require('../resource/github.svg')" alt="github" width="20" style="opacity: 0.65; margin-right: 4px;">
+          <span> {{ $t('settings.report') }} </span>
+        </a>
+      </div>
+
     </div>
     <div class="page-settings-buttons" style="padding: 0 0 12px 0;">
       <FigButton type="primary" @click="save" :status="saving ? 'loading' : 'normal'"> {{ $t('button.save') }} </FigButton>
       <FigButton @click="cancel"> {{ $t('button.cancel') }} </FigButton>
-      <FigButton type="link" @click="test"> CLEAR DATA </FigButton>
+      <!-- <FigButton type="link" @click="test"> CLEAR DATA </FigButton>-->
     </div>
   </div>
 </template>
@@ -97,13 +104,14 @@
 import FigButton from "../component/FigButton.vue";
 import { dispatch } from "../uiMessageHandler";
 import { useI18n } from "vue-i18n";
-import { computed, PropType, ref, watch } from "vue";
+import { onMounted, PropType, ref, watch } from "vue";
 import ToggleRadio from "../component/ToggleRadio.vue";
 import FigInput from "../component/FigInput.vue";
 import DataProvider from "../provider/DataProvider";
 import { DataProviderBlobSave } from "../provider/DataProviderBlobSave";
 import { downloadJson } from "../hooks/downloadJson";
 import * as Utils from "../utils";
+import {event, pageview} from 'vue-gtag';
 import AccessTokenModal from "../access/AccessTokenModal.vue";
 import initProvider from "../provider/initProvider";
 import {NotionProvider} from "../provider/NotionProvider";
@@ -122,6 +130,14 @@ export default {
   emits: [ 'setProvider' ],
   setup(props, context) {
     const { t, locale } = useI18n();
+
+    onMounted(() => {
+      pageview({
+        page_title: "PageSettings",
+        page_path: "/pageselect"
+      });
+    });
+
     const saving = ref(false);
     const accessModal = ref(false);
     const cancel = () => {
@@ -168,6 +184,7 @@ export default {
         const fullTags = await blobProvider.getFullTags(true);
         const fullNodes = await blobProvider.getFullNodes();
         const json = {
+          version: "1",
           tags: [...fullTags],
           nodes: fullNodes
         }
@@ -191,8 +208,6 @@ export default {
             const decode = JSON.parse(<string>reader.result);
             const tags: Storage.FullTags = new Map(decode.tags);
             const nodes: Storage.FullNodes = decode.nodes;
-            console.log(tags);
-            console.log(nodes);
             if (Utils.checkDataFullTags(tags) && Utils.checkDataFullNodes(nodes)) {
               blobProvider.setFullTags(tags);
               blobProvider.setFullNodes(nodes);
@@ -462,12 +477,29 @@ export default {
   align-self: stretch;
 }
 
-.bmc-button {
+.page-settings-about {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  align-self: stretch;
+}
+
+.page-settings-about > * {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  margin-right: 16px;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgba(0, 0, 0, 0.65);
   filter: brightness(100%);
   transition: all 200ms ease-out;
 }
 
-.bmc-button:hover {
+.page-settings-about > *:hover {
   filter: brightness(95%);
 }
 

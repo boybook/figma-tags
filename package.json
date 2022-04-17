@@ -14,6 +14,7 @@
 		"@vueuse/core": "^8.2.5",
 		"figma-plugin-ds": "^0.1.8",
 		"tiny-emitter": "^2.1.0",
+		"vue-gtag": "^2.0.1",
 		"vue-i18n": "^9.2.0-beta.34",
 		"vuedraggable": "^4.1.0"
 	},

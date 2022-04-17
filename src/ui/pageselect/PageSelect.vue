@@ -39,12 +39,14 @@
 <script lang="ts">
 
 import TagTree from "../component/tagtree/TagTree.vue";
-import {computed, PropType, ref} from "vue";
+import {computed, onMounted, PropType, ref} from "vue";
 import * as Utils from "../utils";
+import { event, pageview } from 'vue-gtag';
 import DataProvider from "../provider/DataProvider";
 import PageSelectType from "./PageSelectType.vue";
 import PageSelectBar from "./PageSelectBar.vue";
 import FigButton from "../component/FigButton.vue";
+
 
 export default {
   name: "PageSelect",
@@ -60,6 +62,12 @@ export default {
     }
   },
   setup(props) {
+    onMounted(() => {
+      pageview({
+        page_title: "PageSelect",
+        page_path: "/pageselect"
+      });
+    });
     const tagTree = ref<Context.TagTree>();
     const currentType = ref<string>(props.defaultTagType);
 

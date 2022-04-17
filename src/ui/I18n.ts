@@ -115,7 +115,8 @@ export const messages = {
                     query_empty: "Empty database",
                     database_empty: "Select your database first!"
                 },
-            }
+            },
+            report: "Report"
         },
         access: {
             title: "License for Figma Token",
@@ -244,7 +245,8 @@ export const messages = {
                     query_empty: "你的 Notion 账号下没有可选择的 database",
                     database_empty: "请先选择你的 database"
                 },
-            }
+            },
+            report: "反馈"
         },
         access: {
             title: "授权预览图",

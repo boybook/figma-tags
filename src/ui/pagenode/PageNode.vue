@@ -67,6 +67,7 @@ import PageNodeFooter from "./PageNodeFooter.vue";
 import LoadingWithContent from "../component/LoadingWithContent.vue";
 import AccessTokenModal from "../access/AccessTokenModal.vue";
 import {useI18n} from "vue-i18n";
+import {event, exception, pageview} from "vue-gtag";
 
 export default {
   name: "PageNode",
@@ -104,6 +105,10 @@ export default {
         } else {
           console.log("PageNode.selectionchange", "拦截")
         }
+      });
+      pageview({
+        page_title: "PageNode",
+        page_path: "/pagenode"
       });
     });
 
@@ -217,6 +222,7 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
+        exception(e);
       }
     }
 
@@ -239,6 +245,7 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
+        exception(e);
       }
     }
 
@@ -257,6 +264,8 @@ export default {
       } catch (e) {
         loading.value = t('loading.error') + e;
         console.error(e);
+        dispatch('notify-err', e);
+        exception(e);
       }
     }
 
@@ -271,6 +280,7 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
+        exception(e);
       }
     }
 
@@ -290,6 +300,7 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
+        exception(e);
       }
     }
 
@@ -326,6 +337,7 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
+        exception(e);
       }
     }
 
@@ -343,6 +355,8 @@ export default {
       } catch (e) {
         loading.value = t('loading.error') + e;
         console.error(e);
+        dispatch('notify-err', e);
+        exception(e);
       }
     }
 
