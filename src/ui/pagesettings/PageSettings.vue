@@ -84,7 +84,7 @@
         <img class="bmc-button" width="120" :src="require('../resource/bmc-button.svg')" alt="bmc">
       </a>
     </div>
-    <div class="page-settings-buttons">
+    <div class="page-settings-buttons" style="padding: 0 0 12px 0;">
       <FigButton type="primary" @click="save" :status="saving ? 'loading' : 'normal'"> {{ $t('button.save') }} </FigButton>
       <FigButton @click="cancel"> {{ $t('button.cancel') }} </FigButton>
       <FigButton type="link" @click="test"> CLEAR DATA </FigButton>
@@ -395,7 +395,6 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 0 0 12px 0;
   flex: none;
   order: 2;
   align-self: stretch;

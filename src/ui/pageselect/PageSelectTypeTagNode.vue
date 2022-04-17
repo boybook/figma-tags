@@ -105,6 +105,10 @@ export default {
   }
 }
 
+.node > p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .node-img-loading {
   position: absolute;

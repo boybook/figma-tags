@@ -118,6 +118,11 @@ handleEvent('canvas-unmark-node', (nodeId: string) => {
 	unmarkNode(nodeId);
 });
 
+handleEvent('request-selection', () => {
+	console.log("request-selection", figma.currentPage.selection);
+	dispatch("selectionchange", packageCurrentSelection());
+})
+
 figma.on("selectionchange", () => {
 	dispatch("selectionchange", packageCurrentSelection());
 });

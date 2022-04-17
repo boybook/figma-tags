@@ -1,23 +1,23 @@
 export const messages = {
     en: {
         file_id: {
-            placeholder: "Start by typing the file URL",
+            placeholder: "Start with the file URL",
             help: "⌘ + L to COPY",
             intro: "Due to plugin API limitations, you need to manually fill in the file URL to locate your design.",
             error: "The URL is not a Figma file link"
         },
         loading: {
             init: "Initializing...",
-            node: "Loading Node...",
+            node: "Loading the Node...",
             error: "Something wrong happened! Try to restart the plugin?"
         },
         saving: {
-            node: "Saving Node...{0}",
-            tag: "Saving Tag...",
+            node: "Saving the Node...{0}",
+            tag: "Saving Tags...",
             notify: "✅  {0} Saved"
         },
         delete: {
-            node: "Deleting Node...",
+            node: "Deleting the Node...",
             notify: "🗑  {0} Deleted"
         },
         button: {
@@ -39,7 +39,7 @@ export const messages = {
         },
         tag_type: {
             add: {
-                button: "Add a type",
+                button: "New type",
                 title: "Add a new type: ",
                 placeholder: "Type name"
             },
@@ -47,7 +47,7 @@ export const messages = {
                 confirm: "Rename to \"{0}\"?\n\nIt will be updated to other nodes."
             },
             delete: {
-                confirm: "Delete the Type \"{0}\"?\n\nIt will be updated to other nodes."
+                confirm: "Delete the type \"{0}\"?\n\nIt will be updated to other nodes."
             }
         },
         tag: {
@@ -56,7 +56,7 @@ export const messages = {
                 placeholder: "The tag name"
             },
             edit: {
-                confirm: "Save the tag \"{0}\"？"
+                confirm: "Save the tag \"{0}\"?"
             },
             delete: {
                 confirm: "Delete the tag \"{0}\"?"
@@ -66,8 +66,8 @@ export const messages = {
             back: "Back",
             refresh: "{0} covers refreshing...",
             sort: "Sort",
-            empty_title: "Empty",
-            empty_intro: "You can easily manage everything across files",
+            empty_title: "Nothing here",
+            empty_intro: "You will easily manage everything across files",
             empty_button: "Start Now"
         },
         settings: {
@@ -83,7 +83,7 @@ export const messages = {
             },
             provider: {
                 title: "Data Provider",
-                init_failed: "😵  Data Provider connect failed!",
+                init_failed: "😵  Data Provider connection failure!",
                 local: {
                     name: "Local",
                     title: "Congratulations, no configuration required",
@@ -119,9 +119,9 @@ export const messages = {
         },
         access: {
             title: "License for Figma Token",
-            intro: "Authorization to Figma Access Token is required for display of preview images.",
+            intro: "Authorization to Figma Access Token is required for generating preview images.",
             step1: "Step1: Open the URL.",
-            step2: "Step2：Click and paste the Access Token below.",
+            step2: "Step2: Click and paste the Access Token below.",
             placeholder: "Paste the token here",
             error: "Maybe the token is incorrect?",
             demo: "Sample",

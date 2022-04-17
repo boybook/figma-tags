@@ -7,7 +7,7 @@
         {{ $t('lookup.refresh', [requestCount]) }}
       </span>
     </div>
-    <tk-select class="page-select-bar-sort-select" :selected="sortType" v-model="sortType" :allow-clear-selection="true" :min-width="120" align="right">
+    <tk-select v-if="fullTypes.length > 1" class="page-select-bar-sort-select" :selected="sortType" v-model="sortType" :allow-clear-selection="true" :min-width="120" align="right">
       <template #selectButton>
         <div class="page-select-bar-sort" :class="{ 'page-select-bar-sort--normal': !sort, 'page-select-bar-sort--sorting': sort }">
           <img :src="require('../resource/sort' + (sort ? '-blue' : '') + '.svg')" alt="sort" style="margin-right: 4px">
@@ -41,9 +41,8 @@ export default {
   emits: [ 'changeSort' ],
   setup(props, context) {
     // 获取完整列表
-    const fullTypes = ref<string[]>();
+    const fullTypes = ref<string[]>([]);
     props.provider.getFullTags().then(re => fullTypes.value = [...re.values()].flatMap(g => g.name));
-
     // 加载排序
     const sort = ref<Storage.ViewSort>(props.viewSort);
     const sortType = ref<string>(props.viewSort?.type);

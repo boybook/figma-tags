@@ -35,7 +35,6 @@ export default {
         return;
       }
       active.value = res.value === props.value;
-      console.log("TkSelectItem.chooseActive", active.value, res.value, props.value);
     });
 
     // 选择下拉

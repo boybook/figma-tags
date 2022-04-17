@@ -53,7 +53,7 @@
 
 import DataProvider from "../provider/DataProvider";
 import { exportCover } from "../provider/CoverProvider";
-import { computed, onMounted, PropType, ref, watchEffect } from "vue";
+import {computed, onMounted, PropType, ref, watch, watchEffect} from "vue";
 import { dispatch, handleEvent} from "../uiMessageHandler";
 import * as Utils from "../utils";
 
@@ -81,7 +81,7 @@ export default {
   },
 
   setup(props) {
-    const { locale, t } = useI18n();
+    const { t } = useI18n();
     const provider = <DataProvider> props.provider;
     const loading = ref<string|undefined>(undefined);
 
@@ -96,10 +96,22 @@ export default {
 
     // 监听从插件传来的 selectionchange
     onMounted(() => {
-      handleEvent("selectionchange", async (data: Transfer.CurrentSelection) => {
-        currentSelection.value = data;
+      handleEvent("selectionchange", (data: Transfer.CurrentSelection) => {
+        if (!loading.value) {
+          if (data.id != currentSelection.value.id) {  // 只有选中不同时才刷新
+            currentSelection.value = data;
+          }
+        } else {
+          console.log("PageNode.selectionchange", "拦截")
+        }
       });
     });
+
+    watch(loading, (newVal) => {
+      if (newVal === undefined) { // 加载完毕后，重新请求加载
+        dispatch('request-selection');
+      }
+    })
 
     const reloadNode = async (keepCheck: boolean, reloadTags: boolean) => {
       if (!currentSelection.value) return;
