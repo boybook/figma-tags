@@ -1,3 +1,5 @@
+const offset = 49;
+
 const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
     const node: BaseNode = figma.getNodeById(nodeData.node_id);
     if (node && isEmbedNodeLike(node)) {
@@ -18,11 +20,11 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
             return;
         }
 
-        figma.loadFontAsync({ family: "Inter", style: "Medium" }).then(() => {
+        figma.loadFontAsync({ family: "Inter", style: "Semi Bold" }).then(() => {
             //const tagFrames = [];
             const root = figma.createFrame();
             root.x = node.x;
-            root.y = node.y - 38;
+            root.y = node.y - offset;
 
             const tags : Storage.Tag[] = [];
             for (let type in nodeData.tags) {
@@ -49,10 +51,10 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
                 const text = figma.createText();
                 text.fontName = {
                     family: "Inter",
-                    style: "Medium"
+                    style: "Semi Bold"
                 };
-                text.lineHeight = { value: 14, unit: 'PIXELS' };
-                text.fontSize = 12;
+                text.lineHeight = { value: 21, unit: 'PIXELS' };
+                text.fontSize = 14;
                 text.characters = tag.name;
                 text.fills = [{
                     type: "SOLID",
@@ -73,8 +75,8 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
                 frame.counterAxisSizingMode = "AUTO";
                 frame.paddingTop = 4;
                 frame.paddingBottom = 4;
-                frame.paddingLeft = 8;
-                frame.paddingRight = 8;
+                frame.paddingLeft = 16;
+                frame.paddingRight = 16;
                 frame.cornerRadius = 4;
                 frame.fills = [{
                     type: "SOLID",
@@ -92,7 +94,7 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
                 root.appendChild(frame);
             });
             const group = figma.group([root], page);
-            group.name = root.name;
+            group.name = "Tag#" + nodeData.node_id;
             page.appendChild(group);
             page.setPluginData(nodeData.node_id, group.id);
         }).catch(e => {
@@ -133,8 +135,10 @@ const interval = setInterval(() => {
         if (tileNodeId) {
             const tileNode = figma.getNodeById(tileNodeId);
             if (tileNode && (tileNode.type === 'GROUP' || tileNode.type === 'FRAME')) {
-                tileNode.x = el.x;
-                tileNode.y = el.y - 38;
+                if (tileNode.x != el.x || tileNode.y != el.y - offset) {
+                    tileNode.x = el.x;
+                    tileNode.y = el.y - offset;
+                }
             }
         }
     }

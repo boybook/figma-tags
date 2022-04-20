@@ -19,7 +19,7 @@
       <img v-if="operable && !editing" v-show="hover" class="icon-edit" @click="editing = true" @click.stop :src="require('../../resource/edit.svg')" alt="edit" style="margin-left: 4px;">
     </div>
     <div class="tree-extra-area" v-if="operable && !editing">
-      <div v-if="extraLookup" v-show="hover" class="tree-extra-operation" @click="$emit('extraLookup')" @click.stop>
+      <div v-if="extraLookup" class="tree-extra-operation" @click="$emit('extraLookup')" @click.stop>
         <img :src="require('../../resource/lookup.svg')" alt="lookup">
       </div>
       <div v-if="extraAdd" class="tree-extra-operation" @click="$emit('extraAdd')" @click.stop>

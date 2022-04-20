@@ -2,6 +2,7 @@ import { dispatch, handleEvent } from './codeMessageHandler';
 import SelectionChange = Transfer.CurrentSelection;
 import { interval, markNode, unmarkNode } from "./codeCanvasTag";
 import WindowResize = Transfer.WindowResize;
+import PageNode from "./ui/pagenode/PageNode.vue";
 
 figma.showUI(__html__, { visible: false });
 
@@ -11,6 +12,7 @@ let uiShowed = false;
 //figma.clientStorage.setAsync("nodes", undefined).then();
 //figma.clientStorage.setAsync("language", "ch").then();
 //figma.clientStorage.setAsync("provider", undefined).then();
+//figma.clientStorage.setAsync("access-token", undefined).then();
 //figma.root.setPluginData("file-id", "");
 
 let file = figma.fileKey;
@@ -124,6 +126,18 @@ handleEvent('request-selection', () => {
 })
 
 figma.on("selectionchange", () => {
+	// 点击标签的Group，自动选择到对应的内容
+	if (figma.currentPage.selection.length > 0) {
+		const select = figma.currentPage.selection[0];
+		if (select.type === 'GROUP' && select.name.startsWith("Tag#")) {
+			const nodeId = select.name.slice(4);
+			const node = figma.getNodeById(nodeId);
+			if (node) {
+				figma.currentPage = getPageNode(node);
+				figma.currentPage.selection = [<SceneNode> node];
+			}
+		}
+	}
 	dispatch("selectionchange", packageCurrentSelection());
 });
 
