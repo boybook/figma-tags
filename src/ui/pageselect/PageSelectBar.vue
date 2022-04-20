@@ -7,18 +7,19 @@
         {{ $t('lookup.refresh', [requestCount]) }}
       </span>
     </div>
-    <tk-select v-if="fullTypes.length > 1" class="page-select-bar-sort-select" :selected="sortType" v-model="sortType" :allow-clear-selection="true" :min-width="120" align="right">
-      <template #selectButton>
-        <div class="page-select-bar-sort" :class="{ 'page-select-bar-sort--normal': !sort, 'page-select-bar-sort--sorting': sort }">
-          <img :src="require('../resource/sort' + (sort ? '-blue' : '') + '.svg')" alt="sort" style="margin-right: 4px">
-          {{ sort ? sort.type : $t('lookup.sort') }}
-        </div>
-      </template>
-      <template #selectDropDown>
-        <tk-select-item size="small" v-for="tagType in fullTypes" v-show="typeName !== tagType" :value="tagType"> {{ tagType }} </tk-select-item>
-      </template>
-    </tk-select>
-
+    <div style="margin-right: 8px">
+      <tk-select v-if="fullTypes.length > 1" :selected="sortType" v-model="sortType" :allow-clear-selection="true" :min-width="120" align="right">
+        <template #selectButton>
+          <div class="page-select-bar-sort" :class="{ 'page-select-bar-sort--normal': !sort, 'page-select-bar-sort--sorting': sort }">
+            <img :src="require('../resource/sort' + (sort ? '-blue' : '') + '.svg')" alt="sort" style="margin-right: 4px">
+            {{ sort ? sort.type : $t('lookup.sort') }}
+          </div>
+        </template>
+        <template #selectDropDown>
+          <tk-select-item size="small" v-for="tagType in fullTypes" v-show="typeName !== tagType" :value="tagType"> {{ tagType }} </tk-select-item>
+        </template>
+      </tk-select>
+    </div>
   </div>
 </template>
 
@@ -123,10 +124,6 @@ export default {
   100% {
     opacity: 1;
   }
-}
-
-.page-select-bar-sort-select {
-  margin-right: 8px;
 }
 
 .page-select-bar-sort {

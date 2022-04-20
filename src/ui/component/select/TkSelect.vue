@@ -1,28 +1,26 @@
 <template>
   <!-- 下拉框 -->
-  <div class="tk-select">
-    <div ref="select_button" class="tk-select-button" @click="selectOpen = !selectOpen">
-      <!-- 选中内容 -->
-      <slot name="selectButton">
-        <div class="tk-select-button-input" :class="'tk-select-button-input--size-' + size">
-          <span :class="{ 'tk-select-button-span-empty': !selectValue || selectValue.length === 0 }"> {{ valueDisplay }} </span>
-          <div class="select-icon" :class="{'selectOpen':selectOpen}">
-            <img :src="require('../../resource/arrow-down.svg')" class="fi fi-rr-angle-small-down" alt="arrow-down">
-          </div>
+  <div ref="select_button" class="tk-select-button" @click="selectOpen = !selectOpen">
+    <!-- 选中内容 -->
+    <slot name="selectButton">
+      <div class="tk-select-button-input" :class="'tk-select-button-input--size-' + size">
+        <span :class="{ 'tk-select-button-span-empty': !selectValue || selectValue.length === 0 }"> {{ valueDisplay }} </span>
+        <div class="select-icon" :class="{'selectOpen':selectOpen}">
+          <img :src="require('../../resource/arrow-down.svg')" class="fi fi-rr-angle-small-down" alt="arrow-down">
         </div>
-      </slot>
-    </div>
-    <!-- 下拉框 -->
-    <teleport to="body">
-      <transition name="select">
-        <div ref="select_dropdown" v-show="selectOpen" :style="dropdownStyle" class="tk-select-dropdown">
-          <ul>
-            <slot name="selectDropDown"></slot>
-          </ul>
-        </div>
-      </transition>
-    </teleport>
+      </div>
+    </slot>
   </div>
+  <!-- 下拉框 -->
+  <teleport to="body">
+    <transition name="select">
+      <div ref="select_dropdown" v-show="selectOpen" :style="dropdownStyle" class="tk-select-dropdown">
+        <ul>
+          <slot name="selectDropDown"></slot>
+        </ul>
+      </div>
+    </transition>
+  </teleport>
 </template>
 
 <script lang="ts">
@@ -251,11 +249,10 @@ export default {
 }
 
 .select-icon {
-  padding: 4px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
   transition: all .2s;
 }
 

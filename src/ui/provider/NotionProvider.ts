@@ -6,8 +6,8 @@ export class NotionProvider implements DataProvider {
 
     type: string = 'notion';
 
-    private token: string;
-    private notion : Client;
+    private readonly token: string;
+    private readonly notion : Client;
     private readonly database: string;
 
     private fullTags?: Storage.FullTags;
@@ -373,7 +373,7 @@ export class NotionProvider implements DataProvider {
                 multi_select: {
                     options: v.tags.map(tag => ({
                         name: tag.name,
-                        color: Utils.findColorName(tag)
+                        //color: Utils.findColorName(tag) // 不支持修改已有的颜色和名称。。
                     }))
                 }
             }

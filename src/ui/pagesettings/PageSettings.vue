@@ -62,6 +62,7 @@
             {{ $t('settings.provider.notion.query_database') }}
           </FigButton>
           <tk-select
+              style="display: flex; align-self: stretch;"
               v-if="notionDatabases.length > 0"
               size="small"
               :selected="selectedNotionDatabase"

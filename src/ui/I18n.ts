@@ -249,7 +249,7 @@ export const messages = {
             report: "反馈"
         },
         access: {
-            title: "授权预览图",
+            title: "授权生成预览图",
             intro: "为了后续展示预览图，需要授权获取 Figma Token",
             step1: "第1步：点击打开网页",
             step2: "第2步：点击如图所示位置，复制生成的 access token 到下方输入框中",

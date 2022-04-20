@@ -22,7 +22,6 @@
 
 <script lang="ts">
 
-import * as Utils from "../../utils";
 import FigTag from "../FigTag.vue";
 import {PropType, ref} from "vue";
 import TagTreeEntryEdit from "./TagTreeEntryEdit.vue";

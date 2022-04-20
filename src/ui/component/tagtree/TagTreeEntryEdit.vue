@@ -1,6 +1,8 @@
 <template>
   <div class="tag-adding">
-    <TagColorDropdown v-if="color" class="tag-adding-color" v-model:color="color" />
+    <div class="tag-adding-color" v-if="color">
+      <TagColorDropdown v-model:color="color" />
+    </div>
     <FigInput
         v-focus
         v-model:val="text"
@@ -108,6 +110,9 @@ export default {
   width: 16px;
   max-width: 16px;
   margin-right: 4px;
+  display: flex;
+  align-self: stretch;
+  flex-grow: 0;
 }
 
 </style>

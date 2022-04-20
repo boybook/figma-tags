@@ -229,3 +229,39 @@ export function checkDataFullNodes(nodes: Storage.FullNodes) : boolean {
     }
     return true;
 }
+
+export function equalsFullTags(full1: Storage.FullTags, full2: Storage.FullTags) : boolean {
+    const list1 = [...full1.values()];
+    const list2 = [...full2.values()];
+    if (list1.length != list2.length) {
+        console.log("equalsFullTags", "list.length", list1.length, list2.length);
+        return false;
+    }
+    for (let i = 0; i < list1.length; i++) {
+        const entry1 = list1[i];
+        const entry2 = list2[i];
+        if (entry1.name !== entry2.name) {
+            console.log("equalsFullTags", "name", entry1.name, entry2.name);
+            return false;
+        }
+        if (entry1.tags.length !== entry2.tags.length) {
+            console.log("equalsFullTags", "tags.length", entry1.tags.length, entry2.tags.length);
+            return false;
+        }
+        for (let i0 = 0; i0 < entry1.tags.length; i0++) {
+            if (entry1.tags[i0].name !== entry2.tags[i0].name) {
+                console.log("equalsFullTags", "tag.name", entry1.tags[i0].name, entry2.tags[i0].name);
+                return false;
+            }
+            if (!equalsRGBA(entry1.tags[i0].color, entry2.tags[i0].color)) {
+                console.log("equalsFullTags", "tag.color", entry1.tags[i0].color, entry2.tags[i0].color);
+                return false;
+            }
+            if (!equalsRGBA(entry1.tags[i0].background, entry2.tags[i0].background)) {
+                console.log("equalsFullTags", "tag.background", entry1.tags[i0].background, entry2.tags[i0].background);
+                return false;
+            }
+        }
+    }
+    return true;
+}

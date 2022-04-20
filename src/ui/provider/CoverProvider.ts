@@ -24,7 +24,7 @@ const exportCover = (fileId: string, nodeId: string, nodeWidth: number, accessTo
                 reject(e);
             }
         } else {
-            resolve("https://static.figma.com/uploads/28811d94ebbbeed985725e23e0a560215cc43f7b");
+            resolve(""); // 如果没有token，将会在Search列表进行获取
         }
     })
 );

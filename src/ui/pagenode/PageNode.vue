@@ -324,7 +324,9 @@ export default {
         node.value.cover = await exportCover(node.value.file_id, node.value.node_id, nodeWidth, props.initData.accessToken);
         loading.value = t('saving.node', [' (tags)']);
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
-        await provider.updateFullTags(fullTags.value, {});
+        if (!Utils.equalsFullTags(await props.provider.getFullTags(), fullTags.value)) {
+          await provider.updateFullTags(fullTags.value, {});
+        }
         loading.value = t('saving.node', [' (storage)']);
         await provider.saveNode(fileId.value, node.value.node_id, node.value);
         loading.value = undefined;
