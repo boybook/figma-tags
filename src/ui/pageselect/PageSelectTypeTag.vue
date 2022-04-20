@@ -12,7 +12,7 @@
         <p>Empty</p>
       </li>
       <li v-for="node in result">
-        <PageSelectTypeTagNode :access-token="accessToken" :node="node" @refresh-cover="refreshCover"></PageSelectTypeTagNode>
+        <PageSelectTypeTagNode :access-token="accessToken" :node="node" @refresh-cover="refreshCover" @refresh-cover-without-token="$emit('refreshCoverWithoutToken')" />
       </li>
     </ul>
   </div>
@@ -36,6 +36,7 @@ export default {
     viewSort: Object as PropType<Storage.ViewSort>,
     tag: Object as PropType<Storage.Tag>
   },
+  emits: [ 'refreshCoverWithoutToken' ],
   setup(props) {
     const loading = ref(true);
 

@@ -7,9 +7,9 @@
       <FigButton type="primary" @click="togglePage('PageNode')"> {{ $t('lookup.empty_button') }} </FigButton>
     </div>
     <div class="page-select-wrapper-tree" v-if="tagTree?.length > 0">
-      <div v-if="backVisible" class="back-button" @click="togglePage('PageNode')">
+      <div class="back-button" @click="togglePage('PageNode')">
         <img :src="require('../resource/back.svg')" alt="back">
-        <span style="margin-left: 4px"> {{ $t('lookup.back') }} </span>
+        <span style="margin-left: 4px"> {{ backVisible ? $t('lookup.back') : $t('lookup.to_tags') }} </span>
       </div>
       <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" />
     </div>
@@ -30,27 +30,32 @@
           :view-sort="type.view_sort"
           :tags="collectTags"
           :access-token="initData.accessToken"
+          :key="initData.accessToken"
+          @refresh-cover-without-token="accessModal = true"
       />
     </div>
-
+    <div class="node-token-access" v-if="accessModal">
+      <AccessTokenModal :show-ignore="true" @ignore="accessModalIgnore" @submit="accessModalSubmit" />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 
 import TagTree from "../component/tagtree/TagTree.vue";
-import {computed, onMounted, PropType, ref} from "vue";
+import {computed, onMounted, PropType, ref, watchEffect} from "vue";
 import * as Utils from "../utils";
 import { event, pageview } from 'vue-gtag';
 import DataProvider from "../provider/DataProvider";
 import PageSelectType from "./PageSelectType.vue";
 import PageSelectBar from "./PageSelectBar.vue";
 import FigButton from "../component/FigButton.vue";
-
+import AccessTokenModal from "../access/AccessTokenModal.vue";
+import {dispatch} from "../uiMessageHandler";
 
 export default {
   name: "PageSelect",
-  components: {FigButton, PageSelectBar, PageSelectType, TagTree },
+  components: { FigButton, PageSelectBar, PageSelectType, TagTree, AccessTokenModal },
   props: {
     initData: Object as PropType<Transfer.InitData>,
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
@@ -62,14 +67,21 @@ export default {
     }
   },
   setup(props) {
+    const accessModal = ref(false);
+
     onMounted(() => {
       pageview({
         page_title: "PageSelect",
         page_path: "/pageselect"
       });
     });
+
     const tagTree = ref<Context.TagTree>();
     const currentType = ref<string>(props.defaultTagType);
+
+    watchEffect(() => {
+      document.body.style.overflow = (accessModal.value) ? 'hidden' : 'auto';
+    })
 
     props.provider.getFullTags().then(result => {
       tagTree.value = Utils.storageTags2ContextTagTree({}, result);
@@ -102,7 +114,22 @@ export default {
       props.provider.setViewSort(tagType.type, sort);
     }
 
-    return { tagTree, currentType, collectTags, selectTag, changeSort }
+    const accessModalIgnore = (callback: Function) => {
+      accessModal.value = false;
+      callback?.();
+    }
+
+    const accessModalSubmit = (token: string, callback: Function) => {
+      props.initData.accessToken = token;
+      accessModal.value = false;
+      dispatch('client-storage-set', {
+        key: 'access-token',
+        data: token
+      });
+      callback?.();
+    }
+
+    return { tagTree, currentType, collectTags, accessModal, selectTag, changeSort, accessModalIgnore, accessModalSubmit }
   }
 }
 
@@ -174,6 +201,26 @@ export default {
 
 .back-button:active {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.node-token-access {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.node-token-access > * {
+  flex: none;
+  width: 264px;
 }
 
 </style>

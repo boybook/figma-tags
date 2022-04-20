@@ -68,6 +68,7 @@ import LoadingWithContent from "../component/LoadingWithContent.vue";
 import AccessTokenModal from "../access/AccessTokenModal.vue";
 import {useI18n} from "vue-i18n";
 import {event, exception, pageview} from "vue-gtag";
+import {removeCoverCache} from "../hooks/reloadCover";
 
 export default {
   name: "PageNode",
@@ -116,6 +117,10 @@ export default {
       if (newVal === undefined) { // 加载完毕后，重新请求加载
         dispatch('request-selection');
       }
+    });
+
+    watchEffect(() => {
+      document.body.style.overflow = (accessModal.value || loading.value) ? 'hidden' : 'auto';
     })
 
     const reloadNode = async (keepCheck: boolean, reloadTags: boolean) => {
@@ -171,7 +176,11 @@ export default {
     }
 
     // selection改变时，自动刷新当前已选中的frame
-    watchEffect(() => reloadNode(false, false));
+    watchEffect(() => {
+      if (fileId.value) {
+        reloadNode(false, false);
+      }
+    });
 
     // flat出所有已选Tag
     const collectTags = computed(() => {
@@ -308,11 +317,6 @@ export default {
     const toSave = async (force: boolean = false) => {
       console.log("toSave", tagTree.value);
       try {
-        // 还没获取过accessKey
-        if (!force && !props.initData.accessToken) {
-          accessModal.value = true;
-          return;
-        }
         accessModal.value = false;
         const nodeWidth = currentSelection.value.width;
         loading.value = t('saving.node', [' (collect)']);
@@ -320,8 +324,18 @@ export default {
         node.value.tags = Utils.contextTagTree2ContextNode(tagTree.value);
         node.value.saved = true;
         node.value.file_id = fileId.value;
-        loading.value = t('saving.node', [' (cover)']);
-        node.value.cover = await exportCover(node.value.file_id, node.value.node_id, nodeWidth, props.initData.accessToken);
+        if (props.provider.type === 'notion') {  // Notion模式，需要现场获取封面
+          // 还没获取过accessKey
+          if (!force && !props.initData.accessToken) {
+            accessModal.value = true;
+            loading.value = undefined;
+            return;
+          }
+          loading.value = t('saving.node', [' (cover)']);
+          node.value.cover = await exportCover(node.value.file_id, node.value.node_id, nodeWidth, props.initData.accessToken);
+        } else {
+          node.value.cover = "";  // 设置为空，在Search页面查看时进行封面刷新
+        }
         loading.value = t('saving.node', [' (tags)']);
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         if (!Utils.equalsFullTags(await props.provider.getFullTags(), fullTags.value)) {
@@ -329,6 +343,9 @@ export default {
         }
         loading.value = t('saving.node', [' (storage)']);
         await provider.saveNode(fileId.value, node.value.node_id, node.value);
+        if (node.value.cover === "") {
+          removeCoverCache(fileId.value, node.value.node_id);
+        }
         loading.value = undefined;
         dispatch('canvas-mark-node', <Transfer.CanvasSignNode> {
           fullTags: JSON.stringify([...fullTags.value]),

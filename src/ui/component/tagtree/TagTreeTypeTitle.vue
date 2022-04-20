@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import TagTreeEntryEdit from "./TagTreeEntryEdit.vue";
 import {useI18n} from "vue-i18n";
 

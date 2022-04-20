@@ -34,6 +34,7 @@ switch (figma.command) {
 	case 'lookup': {
 		(async() => {
 			const [language, accessToken, provider] = await storageInit();
+			checkSelectCanvasTag();
 			dispatch("init", <Transfer.InitData> {
 				language: language ? language : "en",
 				accessToken: accessToken,
@@ -49,6 +50,7 @@ switch (figma.command) {
 	default: {
 		(async() => {
 			const [language, accessToken, provider] = await storageInit();
+			checkSelectCanvasTag();
 			dispatch("init", <Transfer.InitData> {
 				language: language ? language : "en",
 				accessToken: accessToken,
@@ -127,17 +129,7 @@ handleEvent('request-selection', () => {
 
 figma.on("selectionchange", () => {
 	// 点击标签的Group，自动选择到对应的内容
-	if (figma.currentPage.selection.length > 0) {
-		const select = figma.currentPage.selection[0];
-		if (select.type === 'GROUP' && select.name.startsWith("Tag#")) {
-			const nodeId = select.name.slice(4);
-			const node = figma.getNodeById(nodeId);
-			if (node) {
-				figma.currentPage = getPageNode(node);
-				figma.currentPage.selection = [<SceneNode> node];
-			}
-		}
-	}
+	checkSelectCanvasTag();
 	dispatch("selectionchange", packageCurrentSelection());
 });
 
@@ -149,6 +141,20 @@ figma.on("currentpagechange", () => {
 figma.on("close", () => {
 	clearInterval(interval);
 });
+
+function checkSelectCanvasTag() {
+	if (figma.currentPage.selection.length > 0) {
+		const select = figma.currentPage.selection[0];
+		if (select.type === 'GROUP' && select.name.startsWith("Tag#")) {
+			const nodeId = select.name.slice(4);
+			const node = figma.getNodeById(nodeId);
+			if (node) {
+				figma.currentPage = getPageNode(node);
+				figma.currentPage.selection = [<SceneNode> node];
+			}
+		}
+	}
+}
 
 function packageCurrentSelection() : SelectionChange {
 	try {

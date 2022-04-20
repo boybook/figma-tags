@@ -64,6 +64,7 @@ export const messages = {
         },
         lookup: {
             back: "Back",
+            to_tags: "Tags",
             refresh: "{0} covers refreshing...",
             sort: "Sort",
             empty_title: "Nothing here",
@@ -194,6 +195,7 @@ export const messages = {
         },
         lookup: {
             back: "返回",
+            to_tags: "Tags",
             refresh: "{0}个封面刷新中...",
             sort: "排序",
             empty_title: "这里看起来空空如也",

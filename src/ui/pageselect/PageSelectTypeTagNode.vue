@@ -4,7 +4,7 @@
       <div v-if="loading" class="node-img-loading">
         <LoadingIcon />
       </div>
-      <img :src="node.cover" @load="imageLoad" @error.once="imageError" :alt="node.title">
+      <img :src="node.cover ? node.cover : ''" @load="imageLoad" @error.once="imageError" :alt="node.title">
     </div>
     <p> {{ node.title }} </p>
   </a>
@@ -23,22 +23,28 @@ export default {
     accessToken: String,
     node: Object as PropType<Storage.Node>
   },
-  emits: [ 'refreshCover' ],
+  emits: [ 'refreshCover', 'refreshCoverWithoutToken' ],
   setup(props, context) {
     const loading = ref(true);
     const imageLoad = () => {
       loading.value = false;
     }
     const imageError = (event) => {
-      loading.value = true;
-      reloadCover(props.node.file_id, props.node.node_id, props.node.width, props.accessToken)
-          .then(entry => {
-            event.target.src = entry.cover;
-            context.emit('refreshCover', props.node, entry.cover);
-          })
-          .catch(_ => {
-            loading.value = false;
-          });
+      if (props.accessToken) {  // 只有有accessToken的时候，才会刷新
+        loading.value = true;
+        reloadCover(props.node.file_id, props.node.node_id, props.node.width, props.accessToken)
+            .then(entry => {
+              event.target.src = entry.cover;
+              context.emit('refreshCover', props.node, entry.cover);
+            })
+            .catch(_ => {
+              loading.value = false;
+            });
+      } else {
+        event.target.src = require('../resource/img-deafult.svg');
+        console.log("PageSelectTypeTagNode", "refreshCoverWithoutToken");
+        context.emit('refreshCoverWithoutToken');
+      }
     }
     return { Utils, loading, imageLoad, imageError }
   }

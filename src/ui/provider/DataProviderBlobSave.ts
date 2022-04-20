@@ -1,6 +1,4 @@
 import DataProvider from "./DataProvider";
-import * as Utils from "../utils";
-import { useI18n } from "vue-i18n";
 
 export interface BlobProvider {
     storageGet: (key: string) => Promise<any>
@@ -202,7 +200,6 @@ export class DataProviderBlobSave implements DataProvider {
             cover: node.cover,
             tags: node.tags
         };
-
         await this.setFullNodes(full);
     }
 

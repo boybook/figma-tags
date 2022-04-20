@@ -65,4 +65,10 @@ const reloadCover = (fileId: string, nodeId: string, nodeWidth: number, accessTo
     }));
 }
 
-export { requestCount, reloadCover }
+const removeCoverCache = (fileId: string, nodeId: string) => {
+    if (coverReloadMap[fileId + "#" + nodeId]) {
+        delete coverReloadMap[fileId + "#" + nodeId];
+    }
+}
+
+export { requestCount, reloadCover, removeCoverCache }

@@ -8,6 +8,7 @@
           :tag-type="tagType"
           :view-sort="viewSort"
           :tag="tag"
+          @refresh-cover-without-token="$emit('refreshCoverWithoutToken')"
       />
     </li>
   </ul>
@@ -27,7 +28,8 @@ export default {
     tagType: String,
     viewSort: Object as PropType<Storage.ViewSort>,
     tags: Array as PropType<Storage.Tag[]>
-  }
+  },
+  emits: [ 'refreshCoverWithoutToken' ]
 }
 </script>
 

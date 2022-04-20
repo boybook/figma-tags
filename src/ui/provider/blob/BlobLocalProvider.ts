@@ -25,7 +25,7 @@ handleEvent('client-storage-set', (data: Transfer.ClientStorageSetResult) => {
 const promiseClientStorageGet: Map<string, Result> = new Map();
 const promiseClientStorageSet: Map<string, Result> = new Map();
 
-const storageGet = (key: string) => {
+const storageGet = (key: string) : Promise<any> => {
     if (!promiseClientStorageGet.has(key)) {
         promiseClientStorageGet.set(key, {
             listeners: 1,
@@ -56,7 +56,7 @@ const storageGet = (key: string) => {
     });
 }
 
-const storageSet = (key: string, data: any) => {
+const storageSet = (key: string, data: any) : Promise<void> => {
     if (!promiseClientStorageSet.has(key)) {
         promiseClientStorageSet.set(key, {
             listeners: 1,
@@ -88,6 +88,6 @@ const storageSet = (key: string, data: any) => {
     });
 }
 
-export default { storageGet, storageSet }
+export { storageGet, storageSet }
 
 

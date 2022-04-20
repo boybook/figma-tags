@@ -2,7 +2,7 @@ const exportCover = (fileId: string, nodeId: string, nodeWidth: number, accessTo
     new Promise<string>(async (resolve, reject) => {
         if (accessToken) {
             try {
-                const scale = nodeWidth ? Math.min(4, 512 / nodeWidth) : 0.1;
+                const scale = nodeWidth ? Math.min(4, 512 / nodeWidth) : 0.5;
                 const result = await fetch("https://api.figma.com/v1/images/" + fileId + "?ids=" + nodeId + "&scale=" + scale, {
                     headers: {
                         'X-FIGMA-TOKEN': accessToken

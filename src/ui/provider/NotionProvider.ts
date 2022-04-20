@@ -1,6 +1,7 @@
 import { Client } from "@notionhq/client";
 import DataProvider from "./DataProvider";
 import * as Utils from "../utils";
+import { storageGet, storageSet } from "./blob/BlobLocalProvider";
 
 export class NotionProvider implements DataProvider {
 
@@ -96,6 +97,13 @@ export class NotionProvider implements DataProvider {
                     }
                     result.set(key, tagGroups);
                 }
+            }
+        }
+        const viewConfigJson = await storageGet("notion-view-config");
+        const viewConfig = viewConfigJson ? JSON.parse(viewConfigJson) : {};
+        for (let tagType in viewConfig) {
+            if (result.has(tagType)) {
+                result.get(tagType).view_sort = viewConfig[tagType];
             }
         }
         this.fullTags = result;
@@ -196,12 +204,12 @@ export class NotionProvider implements DataProvider {
                     'notion-version': '2022-02-22'
                 },
                 body: JSON.stringify({
-                    cover: {
+                    cover: node.cover ? {
                         type: "external",
-                        external: node.cover ? {
+                        external: {
                             url: node.cover
-                        } : undefined
-                    },
+                        }
+                    } : undefined,
                     properties: properties
                 })
             });
@@ -278,44 +286,45 @@ export class NotionProvider implements DataProvider {
             properties['URL'] = {
                 url: url
             }
+            const children = [];
+            if (node.cover) {
+                if (node.cover.endsWith(".png")) {
+                    children.push({
+                        type: "image",
+                        image: {
+                            type: "external",
+                            external: {
+                                url: node.cover
+                            }
+                        }
+                    });
+                } else {
+                    children.push({
+                        type: "embed",
+                        embed: {
+                            url: node.cover
+                        }
+                    });
+                }
+            }
+            children.push({
+                type: "embed",
+                embed: {
+                    url: 'https://www.figma.com/embed?embed_host=notion&url=' + encodeURIComponent(url)
+                },
+            });
             await this.notion.pages.create({
                 parent: {
                     database_id: this.database,
                 },
-                cover: {
+                cover: node.cover ? {
                     type: "external",
-                    external: node.cover ? {
+                    external: {
                         url: node.cover
-                    } : undefined
-                },
+                    }
+                } : undefined,
                 properties: properties,
-                children: [
-                    node.cover ? (
-                        node.cover?.endsWith(".png") ?
-                            {
-                                type: "image",
-                                image: {
-                                    type: "external",
-                                    external: {
-                                        url: node.cover
-                                    }
-                                }
-                            }
-                            :
-                            {
-                                type: "embed",
-                                embed: {
-                                    url: node.cover
-                                }
-                            }
-                    ) : undefined,
-                    {
-                        type: "embed",
-                        embed: {
-                            url: 'https://www.figma.com/embed?embed_host=notion&url=' + encodeURIComponent(url)
-                        },
-                    },
-                ]
+                children: children
             });
         }
     }
@@ -415,8 +424,17 @@ export class NotionProvider implements DataProvider {
     }
 
     setViewSort = async (tagType: string, sort?: Storage.ViewSort) : Promise<void> => {
-        // Notion中不支持设置视图
+        // Notion中不支持设置视图，因此将排序保存到本地
         // Not support in Notion
+        const viewConfigJson = await storageGet("notion-view-config");
+        const viewConfig = viewConfigJson ? JSON.parse(viewConfigJson) : {};
+        viewConfig[tagType] = sort;
+        await storageSet("notion-view-config", JSON.stringify(viewConfig));
+        if (this.fullTags) {
+            if (this.fullTags.has(tagType)) {
+                this.fullTags.get(tagType).view_sort = viewConfig[tagType];
+            }
+        }
     }
 
 }
