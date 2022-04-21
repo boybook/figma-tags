@@ -1,17 +1,19 @@
 <template>
   <div>
     <slot></slot>
-    <div v-if="loading" class="loading-wrapper">
-      <LoadingIcon />
-      <p style="padding-bottom: 16px"> {{ msg }} </p>
-    </div>
+    <transition name="fade">
+      <div v-if="realLoading" class="loading-wrapper">
+        <LoadingIcon />
+        <p style="padding-bottom: 16px"> {{ msg }} </p>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
 
 import LoadingIcon from "./LoadingIcon.vue";
-import {watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 export default {
   name: "LoadingWithContent",
   components: { LoadingIcon },
@@ -20,9 +22,20 @@ export default {
     msg: String
   },
   setup(props) {
+    const realLoading = ref(false);
     watchEffect(() => {
       console.log('loading', props.loading, props.msg);
+      if (realLoading.value) {
+        realLoading.value = props.loading;
+      } else {
+        setTimeout(() => {
+          if (props.loading && !realLoading.value) {
+            realLoading.value = props.loading;
+          }
+        }, 50);
+      }
     });
+    return { realLoading };
   }
 }
 
@@ -47,6 +60,16 @@ export default {
 
   font-size: 14px;
   color: rgba(0, 0, 0, .65);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
 }
 
 </style>

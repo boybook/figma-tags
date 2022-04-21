@@ -167,7 +167,7 @@ export default {
   background: white;
   margin: 0;
   padding: 4px 0;
-  overflow: scroll;
+  overflow: auto;
   border-right: 1px #E0E0E0 solid;
 
   display: flex;

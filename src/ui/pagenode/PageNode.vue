@@ -7,7 +7,7 @@
       @page-settings="openSettings"
   />
   <PageNodeFooter
-      v-if="fileId && !loading" :show-del="node?.saved"
+      v-if="fileId && !loading && provider.type !== 'local'" :show-del="node?.saved"
       @save="toSave"
       @delete="toDelete"
   />
@@ -26,7 +26,7 @@
             v-for="tag in collectTags"
             :tag="tag"
             :removable="true"
-            @remove="tag.check = !tag.check"
+            @remove="removeTag(tag)"
         >
         </FigTag>
       </div>
@@ -39,6 +39,7 @@
             @delete-tag-type="deleteTagType"
             @edit-tag="editTag"
             @delete-tag="deleteTag"
+            @select-tag="selectTag"
             :toggle-page="togglePage"
         />
       </div>
@@ -204,6 +205,9 @@ export default {
           return; // 重复了
         }
         Utils.newTagToTagTree(tagTree.value, tagType, tag);
+        if (provider.type === 'local') {
+          toSave();
+        }
       } else {
         throw "tagTree is undefined";
       }
@@ -227,6 +231,9 @@ export default {
         await provider.updateFullTags(fullTags.value, tagRenames);
         await reloadNode(true, true);
         loading.value = undefined;
+        if (provider.type === 'local') {
+          await toSave();
+        }
       } catch (e) {
         loading.value = t('loading.error');
         console.error(e);
@@ -250,6 +257,9 @@ export default {
         await provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
         loading.value = undefined;
+        if (provider.type === 'local') {
+          await toSave();
+        }
       } catch (e) {
         loading.value = t('loading.error');
         console.error(e);
@@ -285,6 +295,9 @@ export default {
         fullTags.value.delete(tagType);
         await provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
+        if (provider.type === 'local') {
+          await toSave();
+        }
       } catch (e) {
         loading.value = t('loading.error');
         console.error(e);
@@ -310,6 +323,21 @@ export default {
         console.error(e);
         dispatch('notify-err', e);
         exception(e);
+      }
+    }
+
+    const removeTag = (tag: Context.Tag) => {
+      tag.check = false;
+      selectTag('', tag, false);
+    }
+
+    const selectTag = (type: string, tag: Context.Tag, check: boolean) => {
+      if (provider.type === 'local') {
+        if (collectTags.value.length == 0) {
+          toDelete();
+        } else {
+          toSave();
+        }
       }
     }
 
@@ -351,7 +379,9 @@ export default {
           fullTags: JSON.stringify([...fullTags.value]),
           node: JSON.stringify(node.value)
         });
-        dispatch('notify', t('saving.notify', [node.value.title]));
+        if (provider.type !== 'local') {
+          dispatch('notify', t('saving.notify', [node.value.title]));
+        }
       } catch (e) {
         loading.value = t('loading.error');
         console.error(e);
@@ -399,7 +429,7 @@ export default {
 
     return {
       provider, loading, fileId, currentSelection, fullTags, node, tagTree, collectTags, accessModal,
-      reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, toSave, toDelete, openSettings, accessModalIgnore, accessModalSubmit
+      reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, removeTag, selectTag, toSave, toDelete, openSettings, accessModalIgnore, accessModalSubmit
     }
 
   }
@@ -447,7 +477,8 @@ export default {
   align-items: flex-start;
   flex-flow: wrap;
   transition: all 500ms ease;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
   max-height: 110px;
 }
 

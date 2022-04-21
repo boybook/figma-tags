@@ -10,6 +10,6 @@
 	],
 	"menu": [
 		{"name": "Tag", "command": "node"},
-		{"name": "Search", "command": "lookup"}
+		{"name": "Preview", "command": "lookup"}
 	]
 }

@@ -266,7 +266,7 @@ export default {
   background-color: #fff;
   border-radius: 2px;
   padding: 4px 0;
-  overflow: scroll;
+  overflow-y: auto;
   z-index: 999;
 }
 
