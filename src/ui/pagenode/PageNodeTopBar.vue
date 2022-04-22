@@ -87,6 +87,7 @@ export default {
   width: 0;
   text-overflow: ellipsis;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .current-select button {
