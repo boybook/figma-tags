@@ -25,6 +25,11 @@ declare namespace Transfer {
         value: string
     }
 
+    type DocumentPluginDataSetResult = {
+        key: string,
+        suc: boolean
+    }
+
     type CurrentSelection = {
         type: 'PAGE' | 'FRAME',
         id: string,
@@ -68,6 +73,9 @@ declare namespace Transfer {
     }
 
     type ProviderConfig =
+        {
+            type: 'document'
+        } |
         {
             type: 'local'
         } |

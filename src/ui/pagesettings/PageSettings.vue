@@ -26,11 +26,22 @@
       <div class="page-settings-content-entry">
         <h3> {{ $t('settings.provider.title') }} </h3>
         <ToggleRadio
-            :entries="[$t('settings.provider.local.name'), $t('settings.provider.notion.name'), $t('settings.provider.cloud.name')]"
+            :fill="true"
+            :entries="[$t('settings.provider.document.name'), $t('settings.provider.local.name'), $t('settings.provider.notion.name'), $t('settings.provider.cloud.name')]"
             v-model:current="providerCurrent"
         />
-        <!-- Provider.Local -->
         <div class="provider-card" v-if="providerCurrent === 0">
+          <h3> {{ $t('settings.provider.document.title') }} </h3>
+          <p> {{ $t('settings.provider.document.content') }} </p>
+          <div class="page-settings-buttons" style="margin-top: 8px;">
+            <FigButton type="link" @click="localExport" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.local.export_json') }} </FigButton>
+            <a style="display: none" target="_blank" download="tags-export.json" ref="alink"></a>
+            <FigButton type="link" @click="localImport" style="padding: 4px 4px 4px 0"> {{ $t('settings.provider.local.import_json') }} </FigButton>
+            <input type="file" accept="application/json" style="display: none" ref="afile" @change="onLocalImport" >
+          </div>
+        </div>
+        <!-- Provider.Local -->
+        <div class="provider-card" v-if="providerCurrent === 1">
           <h3> {{ $t('settings.provider.local.title') }} </h3>
           <p> {{ $t('settings.provider.local.content') }} </p>
           <div class="page-settings-buttons" style="margin-top: 8px;">
@@ -41,7 +52,7 @@
           </div>
         </div>
         <!-- Provider.Notion -->
-        <div class="provider-card" v-if="providerCurrent === 1">
+        <div class="provider-card" v-if="providerCurrent === 2">
           <h3> {{ $t('settings.provider.notion.name') }} </h3>
           <p style="margin-bottom: 8px"> {{ $t('settings.provider.notion.content') }} </p>
           <p style="margin-bottom: 4px">
@@ -76,7 +87,7 @@
           </tk-select>
         </div>
         <!-- Provider.Cloud -->
-        <div class="provider-card" v-if="providerCurrent === 2">
+        <div class="provider-card" v-if="providerCurrent === 3">
           <h3> {{ $t('settings.provider.cloud.title') }} </h3>
           <p> {{ $t('settings.provider.cloud.content') }} </p>
         </div>
@@ -180,7 +191,7 @@ export default {
     const afile = ref<HTMLInputElement>();
 
     const localExport = async () => {
-      if (props.provider.type === 'local') {
+      if (props.provider.type === 'document' || props.provider.type === 'local') {
         const blobProvider = <DataProviderBlobSave> props.provider;
         const fullTags = await blobProvider.getFullTags(true);
         const fullNodes = await blobProvider.getFullNodes();
@@ -204,7 +215,7 @@ export default {
         const file = afile.value.files[0];
         const reader = new FileReader();
         reader.onload = () => {
-          if (props.provider.type === 'local') {
+          if (props.provider.type === 'document' || props.provider.type === 'local') {
             const blobProvider = <DataProviderBlobSave>props.provider;
             const decode = JSON.parse(<string>reader.result);
             const tags: Storage.FullTags = new Map(decode.tags);
@@ -225,18 +236,24 @@ export default {
     let providerIndex : number;
     console.log("PageSettings", props.provider)
     switch (props.provider?.type) {
-      case 'local':
       default:
+      case 'document':
         providerIndex = 0;
         break;
-      case 'notion':
+      case 'local':
         providerIndex = 1;
         break;
+      case 'notion':
+        providerIndex = 2;
+        break;
     }
-    // TODO 默认值
+    // 默认值
     const providerCurrent = ref(providerIndex);
     const providerConfig : Transfer.ProviderConfig = JSON.parse(props.initData.provider);
     const providerConfigs = ref({
+      document: {
+        type: 'document'
+      },
       local: {
         type: 'local'
       },
@@ -296,11 +313,14 @@ export default {
       try {
         let config;
         switch (providerCurrent.value) {
-          case 0:
           default:
-            config = providerConfigs.value.local;
+          case 0:
+            config = providerConfigs.value.document;
             break;
           case 1:
+            config = providerConfigs.value.local;
+            break;
+          case 2:
             config = providerConfigs.value.notion;
         }
         if (config.type === 'notion' && (!config.database || config.database.length === 0)) {

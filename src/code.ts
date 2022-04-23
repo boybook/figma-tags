@@ -94,8 +94,20 @@ handleEvent('client-storage-set', (data: Transfer.ClientStorageSetRequest) => {
 	});
 });
 
+handleEvent('document-plugin-data-get', (key: string) => {;
+	const result: Transfer.DocumentPluginData = {
+		key: key,
+		value: figma.root.getPluginData(key)
+	}
+	dispatch('document-plugin-data-get', result);
+});
+
 handleEvent('document-plugin-data-set', (data: Transfer.DocumentPluginData) => {
 	figma.root.setPluginData(data.key, data.value);
+	dispatch('document-plugin-data-set', {
+		key: data.key,
+		suc: true
+	});
 });
 
 handleEvent('notify', (msg) => {

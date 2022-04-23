@@ -85,9 +85,14 @@ export const messages = {
             provider: {
                 title: "Data Provider",
                 init_failed: "😵  Data Provider connection failure!",
+                document: {
+                    name: "Document",
+                    title: "Storage in Document",
+                    content: "Stored in Figma files, but data is not communicated between files. Switch to another data source if you want to cross files."
+                },
                 local: {
                     name: "Local",
-                    title: "Congratulations, no configuration required",
+                    title: "Stored in this device",
                     content: "Data is stored locally, but only for personal use. If multiple people collaborate, switch data sources.",
                     export_json: "Export JSON",
                     export_json_fail: "JSON export failed!",
@@ -216,9 +221,14 @@ export const messages = {
             provider: {
                 title: "数据源",
                 init_failed: "😵  似乎连不上数据源呀！",
+                document: {
+                    name: "文档",
+                    title: "储存在文档中",
+                    content: "在Figma的各文件中储存，可多人在同一文件中协作。但是在多个文件之间，数据不互通，如需跨文件，请切换至其他数据源。"
+                },
                 local: {
                     name: "本地",
-                    title: "恭喜，无需配置",
+                    title: "储存在本机",
                     content: "数据保存在本地，但是只能个人本机使用。\n如需多人协作，请切换数据源。",
                     export_json: "导出JSON",
                     export_json_fail: "JSON导出失败！",

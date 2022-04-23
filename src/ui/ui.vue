@@ -72,7 +72,7 @@ export default {
         locale.value = data.language;
         initData.value = data;
         page.value = data.page;
-        if (!initData.value.provider) initData.value.provider = JSON.stringify({ type: 'local' });
+        if (!initData.value.provider) initData.value.provider = JSON.stringify({ type: 'document' });
         const prv: DataProvider = initProvider(JSON.parse(initData.value.provider));
         const prvError = await prv.testError();
         if (!prvError) {
