@@ -195,7 +195,6 @@ function isRootFrame(node: BaseNode): node is FrameNode | ComponentNode | Instan
 }
 
 function getPageRootNode(node: BaseNode): SceneNode {
-	console.log("===========", node.parent);
 	if (node.parent === null) {
 		return <SceneNode> node;
 	}

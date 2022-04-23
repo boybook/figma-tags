@@ -1,6 +1,9 @@
 <template>
   <div class="page-node-init">
     <PageSettingsLanguage class="language" />
+    <div class="settings" @click="togglePage('PageSetting')">
+      <img :src="require('./resource/setting.svg')" alt="settings">
+    </div>
     <img :src="require('./resource/file-input.svg')" alt="file-input">
     <div class="page-node-init-input">
       <FigInput v-model:val="fileUrl" :status="error ? 'error' : ''" :placeholder="$t('file_id.placeholder')" @submit="check" />
@@ -22,7 +25,10 @@ import PageSettingsLanguage from "../pagesettings/PageSettingsLanguage.vue";
 
 export default {
   name: "PageNodeInitFile",
-  components: {PageSettingsLanguage, FigButton, FigInput },
+  props: {
+    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
+  },
+  components: { PageSettingsLanguage, FigButton, FigInput },
   emits: [ 'set-file-id' ],
   setup(_, context) {
     const fileUrl = ref('');
@@ -56,6 +62,22 @@ export default {
   position: absolute;
   top: 8px;
   left: 8px;
+}
+
+.settings {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 7px;
+  margin: 0 !important;
+  border-radius: 2px;
+  user-select: none;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.settings:hover {
+  background-color: #f2f2f2;
 }
 
 p {

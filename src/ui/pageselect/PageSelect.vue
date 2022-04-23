@@ -37,6 +37,7 @@
     <div class="node-token-access" v-if="accessModal">
       <AccessTokenModal :show-ignore="true" @ignore="accessModalIgnore" @submit="accessModalSubmit" />
     </div>
+    <!--  TODO 为了生成预览图，则必须获取本文件的URL  -->
   </div>
 </template>
 

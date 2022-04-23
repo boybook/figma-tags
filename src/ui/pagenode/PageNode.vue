@@ -1,18 +1,23 @@
 <template>
-  <PageNodeInitFile v-if="!fileId" @set-file-id="onSetFileId" />
+  <!-- TODO 在设置、预览时，都可能需要填写文件ID的 -->
+  <PageNodeInitFile
+      v-if="showFileInit"
+      :toggle-page="togglePage"
+      @set-file-id="onSetFileId"
+  />
   <PageNodeTopBar
-      v-if="fileId"
+      v-if="!showFileInit"
       :current="currentSelection"
       @refresh="reloadNode(false, true)"
       @page-settings="openSettings"
   />
   <PageNodeFooter
-      v-if="fileId && !loading && provider.type !== 'local'" :show-del="node?.saved"
+      v-if="!showFileInit && !loading && !needAutoSave" :show-del="node?.saved"
       @save="toSave"
       @delete="toDelete"
   />
   <LoadingWithContent :loading="!!loading" :msg="loading">
-    <div id="ui" v-if="fileId">
+    <div id="ui" v-if="!showFileInit">
       <div class="title">
         <!--
         <a v-tooltip="{ content: node.notion_id ? 'Linked' : 'Unlinked', placement: 'bottom', offset: 4}" :href="node.notion_url" target="_blank">
@@ -91,6 +96,14 @@ export default {
     const fileId = ref(props.initData.fileId);
     const currentSelection = ref<Transfer.CurrentSelection>(props.initData.selection);
 
+    const showFileInit = computed(() => {
+      return provider.type !== 'document' && !fileId.value;
+    });
+
+    const needAutoSave = computed(() => {
+      return provider.type === 'document' || provider.type === 'local';
+    });
+
     const fullTags = ref<Storage.FullTags>();
     const node = ref<Context.Node>();
     const tagTree = ref<Context.TagTree>();
@@ -112,6 +125,9 @@ export default {
         page_title: "PageNode",
         page_path: "/pagenode"
       });
+      if (provider.type === 'document') {
+        reloadNode(false, true);
+      }
     });
 
     watch(loading, (newVal) => {
@@ -119,10 +135,6 @@ export default {
         dispatch('request-selection');
       }
     });
-
-    watchEffect(() => {
-      document.body.style.overflow = (accessModal.value || loading.value) ? 'hidden' : 'auto';
-    })
 
     const reloadNode = async (keepCheck: boolean, reloadTags: boolean) => {
       if (!currentSelection.value) return;
@@ -176,11 +188,21 @@ export default {
       }
     }
 
-    // selection改变时，自动刷新当前已选中的frame
-    watchEffect(() => {
-      if (fileId.value) {
+    watch(currentSelection, () => {
+      // selection改变时，自动刷新当前已选中的frame
+      if (provider.type === 'document' || fileId.value) {
         reloadNode(false, false);
       }
+    });
+
+    watch(fileId, () => {
+      if (fileId.value) {
+        reloadNode(false, true);
+      }
+    })
+
+    watchEffect(() => {
+      document.body.style.overflow = (accessModal.value || loading.value) ? 'hidden' : 'auto';
     });
 
     // flat出所有已选Tag
@@ -205,7 +227,7 @@ export default {
           return; // 重复了
         }
         Utils.newTagToTagTree(tagTree.value, tagType, tag);
-        if (provider.type === 'local') {
+        if (needAutoSave.value) {
           toSave();
         }
       } else {
@@ -231,7 +253,7 @@ export default {
         await provider.updateFullTags(fullTags.value, tagRenames);
         await reloadNode(true, true);
         loading.value = undefined;
-        if (provider.type === 'local') {
+        if (needAutoSave.value) {
           await toSave();
         }
       } catch (e) {
@@ -257,7 +279,7 @@ export default {
         await provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
         loading.value = undefined;
-        if (provider.type === 'local') {
+        if (needAutoSave.value) {
           await toSave();
         }
       } catch (e) {
@@ -295,7 +317,7 @@ export default {
         fullTags.value.delete(tagType);
         await provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
-        if (provider.type === 'local') {
+        if (needAutoSave.value) {
           await toSave();
         }
       } catch (e) {
@@ -332,7 +354,7 @@ export default {
     }
 
     const selectTag = (type: string, tag: Context.Tag, check: boolean) => {
-      if (provider.type === 'local') {
+      if (needAutoSave.value) {
         if (collectTags.value.length == 0) {
           toDelete();
         } else {
@@ -379,7 +401,7 @@ export default {
           fullTags: JSON.stringify([...fullTags.value]),
           node: JSON.stringify(node.value)
         });
-        if (provider.type !== 'local') {
+        if (!needAutoSave.value) {
           dispatch('notify', t('saving.notify', [node.value.title]));
         }
       } catch (e) {
@@ -428,7 +450,7 @@ export default {
     }
 
     return {
-      provider, loading, fileId, currentSelection, fullTags, node, tagTree, collectTags, accessModal,
+      provider, loading, fileId, currentSelection, showFileInit, needAutoSave, fullTags, node, tagTree, collectTags, accessModal,
       reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, removeTag, selectTag, toSave, toDelete, openSettings, accessModalIgnore, accessModalSubmit
     }
 
