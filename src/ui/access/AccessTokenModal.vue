@@ -1,31 +1,31 @@
 <template>
   <div class="access-modal">
-    <h1> {{ $t('access.title') }} </h1>
-    <p style="margin-bottom: 16px"> {{ $t('access.intro') }} </p>
-    <p style="margin: 0 0 8px"> {{ $t('access.step1') }} </p>
+    <h1> {{ $t('access.token.title') }} </h1>
+    <p style="margin-bottom: 16px"> {{ $t('access.token.intro') }} </p>
+    <p style="margin: 0 0 8px"> {{ $t('access.token.step1') }} </p>
     <a class="access-modal-url" href="https://www.figma.com/developers/api?fuid=907796581785540291#access-tokens" target="_blank">
       <img :src="require('../resource/link.svg')" alt="link" style="margin-right: 8px;">
       <span> Figma REST API </span>
     </a>
-    <p style="margin-top: 8px"> {{ $t('access.step2') }} </p>
+    <p style="margin-top: 8px"> {{ $t('access.token.step2') }} </p>
     <div class="access-modal-sample-img">
       <img :src="require('../resource/access-token.png')" alt="access-token" style="width: 100%">
-      <span> {{ $t('access.demo') }} </span>
+      <span> {{ $t('access.token.demo') }} </span>
     </div>
     <FigInput
         size="small"
         v-model:val="input"
-        :placeholder="$t('access.placeholder') "
+        :placeholder="$t('access.token.placeholder') "
         @submit="submit"
         :status="error ? 'error' : undefined"
         @keydown="error = false"
     />
     <p v-if="error" style="color: #f24822">
-      {{ $t('access.error') }}
+      {{ $t('access.token.error') }}
     </p>
     <div class="button-group">
       <FigButton @click="$emit('ignore', callback)"> {{ showIgnore ? $t('button.ignore') : $t('button.cancel') }} </FigButton>
-      <FigButton type="primary" :status="loading ? 'loading' : 'normal'" @click="submit"> {{ $t('button.ok') }} </FigButton>
+      <FigButton type="primary" :status="loading ? 'loading' : 'normal'" @click="submit"> {{ buttonSubmit ? buttonSubmit : $t('button.ok') }} </FigButton>
     </div>
   </div>
 </template>
@@ -43,6 +43,10 @@ export default {
     showIgnore: {
       type: Boolean,
       default: false
+    },
+    buttonSubmit: {
+      type: String,
+      default: undefined
     },
     callback: Function
   },

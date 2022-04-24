@@ -4,6 +4,7 @@
       <PageSelectTypeTag
           :key="tagType + '#' + tag.name + '#' + viewSort?.type + '#' + viewSort?.order"
           :provider="provider"
+          :document-file-id="documentFileId"
           :access-token="accessToken"
           :tag-type="tagType"
           :view-sort="viewSort"
@@ -24,6 +25,7 @@ export default {
   components: { PageSelectTypeTag },
   props: {
     provider: Object as PropType<DataProvider>,
+    documentFileId: String,
     accessToken: String,
     tagType: String,
     viewSort: Object as PropType<Storage.ViewSort>,
@@ -40,7 +42,7 @@ export default {
   order: 1;
   flex-grow: 1;
   margin: 0 0 0 176px;
-  padding: 42px 0 16px 0;
+  padding: 42px 0 64px 0;
   background-color: #EDEDED;
   min-height: 100vh;
 }

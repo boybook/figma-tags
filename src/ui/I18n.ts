@@ -160,7 +160,8 @@ export const messages = {
             save: "保 存",
             cancel: "取 消",
             ignore: "跳 过",
-            ok: "确 定"
+            ok: "确 定",
+            next: "下一步"
         },
         default_tag: {
             type: "设计状态",
@@ -205,7 +206,12 @@ export const messages = {
             sort: "排序",
             empty_title: "这里看起来空空如也",
             empty_intro: "你将在此方便地「跨文件」管理所有内容",
-            empty_button: "从打标签开始"
+            empty_button: "从打标签开始",
+            alert: {
+                token: "部分预览图需要授权 Figma Token 来生成",
+                token_file: "部分预览图需要授权 Figma Token 和 填写文件URL 来生成",
+                button: "前往授权"
+            }
         },
         settings: {
             title: "设置",
@@ -261,14 +267,25 @@ export const messages = {
             report: "反馈"
         },
         access: {
-            title: "授权生成预览图",
-            intro: "为了后续展示预览图，需要授权获取 Figma Token",
-            step1: "第1步：点击打开网页",
-            step2: "第2步：点击如图所示位置，复制生成的 access token 到下方输入框中",
-            placeholder: "请点击网页中如图所示位置，获取token",
-            error: "似乎你输入的token不正确？",
-            demo: "示例图",
-            suc: "✅  Figma Token 已保存"
+            token: {
+                title: "授权生成预览图",
+                intro: "为了后续展示预览图，需要授权获取 Figma Token",
+                step1: "第1步：点击打开网页",
+                step2: "第2步：点击如图所示位置，复制生成的 access token 到下方输入框中",
+                placeholder: "请点击网页中如图所示位置，获取token",
+                error: "似乎你输入的token不正确？",
+                demo: "示例图",
+                suc: "✅  Figma Token 已保存"
+            },
+            file_id: {
+                title: "填写文件URL",
+                intro: "由于插件API限制，需要手动填写该文件URL，这样才能使用FigmaAPI生成预览图 :)",
+                step1: "第1步：在画布上 ⌘ + L 复制 URL",
+                step2: "第2步：填入下方输入框",
+                placeholder: "将文件URL复制在此",
+                error: "似乎你输入的不是 Figma 链接",
+                suc: "✅  文件ID 已保存"
+            }
         }
     }
 }

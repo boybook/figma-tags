@@ -2,6 +2,7 @@
   <div class="node-tag" ref="target">
     <div class="node-tag-title">
       <FigTag :tag="tag" :removable="false"></FigTag>
+      <span class="counter" v-if="!loading" v-bind:class="{ 'counter-zero': count === 0 }"> {{ count }} </span>
     </div>
     <ul>
       <li class="node-tag-loading" v-if="loading">
@@ -12,14 +13,21 @@
         <p>Empty</p>
       </li>
       <li v-for="node in result">
-        <PageSelectTypeTagNode :access-token="accessToken" :node="node" @refresh-cover="refreshCover" @refresh-cover-without-token="$emit('refreshCoverWithoutToken')" />
+        <PageSelectTypeTagNode
+            :provider="provider"
+            :document-file-id="documentFileId"
+            :access-token="accessToken"
+            :node="node"
+            @refresh-cover="refreshCover"
+            @refresh-cover-without-token="$emit('refreshCoverWithoutToken')"
+        />
       </li>
     </ul>
   </div>
 </template>
 
 <script lang="ts">
-import {PropType, ref, watch, watchEffect} from "vue";
+import {computed, PropType, ref, watch, watchEffect} from "vue";
 import DataProvider from "../provider/DataProvider";
 import {useLazyData} from "../hooks/useLazyData";
 import FigTag from "../component/FigTag.vue";
@@ -31,6 +39,7 @@ export default {
   components: {LoadingIcon, PageSelectTypeTagNode, FigTag},
   props: {
     provider: Object as PropType<DataProvider>,
+    documentFileId: String,
     accessToken: String,
     tagType: String,
     viewSort: Object as PropType<Storage.ViewSort>,
@@ -47,13 +56,17 @@ export default {
         () => loading.value = false
     );
 
+    const count = computed(() => {
+      return result.value?.length;
+    });
+
     const refreshCover = (node: Storage.Node, cover: string) => {
       console.log("refreshCover", cover);
       node.cover = cover;
       props.provider.saveNode(node.file_id, node.node_id, node);
     }
 
-    return { loading, target, result, refreshCover }
+    return { loading, target, result, count, refreshCover }
   }
 }
 </script>
@@ -96,7 +109,7 @@ export default {
   padding: 12px 16px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-start;
 }
 
@@ -121,6 +134,30 @@ export default {
   flex-grow: 0;
   display: flex;
   align-items: stretch;
+}
+
+.counter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 6px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgba(0, 0, 0, 0.85);
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  min-width: 8px;
+  font-family: Avenir, -apple-system, serif;
+  margin-left: 8px;
+  user-select: none;
+}
+
+.counter-zero {
+  font-weight: 400 !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+  background: rgba(255, 255, 255, 0.25) !important;
 }
 
 </style>

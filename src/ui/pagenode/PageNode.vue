@@ -125,7 +125,7 @@ export default {
         page_title: "PageNode",
         page_path: "/pagenode"
       });
-      if (provider.type === 'document') {
+      if (provider.type === 'document' || fileId.value) {
         reloadNode(false, true);
       }
     });

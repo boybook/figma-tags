@@ -8,12 +8,14 @@ figma.showUI(__html__, { visible: false });
 
 let uiShowed = false;
 
-//figma.clientStorage.setAsync("tags", undefined).then();
-//figma.clientStorage.setAsync("nodes", undefined).then();
-//figma.clientStorage.setAsync("language", "ch").then();
-//figma.clientStorage.setAsync("provider", undefined).then();
-//figma.clientStorage.setAsync("access-token", undefined).then();
-//figma.root.setPluginData("file-id", "");
+// figma.clientStorage.setAsync("tags", undefined).then();
+// figma.clientStorage.setAsync("nodes", undefined).then();
+// figma.clientStorage.setAsync("language", "ch").then();
+// figma.clientStorage.setAsync("provider", undefined).then();
+// figma.clientStorage.setAsync("access-token", undefined).then();
+// figma.root.setPluginData("file-id", "");
+// figma.root.setPluginData("tags", "");
+// figma.root.setPluginData("nodes", "");
 
 let file = figma.fileKey;
 if (!file) {
@@ -138,6 +140,19 @@ handleEvent('request-selection', () => {
 	console.log("request-selection", figma.currentPage.selection);
 	dispatch("selectionchange", packageCurrentSelection());
 })
+
+handleEvent('select-node', (nodeId: string) => {
+	const node = figma.getNodeById(nodeId);
+	if (node) {
+		figma.currentPage = getPageNode(node);
+		if (node.type !== 'PAGE') {
+			figma.currentPage.selection = [getPageRootNode(node)];
+			figma.viewport.scrollAndZoomIntoView([node]);
+		}
+	} else {
+		figma.notify("Missing node " + nodeId + "?");
+	}
+});
 
 figma.on("selectionchange", () => {
 	// 点击标签的Group，自动选择到对应的内容

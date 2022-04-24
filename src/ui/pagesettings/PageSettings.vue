@@ -9,7 +9,7 @@
         <h3> {{ $t('settings.current_file.title') }} </h3>
         <p style="margin: 0; font-size: 12px; color: rgba(0, 0, 0, 0.45); display: flex; flex-direction: row; align-items: center">
           {{ initData.fileId ? initData.fileId : $t('settings.unset') }}
-          <FigButton type="link" size="small" @click="resetFileId" style="padding: 0 8px;"> {{ $t('settings.current_file.reset') }} </FigButton>
+          <FigButton type="link" size="small" @click="setFileId" style="padding: 0 8px;"> {{ $t('settings.current_file.reset') }} </FigButton>
         </p>
       </div>
       <div class="page-settings-content-entry">
@@ -18,9 +18,12 @@
           {{ initData.accessToken ? initData.accessToken : $t('settings.unset') }}
           <FigButton type="link" size="small" @click="setAccessToken" style="padding: 0; margin-top: 8px;"> {{ $t('settings.access_token.set') }} </FigButton>
         </p>
-        <div class="node-token-access" v-if="accessModal">
-          <AccessTokenModal @ignore="accessModal=false" @submit="accessModalSubmit" />
-        </div>
+        <transition name="modal">
+          <div class="node-token-access" v-if="accessModal || fileIdModal">
+            <AccessTokenModal v-if="accessModal" @ignore="accessModal=false" @submit="accessModalSubmit" />
+            <AccessFileIdModal v-if="fileIdModal" @ignore="fileIdModal=false" @submit="fileIdModalSubmit" />
+          </div>
+        </transition>
       </div>
       <!-- Provider -->
       <div class="page-settings-content-entry">
@@ -130,10 +133,13 @@ import {NotionProvider} from "../provider/NotionProvider";
 import TkSelect from "../component/select/TkSelect.vue";
 import TkSelectItem from "../component/select/TkSelectItem.vue";
 import PageSettingsLanguage from "./PageSettingsLanguage.vue";
+import AccessFileIdModal from "../access/AccessFileIdModal.vue";
 
 export default {
   name: "PageSettings",
-  components: {PageSettingsLanguage, FigInput, ToggleRadio, FigButton, AccessTokenModal, TkSelect, TkSelectItem },
+  components: {
+    AccessFileIdModal,
+    PageSettingsLanguage, FigInput, ToggleRadio, FigButton, AccessTokenModal, TkSelect, TkSelectItem },
   props: {
     initData: Object as PropType<Transfer.InitData>,
     provider: Object as PropType<DataProvider>,
@@ -152,6 +158,8 @@ export default {
 
     const saving = ref(false);
     const accessModal = ref(false);
+    const fileIdModal = ref(false);
+
     const cancel = () => {
       props.togglePage('PageNode');
     }
@@ -170,9 +178,16 @@ export default {
       });
     }
 
-    const resetFileId = () => {
-      props.initData.fileId = undefined;
-      props.togglePage('PageNode');
+    const setFileId = () => {
+      fileIdModal.value = true;
+    }
+    const fileIdModalSubmit = (fileId: string) => {
+      props.initData.fileId = fileId;
+      dispatch('document-plugin-data-set', {
+        key: 'file-id',
+        value: fileId
+      });
+      fileIdModal.value = false;
     }
     const setAccessToken = () => {
       accessModal.value = true;
@@ -183,7 +198,7 @@ export default {
         key: 'access-token',
         data: token
       });
-      dispatch('notify', t('access.suc'));
+      dispatch('notify', t('access.token.suc'));
       accessModal.value = false;
     }
 
@@ -352,8 +367,8 @@ export default {
     }
 
     return {
-      saving, providerCurrent, providerConfigs, providerNotionInputError, alink, afile, accessModal, selectedNotionDatabase, notionDatabases, notionDatabasesQuerying,
-      save, cancel, test, resetFileId, setAccessToken, accessModalSubmit, localExport, localImport, onLocalImport, queryNotionDatabase, valueDisplay
+      saving, providerCurrent, providerConfigs, providerNotionInputError, alink, afile, accessModal, fileIdModal, selectedNotionDatabase, notionDatabases, notionDatabasesQuerying,
+      save, cancel, test, setFileId, fileIdModalSubmit, setAccessToken, accessModalSubmit, localExport, localImport, onLocalImport, queryNotionDatabase, valueDisplay
     }
   }
 }
@@ -522,6 +537,14 @@ export default {
 
 .page-settings-about > *:hover {
   filter: brightness(95%);
+}
+
+.modal-enter-from, .modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active, .modal-leave-active {
+  transition: opacity .2s cubic-bezier(0.5, 0, 0, 1.25);
 }
 
 </style>
