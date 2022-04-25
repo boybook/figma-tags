@@ -41,7 +41,7 @@ export default {
     // 加载时，如果发现cover不是有效url
     onMounted(() => {
       if (!props.node.cover?.startsWith("http")) { // 图片不是有效URL
-        if ((props.provider.type === 'document' && props.documentFileId || (props.provider.type !== 'document' && props.node.file_id))) {
+        if (props.accessToken && (props.provider.type === 'document' && props.documentFileId || (props.provider.type !== 'document' && props.node.file_id))) {
           // 具备重新生成的条件
           tryReloadCover();
         } else {

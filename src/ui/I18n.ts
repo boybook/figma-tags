@@ -71,8 +71,8 @@ export const messages = {
             empty_intro: "You will easily manage everything across files",
             empty_button: "Start Now",
             alert: {
-                token: "Preview images require the Figma Token license to generate.",
-                token_file: "Preview images require the Figma Token license and File URL to generate.",
+                token: "Previews require the Figma Token license to generate.",
+                token_file: "Previews require the Figma Token license and File URL to generate.",
                 button: "License"
             }
         },

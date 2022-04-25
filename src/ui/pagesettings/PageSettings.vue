@@ -126,7 +126,6 @@ import DataProvider from "../provider/DataProvider";
 import { DataProviderBlobSave } from "../provider/DataProviderBlobSave";
 import { downloadJson } from "../hooks/downloadJson";
 import * as Utils from "../utils";
-import {event, pageview} from 'vue-gtag';
 import AccessTokenModal from "../access/AccessTokenModal.vue";
 import initProvider from "../provider/initProvider";
 import {NotionProvider} from "../provider/NotionProvider";
@@ -148,13 +147,6 @@ export default {
   emits: [ 'setProvider' ],
   setup(props, context) {
     const { t, locale } = useI18n();
-
-    onMounted(() => {
-      pageview({
-        page_title: "PageSettings",
-        page_path: "/pageselect"
-      });
-    });
 
     const saving = ref(false);
     const accessModal = ref(false);

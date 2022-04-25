@@ -62,7 +62,6 @@
 import TagTree from "../component/tagtree/TagTree.vue";
 import {computed, onMounted, PropType, ref, watchEffect} from "vue";
 import * as Utils from "../utils";
-import { event, pageview } from 'vue-gtag';
 import DataProvider from "../provider/DataProvider";
 import PageSelectType from "./PageSelectType.vue";
 import PageSelectBar from "./PageSelectBar.vue";
@@ -91,13 +90,6 @@ export default {
 
     const needAccessBoth = computed(() => {
       return props.provider.type === 'document' && !props.initData.fileId;
-    });
-
-    onMounted(() => {
-      pageview({
-        page_title: "PageSelect",
-        page_path: "/pageselect"
-      });
     });
 
     const tagTree = ref<Context.TagTree>();
@@ -153,7 +145,7 @@ export default {
       callback?.();
       alertAccess.value = false;
       // 文档数据源模式，还需要填写文件ID
-      if (needAccessBoth) {
+      if (needAccessBoth.value) {
         fileIdModal.value = true;
       }
     }

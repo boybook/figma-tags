@@ -38,7 +38,6 @@ import { useI18n } from 'vue-i18n';
 import PageSettings from "./pagesettings/PageSettings.vue";
 import initProvider from "./provider/initProvider";
 import LoadingWithContent from "./component/LoadingWithContent.vue";
-import { event } from 'vue-gtag'
 
 export default {
   components: {LoadingWithContent, PageSettings, PageSelect, PageNode },
@@ -72,7 +71,7 @@ export default {
         locale.value = data.language;
         initData.value = data;
         page.value = data.page;
-        if (!initData.value.provider) initData.value.provider = JSON.stringify({ type: 'local' });
+        if (!initData.value.provider) initData.value.provider = JSON.stringify({ type: 'document' });
         const prv: DataProvider = initProvider(JSON.parse(initData.value.provider));
         const prvError = await prv.testError();
         if (!prvError) {
@@ -84,7 +83,6 @@ export default {
           //setProvider(initProvider({ type: 'local' }));
         }
       });
-      event('setup');
     });
 
     watchEffect(() => {

@@ -24,7 +24,7 @@
           Link
         </a>
         -->
-        <FigInput v-if="node" v-model:val="node.title" />
+        <FigInput v-if="node" v-model:val="node.title" @submit="toSave(false)" />
       </div>
       <div class="selected" :class="{ 'selected-empty': !collectTags || collectTags.length === 0 }">
         <FigTag
@@ -59,7 +59,7 @@
 
 import DataProvider from "../provider/DataProvider";
 import { exportCover } from "../provider/CoverProvider";
-import {computed, onMounted, PropType, ref, watch, watchEffect} from "vue";
+import {computed, onMounted, PropType, ref, watch, watchEffect, watchPostEffect} from "vue";
 import { dispatch, handleEvent} from "../uiMessageHandler";
 import * as Utils from "../utils";
 
@@ -73,7 +73,6 @@ import PageNodeFooter from "./PageNodeFooter.vue";
 import LoadingWithContent from "../component/LoadingWithContent.vue";
 import AccessTokenModal from "../access/AccessTokenModal.vue";
 import {useI18n} from "vue-i18n";
-import {event, exception, pageview} from "vue-gtag";
 import {removeCoverCache} from "../hooks/reloadCover";
 
 export default {
@@ -121,10 +120,6 @@ export default {
           console.log("PageNode.selectionchange", "拦截")
         }
       });
-      pageview({
-        page_title: "PageNode",
-        page_path: "/pagenode"
-      });
       if (provider.type === 'document' || fileId.value) {
         reloadNode(false, true);
       }
@@ -135,6 +130,19 @@ export default {
         dispatch('request-selection');
       }
     });
+
+    /*const tryLazySave = (title: string) => {
+      return setTimeout(() => toSave(false), 1000);
+    };
+
+    watchPostEffect(onInvalidate => {
+      const timer = tryLazySave(node.value?.title);
+      onInvalidate(() => {
+        if (timer) {
+          clearTimeout(timer)
+        }
+      })
+    });*/
 
     const reloadNode = async (keepCheck: boolean, reloadTags: boolean) => {
       if (!currentSelection.value) return;
@@ -260,7 +268,6 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
-        exception(e);
       }
     }
 
@@ -286,7 +293,6 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
-        exception(e);
       }
     }
 
@@ -306,7 +312,6 @@ export default {
         loading.value = t('loading.error') + e;
         console.error(e);
         dispatch('notify-err', e);
-        exception(e);
       }
     }
 
@@ -324,7 +329,6 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
-        exception(e);
       }
     }
 
@@ -344,7 +348,6 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
-        exception(e);
       }
     }
 
@@ -408,7 +411,6 @@ export default {
         loading.value = t('loading.error');
         console.error(e);
         dispatch('notify-err', e);
-        exception(e);
       }
     }
 
@@ -427,7 +429,6 @@ export default {
         loading.value = t('loading.error') + e;
         console.error(e);
         dispatch('notify-err', e);
-        exception(e);
       }
     }
 

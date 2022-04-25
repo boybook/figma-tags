@@ -1,13 +1,14 @@
 <template>
   <div class="node-tag" ref="target">
-    <div class="node-tag-title">
-      <FigTag :tag="tag" :removable="false"></FigTag>
+    <div class="node-tag-title" :style="{ paddingBottom: result.length === 0 ? '4px' : '12px' }">
+      <FigTag :tag="tag" :removable="false" />
+      <LoadingIcon width="12" v-if="loading" style="margin-left: 8px; opacity: 0.45;" />
       <span class="counter" v-if="!loading" v-bind:class="{ 'counter-zero': count === 0 }"> {{ count }} </span>
     </div>
-    <ul>
-      <li class="node-tag-loading" v-if="loading">
+    <ul :style="{ maxHeight: result.length > 0 ? '196px' : 0, opacity: result.length > 0 ? 1 : 0, paddingBottom: result.length > 0 ? '8px' : 0 }">
+      <!--<li class="node-tag-loading" v-if="loading">
         <LoadingIcon style="flex: none; order: 0; flex-grow: 0;" />
-      </li>
+      </li>-->
       <li class="node-tag-loading" v-if="!loading && (!result || result.length === 0)">
         <img :src="require('../resource/empty.svg')" alt="empty">
         <p>Empty</p>
@@ -110,7 +111,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .node-tag ul {
@@ -122,6 +123,7 @@ export default {
   padding: 0 0 8px 16px;
   width: calc(100% - 16px);
   overflow-y: hidden;
+  transition: all 500ms ease;
 }
 
 .node-tag li {
@@ -146,7 +148,7 @@ export default {
   font-size: 12px;
   line-height: 18px;
   color: rgba(0, 0, 0, 0.85);
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 16px;
   min-width: 8px;
   font-family: Avenir, -apple-system, serif;
@@ -157,7 +159,7 @@ export default {
 .counter-zero {
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.25) !important;
-  background: rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
 }
 
 </style>
