@@ -69,7 +69,12 @@ export const messages = {
             sort: "Sort",
             empty_title: "Nothing here",
             empty_intro: "You will easily manage everything across files",
-            empty_button: "Start Now"
+            empty_button: "Start Now",
+            alert: {
+                token: "Preview images require the Figma Token license to generate.",
+                token_file: "Preview images require the Figma Token license and File URL to generate.",
+                button: "License"
+            }
         },
         settings: {
             title: "Settings",
@@ -83,12 +88,12 @@ export const messages = {
                 set: "Edit"
             },
             provider: {
-                title: "Data Provider",
-                init_failed: "😵  Data Provider connection failure!",
+                title: "Data Source",
+                init_failed: "😵  Data Source connection failure!",
                 document: {
                     name: "Document",
-                    title: "Storage in Document",
-                    content: "Stored in Figma files, but data is not communicated between files. Switch to another data source if you want to cross files."
+                    title: "Storage in the Document",
+                    content: "Stored in the Figma document, but data is not communicated between files. Switch to another data source if you want to cross files."
                 },
                 local: {
                     name: "Local",
@@ -125,14 +130,25 @@ export const messages = {
             report: "Report"
         },
         access: {
-            title: "License for Figma Token",
-            intro: "Authorization to Figma Access Token is required for generating preview images.",
-            step1: "Step1: Open the URL.",
-            step2: "Step2: Click and paste the Access Token below.",
-            placeholder: "Paste the token here",
-            error: "Maybe the token is incorrect?",
-            demo: "Sample",
-            suc: "✅  Figma Token saved!"
+            token: {
+                title: "License for Figma Token",
+                intro: "Authorization to Figma Access Token is required for generating preview images.",
+                step1: "Step1: Open the URL.",
+                step2: "Step2: Click and paste the Access Token below.",
+                placeholder: "Paste the token here",
+                error: "Maybe the token is incorrect?",
+                demo: "Sample",
+                suc: "✅  Figma Token saved!"
+            },
+            file_id: {
+                title: "Locate the File URL",
+                intro: "Due to plugin API limitations, you need to manually fill in the file URL to locate your design.",
+                step1: "Step1: ⌘ + L to COPY URL",
+                step2: "Step2: Paste the URL below",
+                placeholder: "Paste the URL here",
+                error: "The URL is not a Figma file link",
+                suc: "✅  File ID saved!"
+            }
         }
     },
     ch: {
@@ -196,7 +212,7 @@ export const messages = {
                 confirm: "确认保存 \"{0}\"？"
             },
             delete: {
-                confirm: "确认删除 \"{0}\"?"
+                confirm: "确认删除 \"{0}\"？"
             }
         },
         lookup: {
