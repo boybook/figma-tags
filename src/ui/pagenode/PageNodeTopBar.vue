@@ -1,10 +1,10 @@
 <template>
   <div class="current-select">
-    <div class="current-select-name">
-      <img v-show="current?.type === 'PAGE'" :src="require('./resource/page.svg')" alt="page">
-      <img v-show="current?.type === 'FRAME'" :src="require('./resource/frame.svg')" alt="frame">
-      <p> {{ current ? current.name : '...' }} </p>
-    </div>
+    <Tabs
+        :current="0"
+        :contents="[$t('page.tags'), $t('page.preview')]"
+        @toggle="tabToggle"
+    />
     <button @click="$emit('refresh')" class="current-select-icon">
       <img :src="require('./resource/refresh.svg')" alt="refresh">
     </button>
@@ -17,15 +17,24 @@
 <script lang="ts">
 
 import { PropType } from "vue";
+import Tabs from "../component/Tabs.vue";
 
 export default {
   name: "PageNodeTopBar",
+  components: { Tabs },
   props: {
+    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
     current: Object as PropType<Transfer.CurrentSelection>,
   },
   emits: [ 'refresh', 'page-settings'],
-  setup() {
-
+  setup(props) {
+    const tabToggle = (index: number, name: string) => {
+      console.log("PageNodeTopBar.tabToggle", index, name);
+      if (index === 1) {
+        props.togglePage('PageSelect');
+      }
+    }
+    return { tabToggle }
   }
 }
 
@@ -45,10 +54,10 @@ export default {
   align-items: center;
   padding: 0;
 
-  background: rgba(235, 235, 235, 0.9);
+  background: #f8f8f8e0;
   backdrop-filter: blur(16px);
 
-  border-bottom: 1px #E0E0E0 solid;
+  box-shadow: inset 0 -1px 0 #eee;
 }
 
 .current-select div {
@@ -56,38 +65,6 @@ export default {
   order: 0;
   flex-grow: 1;
   margin: 0 0;
-}
-
-.current-select .current-select-name {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px 4px 8px 12px;
-  width: 0;
-
-  flex-grow: 1;
-
-  font-size: 12px;
-  line-height: 17px;
-}
-
-.current-select .current-select-name img {
-  flex: none;
-  order: 0;
-  flex-grow: 0;
-  margin: 0 4px 0 0;
-}
-
-.current-select .current-select-name p {
-  flex: none;
-  order: 1;
-  flex-grow: 1;
-  margin: 0;
-  user-select: none;
-  width: 0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 .current-select button {

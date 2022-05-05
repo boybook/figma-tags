@@ -8,8 +8,7 @@
 	"relaunchButtons": [
 		{"command": "node", "name": "Figma Tags"}
 	],
-	"menu": [
-		{"name": "Tag", "command": "node"},
-		{"name": "Preview", "command": "lookup"}
+	"permissions": [
+		"currentuser"
 	]
 }

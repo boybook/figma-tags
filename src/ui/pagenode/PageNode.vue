@@ -7,6 +7,7 @@
   />
   <PageNodeTopBar
       v-if="!showFileInit"
+      :toggle-page="togglePage"
       :current="currentSelection"
       @refresh="reloadNode(false, true)"
       @page-settings="openSettings"
@@ -19,12 +20,13 @@
   <LoadingWithContent :loading="!!loading" :msg="loading">
     <div id="ui" v-if="!showFileInit">
       <div class="title">
-        <!--
-        <a v-tooltip="{ content: node.notion_id ? 'Linked' : 'Unlinked', placement: 'bottom', offset: 4}" :href="node.notion_url" target="_blank">
-          Link
-        </a>
-        -->
-        <FigInput v-if="node" v-model:val="node.title" @submit="toSave(false)" />
+        <ToggleRadio
+            :current="initData.nodeType === 'document' ? 0 : 1"
+            @update:current="(val) => initData.nodeType = val === 0 ? 'document' : 'frame'"
+            fill="min"
+            :entries="[{icon: require('./resource/page.svg'), tooltip: $t('type.document')}, {icon: require('./resource/frame.svg'), tooltip: $t('type.frame')}]"
+        />
+        <FigInput style="flex-grow: 1; margin-left: 8px;" v-if="node" v-model:val="node.title" @submit="toSave(false)" />
       </div>
       <div class="selected" :class="{ 'selected-empty': !collectTags || collectTags.length === 0 }">
         <FigTag
@@ -74,13 +76,22 @@ import LoadingWithContent from "../component/LoadingWithContent.vue";
 import AccessTokenModal from "../access/AccessTokenModal.vue";
 import {useI18n} from "vue-i18n";
 import {removeCoverCache} from "../hooks/reloadCover";
+import ToggleRadio from "../component/ToggleRadio.vue";
 
 export default {
   name: "PageNode",
   components: {
+    ToggleRadio,
     AccessTokenModal,
     LoadingWithContent,
-    PageNodeFooter, TagTree, PageNodeInitFile, FigButton, FigInput, FigTag, PageNodeTopBar },
+    PageNodeFooter,
+    TagTree,
+    PageNodeInitFile,
+    FigButton,
+    FigInput,
+    FigTag,
+    PageNodeTopBar
+  },
   props: {
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
     provider: Object as PropType<DataProvider>,
@@ -131,6 +142,23 @@ export default {
       }
     });
 
+    watch(() => node.value?.title, (newVal) => {
+      if (newVal) {
+        dispatch('node-rename', {
+          nodeId: node.value.node_id,
+          name: newVal
+        });
+      }
+    });
+
+    watch(() => props.initData.nodeType, (newVal, oldVal) => {
+      if (newVal != oldVal) {
+        dispatch('toggle-node-type', newVal);
+        dispatch('notify', t("type." + newVal + "_notify"));
+        //reloadNode(true, true);
+      }
+    });
+
     /*const tryLazySave = (title: string) => {
       return setTimeout(() => toSave(false), 1000);
     };
@@ -151,6 +179,7 @@ export default {
         accessModal.value = false;
         loading.value = t('loading.node');
         fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags(reloadTags)])));
+        console.log("PageNode.reloadNode.fullTags", fullTags.value);
         // 如果没有取到，那么会返回默认的tags
         if (fullTags.value.size === 0) {
           const defaultName = t('default_tag.type');
@@ -482,11 +511,6 @@ export default {
   padding: 0;
 }
 
-.title > * {
-  flex: none;
-  flex-grow: 1;
-}
-
 .tree {
   padding-top: 12px;
   border-top: solid #e0e0e0 1px;
@@ -540,6 +564,26 @@ export default {
 .node-token-access > * {
   flex: none;
   align-self: stretch;
+}
+
+.current-select-name {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px;
+  font-size: 12px;
+  line-height: 17px;
+  flex-grow: 0;
+  margin-right: 4px;
+  background-color: #fafafa;
+  border-radius: 2px;
+}
+
+.current-select-name img {
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin: 0;
 }
 
 </style>

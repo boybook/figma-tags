@@ -29,7 +29,7 @@
       <div class="page-settings-content-entry">
         <h3> {{ $t('settings.provider.title') }} </h3>
         <ToggleRadio
-            :fill="true"
+            fill="fill"
             :entries="[$t('settings.provider.document.name'), $t('settings.provider.local.name'), $t('settings.provider.notion.name'), $t('settings.provider.cloud.name')]"
             v-model:current="providerCurrent"
         />
@@ -92,7 +92,15 @@
         <!-- Provider.Cloud -->
         <div class="provider-card" v-if="providerCurrent === 3">
           <h3> {{ $t('settings.provider.cloud.title') }} </h3>
-          <p> {{ $t('settings.provider.cloud.content') }} </p>
+          <p style="margin-bottom: 8px"> {{ $t('settings.provider.cloud.content') }} </p>
+          <div v-if="!providerConfigs.cloud.uuid" style="display: flex; align-self: stretch; align-items: center; justify-content: center; height: 26px; background-color: #fff; border-radius: 2px;">
+            <LoadingIcon width="14" />
+          </div>
+          <FigInput
+              v-if="providerConfigs.cloud.uuid"
+              v-model:val="providerConfigs.cloud.uuid"
+              size="small"
+          />
         </div>
       </div>
       <div class="page-settings-about">
@@ -133,12 +141,13 @@ import TkSelect from "../component/select/TkSelect.vue";
 import TkSelectItem from "../component/select/TkSelectItem.vue";
 import PageSettingsLanguage from "./PageSettingsLanguage.vue";
 import AccessFileIdModal from "../access/AccessFileIdModal.vue";
+import LoadingIcon from "../component/LoadingIcon.vue";
 
 export default {
   name: "PageSettings",
   components: {
-    AccessFileIdModal,
-    PageSettingsLanguage, FigInput, ToggleRadio, FigButton, AccessTokenModal, TkSelect, TkSelectItem },
+    AccessFileIdModal, PageSettingsLanguage, FigInput, ToggleRadio, FigButton, AccessTokenModal, TkSelect, TkSelectItem, LoadingIcon
+  },
   props: {
     initData: Object as PropType<Transfer.InitData>,
     provider: Object as PropType<DataProvider>,
@@ -269,7 +278,13 @@ export default {
         token: providerConfig.type === 'notion' ? providerConfig.token : '',
         database: providerConfig.type === 'notion' ? providerConfig.database : '',
       },
+      cloud: {
+        type: 'cloud',
+        uuid: providerConfig.type === 'cloud' ? providerConfig.uuid : undefined,
+      }
     });
+
+    // Notion
     const providerNotionInputError = ref(false);
 
     const notionDatabases = ref<{name: any, databaseId: string}[]>([]);
@@ -314,6 +329,22 @@ export default {
       return notionDatabases.value.find(db => db.databaseId === value)?.name;
     }
 
+    // Cloud
+    watch(providerCurrent,  async (newVal) => {
+      if (newVal === 3 && providerConfigs.value.cloud.uuid === undefined) {
+        const re = await fetch("https://figma-tags-figma-tags-vnviuyqxwp.cn-hangzhou.fcapp.run/user/def_uuid/" + props.initData.userId);
+        if (re.ok) {
+          const result = await re.json();
+          console.log("PageSettings.Cloud", result);
+          providerConfigs.value.cloud.uuid = result.result.uuid;
+        } else {
+          dispatch('notify-err', 'user/def_uuid ' + re.statusText);
+        }
+      }
+    });
+
+    // save
+
     const save = async () => {
       saving.value = true;
       console.log("PageSettings.save", providerCurrent.value, providerConfigs.value);
@@ -329,9 +360,17 @@ export default {
             break;
           case 2:
             config = providerConfigs.value.notion;
+            break;
+          case 3:
+            config = providerConfigs.value.cloud;
+            break;
         }
         if (config.type === 'notion' && (!config.database || config.database.length === 0)) {
           dispatch('notify-err', t('settings.provider.notion.database_empty'));
+          return;
+        }
+        if (config.type === 'cloud' && (!config.uuid || config.uuid.length === 0)) {
+          dispatch('notify-err', t('settings.provider.cloud.uuid_empty'));
           return;
         }
         const prv : DataProvider = initProvider(config);

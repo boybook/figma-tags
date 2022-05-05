@@ -54,6 +54,7 @@ export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGr
  * @returns `Context.TagTree` Tags data for UI
  */
 export function storageTags2ContextTagTree(storageTags: Storage.NodeTags, fullTags: Storage.FullTags) : Context.TagTree {
+    console.log("storageTags2ContextTagTree", fullTags);
     const tagTree: Context.TagTree = [];
     for (let typeName of fullTags.keys()) {
         const entry: Context.TagType = {
@@ -130,7 +131,7 @@ export function genTag(name: string, color: Transfer.TagColor) : Storage.Tag {
 }
 
 export function figmaURL(fileId: string, nodeId: string) : string {
-    return "https://www.figma.com/file/" + fileId + "/?node-id=" + encodeURIComponent(nodeId);
+    return "https://www.figma.com/file/" + fileId + (nodeId ? ("/?node-id=" + encodeURIComponent(nodeId)) : "");
 }
 
 export const tagColors = {

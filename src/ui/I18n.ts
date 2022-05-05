@@ -1,5 +1,15 @@
 export const messages = {
     en: {
+        page: {
+            tags: "Tags",
+            preview: "Preview"
+        },
+        type: {
+            document: "File",
+            document_notify: "📖  Toggled to 'File', Tagging to the whole file.",
+            frame: "Frame",
+            frame_notify: "🏷  Toggled to 'Frame', please select a frame to tag it."
+        },
         file_id: {
             placeholder: "Start with the file URL",
             help: "⌘ + L to COPY",
@@ -152,6 +162,16 @@ export const messages = {
         }
     },
     ch: {
+        page: {
+            tags: "打标签",
+            preview: "预览整理"
+        },
+        type: {
+            document: "文件",
+            document_notify: "📖  已切换至「文件」，将给整个文件打标签",
+            frame: "Frame",
+            frame_notify: "🏷  已切换至「Frame」，请选中Frame来打标签"
+        },
         file_id: {
             placeholder: "从录入文件 URL 开始",
             help: "在画布上 ⌘ + L 复制 URL",
@@ -260,8 +280,9 @@ export const messages = {
                 },
                 cloud: {
                     name: "云储存",
-                    title: "暂未提供",
-                    content: "支持完整功能的云储存，只需登录，即可跨Figma账号互通标签。"
+                    title: "云储存",
+                    content: "支持完整功能的云储存。让别人输入以下UUID即可协作。",
+                    uuid_empty: "请先输入UUID"
                 },
                 oss: {
                     name: "自定义OSS"

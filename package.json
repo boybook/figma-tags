@@ -14,6 +14,7 @@
 		"figma-plugin-ds": "^0.1.8",
 		"tiny-emitter": "^2.1.0",
 		"vue-i18n": "^9.2.0-beta.34",
+		"vue3-popper": "^1.4.2",
 		"vuedraggable": "^4.1.0"
 	},
 	"devDependencies": {

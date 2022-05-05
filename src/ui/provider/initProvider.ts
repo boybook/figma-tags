@@ -3,6 +3,7 @@ import { DataProviderBlobSave } from "./DataProviderBlobSave";
 import * as BlobLocalProvider from "./blob/BlobLocalProvider";
 import * as BlobDocumentProvider from "./blob/BlobDocumentProvider";
 import {NotionProvider} from "./NotionProvider";
+import {CloudProvider} from "./CloudProvider";
 
 export default (config: Transfer.ProviderConfig): DataProvider => {
     switch (config?.type) {
@@ -19,6 +20,9 @@ export default (config: Transfer.ProviderConfig): DataProvider => {
         }
         case "notion": {
             return new NotionProvider(config.token, config.database);
+        }
+        case "cloud": {
+            return new CloudProvider(config.uuid)
         }
     }
 }

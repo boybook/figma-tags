@@ -3,6 +3,7 @@ import SelectionChange = Transfer.CurrentSelection;
 import { interval, markNode, unmarkNode } from "./codeCanvasTag";
 import WindowResize = Transfer.WindowResize;
 import PageNode from "./ui/pagenode/PageNode.vue";
+import NodeRename = Transfer.NodeRename;
 
 figma.showUI(__html__, { visible: false });
 
@@ -22,12 +23,15 @@ if (!file) {
 	file = figma.root.getPluginData('file-id');
 }
 
-const storageInit = async () : Promise<[string, string, string]> => {
+let mNodeType: string;
+
+const storageInit = async () : Promise<[string, string, string, string]> => {
 	return await Promise.all(
 		[
 			figma.clientStorage.getAsync("language"),
 			figma.clientStorage.getAsync("access-token"),
 			figma.clientStorage.getAsync("provider"),
+			figma.clientStorage.getAsync("node-type"),
 		]
 	);
 }
@@ -35,12 +39,15 @@ const storageInit = async () : Promise<[string, string, string]> => {
 switch (figma.command) {
 	case 'lookup': {
 		(async() => {
-			const [language, accessToken, provider] = await storageInit();
+			const [language, accessToken, provider, nodeType] = await storageInit();
+			mNodeType = provider === 'document' ? 'frame' : (nodeType ? nodeType : 'frame');
 			checkSelectCanvasTag();
 			dispatch("init", <Transfer.InitData> {
 				language: language ? language : "en",
 				accessToken: accessToken,
+				userId: figma.currentUser.id,
 				provider: provider,
+				nodeType: mNodeType,
 				page: 'PageSelect',
 				fileId: file,
 				selection: packageCurrentSelection()
@@ -51,12 +58,15 @@ switch (figma.command) {
 	case 'node':
 	default: {
 		(async() => {
-			const [language, accessToken, provider] = await storageInit();
+			const [language, accessToken, provider, nodeType] = await storageInit();
+			mNodeType = provider === 'document' ? 'frame' : (nodeType ? nodeType : 'frame');
 			checkSelectCanvasTag();
 			dispatch("init", <Transfer.InitData> {
 				language: language ? language : "en",
 				accessToken: accessToken,
+				userId: figma.currentUser.id,
 				provider: provider,
+				nodeType: mNodeType,
 				page: 'PageNode',
 				fileId: file,
 				selection: packageCurrentSelection()
@@ -112,19 +122,23 @@ handleEvent('document-plugin-data-set', (data: Transfer.DocumentPluginData) => {
 	});
 });
 
+let lastNotify: NotificationHandler;
+
 handleEvent('notify', (msg) => {
+	lastNotify?.cancel();
 	if (typeof msg === 'string') {
-		figma.notify(msg);
+		lastNotify = figma.notify(msg);
 	} else {
-		figma.notify(JSON.stringify(msg));
+		lastNotify = figma.notify(JSON.stringify(msg));
 	}
 });
 
 handleEvent('notify-err', (msg) => {
+	lastNotify?.cancel();
 	if (typeof msg === 'string') {
-		figma.notify(msg, { error: true });
+		lastNotify = figma.notify(msg, { error: true });
 	} else {
-		figma.notify(JSON.stringify(msg), { error: true });
+		lastNotify = figma.notify(JSON.stringify(msg), { error: true });
 	}
 });
 
@@ -154,14 +168,32 @@ handleEvent('select-node', (nodeId: string) => {
 	}
 });
 
+handleEvent('node-rename', (data: NodeRename) => {
+	const node = figma.getNodeById(data.nodeId);
+	if (node && data.name) {
+		node.name = data.name;
+	}
+});
+
+handleEvent('toggle-node-type', (type: 'document' | 'frame') => {
+	figma.clientStorage.setAsync("node-type", type).then(() => {
+		mNodeType = type;
+		if (type === 'document') {
+			figma.viewport.scrollAndZoomIntoView(figma.root.children[0].children);
+		}
+		dispatch("selectionchange", packageCurrentSelection());
+	});
+});
+
 figma.on("selectionchange", () => {
+	if (mNodeType === 'document') return;
 	// 点击标签的Group，自动选择到对应的内容
 	checkSelectCanvasTag();
 	dispatch("selectionchange", packageCurrentSelection());
 });
 
 figma.on("currentpagechange", () => {
-	console.log("currentpagechange", figma.currentPage.selection);
+	if (mNodeType === 'document') return;
 	dispatch("selectionchange", packageCurrentSelection());
 });
 
@@ -184,22 +216,33 @@ function checkSelectCanvasTag() {
 }
 
 function packageCurrentSelection() : SelectionChange {
-	try {
-		const node = figma.currentPage.selection.length > 0 ? getPageRootNode(figma.currentPage.selection[0]) : figma.currentPage;
-		const width = isEmbedNodeLike(node) ? node.width : undefined;
-		console.log("width", width)
+	console.log("packageCurrentSelection.mNodeType", mNodeType);
+	if (mNodeType === 'frame') {
+		try {
+			const node = figma.currentPage.selection.length > 0 ? getPageRootNode(figma.currentPage.selection[0]) : figma.currentPage;
+			const width = isEmbedNodeLike(node) ? node.width : undefined;
+			console.log("width", width)
+			return {
+				type: node.type === 'PAGE' ? 'PAGE' : 'FRAME',
+				id: node.id,
+				name: node.name,
+				width: width
+			};
+		} catch (e) {
+			console.log('packageCurrentSelection', e);
+			return {
+				type: 'PAGE',
+				id: figma.currentPage.id,
+				name: figma.currentPage.name,
+				width: -1
+			}
+		}
+	} else if (mNodeType === 'document') {
+		const document = figma.root;
 		return {
-			type: node.type === 'PAGE' ? 'PAGE' : 'FRAME',
-			id: node.id,
-			name: node.name,
-			width: width
-		};
-	} catch (e) {
-		console.log('packageCurrentSelection', e);
-		return {
-			type: 'PAGE',
-			id: figma.currentPage.id,
-			name: figma.currentPage.name,
+			type: 'DOCUMENT',
+			id: undefined,
+			name: document.name,
 			width: -1
 		}
 	}

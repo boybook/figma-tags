@@ -7,11 +7,19 @@
       <FigButton type="primary" @click="togglePage('PageNode')"> {{ $t('lookup.empty_button') }} </FigButton>
     </div>
     <div class="page-select-wrapper-tree" v-if="tagTree?.length > 0">
-      <div class="back-button" @click="togglePage('PageNode')">
-        <img :src="require('../resource/back.svg')" alt="back">
-        <span style="margin-left: 4px"> {{ backVisible ? $t('lookup.back') : $t('lookup.to_tags') }} </span>
+      <div class="page-select-wrapper-tree-tabs">
+        <Tabs
+            :current="1"
+            :contents="[$t('page.tags'), $t('page.preview')]"
+            @toggle="tabToggle"
+        />
       </div>
-      <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" />
+
+<!--      <div class="back-button" @click="togglePage('PageNode')">-->
+<!--        <img :src="require('../resource/back.svg')" alt="back">-->
+<!--        <span style="margin-left: 4px"> {{ backVisible ? $t('lookup.back') : $t('lookup.to_tags') }} </span>-->
+<!--      </div>-->
+      <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" style="padding-top: 4px" />
     </div>
     <div v-if="tagTree?.length > 0" v-for="type in tagTree">
       <PageSelectBar
@@ -69,10 +77,11 @@ import FigButton from "../component/FigButton.vue";
 import AccessTokenModal from "../access/AccessTokenModal.vue";
 import AccessFileIdModal from "../access/AccessFileIdModal.vue";
 import {dispatch} from "../uiMessageHandler";
+import Tabs from "../component/Tabs.vue";
 
 export default {
   name: "PageSelect",
-  components: { FigButton, PageSelectBar, PageSelectType, TagTree, AccessTokenModal, AccessFileIdModal },
+  components: {Tabs, FigButton, PageSelectBar, PageSelectType, TagTree, AccessTokenModal, AccessFileIdModal },
   props: {
     initData: Object as PropType<Transfer.InitData>,
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
@@ -160,7 +169,13 @@ export default {
       alertAccess.value = false;
     }
 
-    return { tagTree, currentType, collectTags, alertAccess, accessModal, fileIdModal, needAccessBoth, selectTag, changeSort, accessModalIgnore, accessModalSubmit, fileIdModalSubmit }
+    const tabToggle = (index: number) => {
+      if (index === 0) {
+        props.togglePage('PageNode');
+      }
+    }
+
+    return { tagTree, currentType, collectTags, alertAccess, accessModal, fileIdModal, needAccessBoth, selectTag, changeSort, accessModalIgnore, accessModalSubmit, fileIdModalSubmit, tabToggle }
   }
 }
 
@@ -197,7 +212,7 @@ export default {
   bottom: 0;
   background: white;
   margin: 0;
-  padding: 4px 0;
+  padding: 0 0 4px 0;
   overflow: auto;
   border-right: 1px #E0E0E0 solid;
 
@@ -296,6 +311,12 @@ export default {
 
 .modal-enter-active, .modal-leave-active {
   transition: opacity .2s cubic-bezier(0.5, 0, 0, 1.25);
+}
+
+.page-select-wrapper-tree-tabs {
+  align-self: stretch;
+  background-color: #f8f8f8e0;
+  box-shadow: inset 0 -1px 0 #eee;
 }
 
 </style>

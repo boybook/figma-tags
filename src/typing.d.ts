@@ -31,7 +31,7 @@ declare namespace Transfer {
     }
 
     type CurrentSelection = {
-        type: 'PAGE' | 'FRAME',
+        type: 'PAGE' | 'FRAME' | 'DOCUMENT',
         id: string,
         name: string,
         width: number
@@ -42,7 +42,9 @@ declare namespace Transfer {
     type InitData = {
         language: string,
         accessToken?: string,
-        provider: string
+        userId: string
+        provider: string,
+        nodeType: 'document' | 'frame',
         page: Page,
         fileId?: string,
         selection: CurrentSelection,
@@ -83,8 +85,16 @@ declare namespace Transfer {
             type: 'notion',
             token: string,
             database: string
+        } |
+        {
+            type: 'cloud',
+            uuid: string
         }
 
+    type NodeRename = {
+        nodeId: string,
+        name: string
+    }
 }
 
 // 定义Tag、Node相关的数据储存的数据结构

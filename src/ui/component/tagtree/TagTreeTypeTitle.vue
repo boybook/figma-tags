@@ -22,9 +22,11 @@
       <div v-if="extraLookup" class="tree-extra-operation" @click="$emit('extraLookup')" @click.stop>
         <img :src="require('../../resource/lookup.svg')" alt="lookup">
       </div>
-      <div v-if="extraAdd" class="tree-extra-operation" @click="$emit('extraAdd')" @click.stop>
-        <img :src="require('../../resource/add.svg')" alt="add">
-      </div>
+      <popper :hover="true" :arrow="true" offsetDistance="0" :disableClickAway="true" :content="$t('tag.add.button')">
+        <div v-if="extraAdd" class="tree-extra-operation" @click="$emit('extraAdd')" @click.stop>
+          <img :src="require('../../resource/add.svg')" alt="add">
+        </div>
+      </popper>
     </div>
   </div>
 </template>

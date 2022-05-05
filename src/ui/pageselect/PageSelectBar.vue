@@ -95,7 +95,7 @@ export default {
 .page-select-bar-title > p {
   /* Inside auto layout */
   margin: 0;
-  padding: 8px 16px;
+  padding: 5px 16px;
   font-weight: 500;
   font-size: 14px;
   line-height: 24px;

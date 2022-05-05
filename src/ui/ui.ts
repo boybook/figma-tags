@@ -3,6 +3,8 @@ import { createI18n } from 'vue-i18n';
 //@ts-ignore
 import App from './ui.vue';
 import { messages } from "./I18n";
+import Popper from "vue3-popper";
+import './popper.css';
 
 const i18n = createI18n({
     legacy: false,
@@ -12,6 +14,8 @@ const i18n = createI18n({
 })
 
 const app = createApp(App);
+
+app.component("Popper", Popper);
 
 // 注册一个全局自定义指令 `v-focus`
 app.directive('focus', {
