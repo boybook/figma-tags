@@ -262,6 +262,9 @@ export default {
       case 'notion':
         providerIndex = 2;
         break;
+      case 'cloud':
+        providerIndex = 3;
+        break;
     }
     // 默认值
     const providerCurrent = ref(providerIndex);

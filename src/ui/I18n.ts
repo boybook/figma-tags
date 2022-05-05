@@ -118,7 +118,8 @@ export const messages = {
                 cloud: {
                     name: "Cloud",
                     title: "Coming soon!",
-                    content: "Data hosting services will be provided in the future, and you will be able to teamwork across Figma accounts."
+                    content: "Data hosting services with full features, and you will be able to teamwork across Figma accounts through UUID.",
+                    uuid_empty: "Enter the UUID first"
                 },
                 oss: {
                     name: "Custom OSS"
@@ -281,7 +282,7 @@ export const messages = {
                 cloud: {
                     name: "云储存",
                     title: "云储存",
-                    content: "支持完整功能的云储存。让别人输入以下UUID即可协作。",
+                    content: "支持完整功能的云储存。如需协作，可让他人填入该UUID。",
                     uuid_empty: "请先输入UUID"
                 },
                 oss: {
