@@ -5,7 +5,8 @@ import { storageGet, storageSet } from "./blob/BlobLocalProvider";
 
 export class NotionProvider implements DataProvider {
 
-    type: string = 'notion';
+    type = 'notion';
+    autoSave = false;
 
     private readonly token: string;
     private readonly notion : Client;

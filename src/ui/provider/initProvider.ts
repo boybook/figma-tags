@@ -18,11 +18,11 @@ export default (config: Transfer.ProviderConfig): DataProvider => {
             provider.type = 'local';
             return provider;
         }
+        case "cloud": {
+            return new CloudProvider(config.uuid);
+        }
         case "notion": {
             return new NotionProvider(config.token, config.database);
-        }
-        case "cloud": {
-            return new CloudProvider(config.uuid)
         }
     }
 }

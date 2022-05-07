@@ -317,7 +317,7 @@ export const messages = {
             },
             file_id: {
                 title: "填写文件URL",
-                intro: "由于插件API限制，需要手动填写该文件URL，这样才能使用FigmaAPI生成预览图 :)",
+                intro: "由于插件API限制，需要手动填写该文件URL，这样才能跨文件定位到你的设计 :)",
                 step1: "第1步：在画布上 ⌘ + L 复制 URL",
                 step2: "第2步：填入下方输入框",
                 placeholder: "将文件URL复制在此",

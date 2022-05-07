@@ -1,26 +1,27 @@
 <template>
   <!-- TODO 在设置、预览时，都可能需要填写文件ID的 -->
-  <PageNodeInitFile
-      v-if="showFileInit"
-      :toggle-page="togglePage"
-      @set-file-id="onSetFileId"
-  />
+<!--  <PageNodeInitFile-->
+<!--      v-if="showFileInit"-->
+<!--      :toggle-page="togglePage"-->
+<!--      @set-file-id="onSetFileId"-->
+<!--  />-->
   <PageNodeTopBar
-      v-if="!showFileInit"
       :toggle-page="togglePage"
       :current="currentSelection"
       @refresh="reloadNode(false, true)"
       @page-settings="openSettings"
   />
   <PageNodeFooter
-      v-if="!showFileInit && !loading && !needAutoSave" :show-del="node?.saved"
+      v-if="!loading && !needAutoSave" :show-del="node?.saved"
       @save="toSave"
       @delete="toDelete"
   />
   <LoadingWithContent :loading="!!loading" :msg="loading">
-    <div id="ui" v-if="!showFileInit">
+    <div id="ui">
       <div class="title">
         <ToggleRadio
+            v-if="provider.type !== 'document'"
+            :key="initData.nodeType"
             :current="initData.nodeType === 'document' ? 0 : 1"
             @update:current="(val) => initData.nodeType = val === 0 ? 'document' : 'frame'"
             fill="min"
@@ -52,9 +53,12 @@
       </div>
     </div>
   </LoadingWithContent>
-  <div class="node-token-access" v-if="accessModal">
-    <AccessTokenModal :show-ignore="true" :callback="() => toSave(true)" @ignore="accessModalIgnore" @submit="accessModalSubmit" />
-  </div>
+  <transition name="modal">
+    <div class="node-token-access" v-if="accessModal || fileIdModal">
+      <AccessFileIdModal v-if="fileIdModal" @ignore="fileIdModal=false" :button-submit="requestAccessToken ? $t('button.next') : undefined" @submit="fileIdModalSubmit" />
+      <AccessTokenModal v-if="accessModal" :show-ignore="true" :callback="() => toSave(true)" @ignore="accessModalIgnore" @submit="accessModalSubmit" />
+    </div>
+  </transition>
 </template>
 
 <script lang="ts">
@@ -77,10 +81,12 @@ import AccessTokenModal from "../access/AccessTokenModal.vue";
 import {useI18n} from "vue-i18n";
 import {removeCoverCache} from "../hooks/reloadCover";
 import ToggleRadio from "../component/ToggleRadio.vue";
+import AccessFileIdModal from "../access/AccessFileIdModal.vue";
 
 export default {
   name: "PageNode",
   components: {
+    AccessFileIdModal,
     ToggleRadio,
     AccessTokenModal,
     LoadingWithContent,
@@ -111,7 +117,7 @@ export default {
     });
 
     const needAutoSave = computed(() => {
-      return provider.type === 'document' || provider.type === 'local';
+      return provider.autoSave;
     });
 
     const fullTags = ref<Storage.FullTags>();
@@ -119,6 +125,7 @@ export default {
     const tagTree = ref<Context.TagTree>();
 
     const accessModal = ref(false);
+    const fileIdModal = ref(false);
 
     // 监听从插件传来的 selectionchange
     onMounted(() => {
@@ -131,9 +138,7 @@ export default {
           console.log("PageNode.selectionchange", "拦截")
         }
       });
-      if (provider.type === 'document' || fileId.value) {
-        reloadNode(false, true);
-      }
+      reloadNode(false, true);
     });
 
     watch(loading, (newVal) => {
@@ -157,6 +162,10 @@ export default {
         dispatch('notify', t("type." + newVal + "_notify"));
         //reloadNode(true, true);
       }
+    });
+
+    handleEvent('force-change-node-type', (type) => {
+      props.initData.nodeType = type;
     });
 
     /*const tryLazySave = (title: string) => {
@@ -232,14 +241,14 @@ export default {
       }
     });
 
-    watch(fileId, () => {
-      if (fileId.value) {
-        reloadNode(false, true);
-      }
-    })
+    // watch(fileId, () => {
+    //   if (fileId.value) {
+    //     reloadNode(false, true);
+    //   }
+    // });
 
     watchEffect(() => {
-      document.body.style.overflow = (accessModal.value || loading.value) ? 'hidden' : 'auto';
+      document.body.style.overflow = (accessModal.value || fileIdModal.value || loading.value) ? 'hidden' : 'auto';
     });
 
     // flat出所有已选Tag
@@ -395,16 +404,31 @@ export default {
       }
     }
 
+    const requestAccessToken = computed(() => {
+      if (props.provider.type === 'notion') {
+        return props.initData.accessToken === undefined;
+      } else {
+        return false;
+      }
+    });
+
     // 保存Node
     const toSave = async (force: boolean = false) => {
-      console.log("toSave", tagTree.value);
+      console.log("toSave.tree", tagTree.value);
+      console.log("toSave.node", node.value);
+      if (props.provider.type !== 'document') {
+        if (!fileId.value) {
+          fileIdModal.value = true;
+          loading.value = undefined;
+          return;
+        }
+      }
       try {
         accessModal.value = false;
         const nodeWidth = currentSelection.value.width;
         loading.value = t('saving.node', [' (collect)']);
         node.value.width = nodeWidth;
         node.value.tags = Utils.contextTagTree2ContextNode(tagTree.value);
-        node.value.saved = true;
         node.value.file_id = fileId.value;
         if (props.provider.type === 'notion') {  // Notion模式，需要现场获取封面
           // 还没获取过accessKey
@@ -424,7 +448,13 @@ export default {
           await provider.updateFullTags(fullTags.value, {});
         }
         loading.value = t('saving.node', [' (storage)']);
-        await provider.saveNode(fileId.value, node.value.node_id, node.value);
+        if (Object.keys(node.value.tags).length > 0) {
+          await provider.saveNode(fileId.value, node.value.node_id, node.value);
+          node.value.saved = true;
+        } else if (node.value.saved) {
+          await provider.deleteNode(fileId.value, node.value.node_id);
+          node.value.saved = false;
+        }
         if (node.value.cover === "") {
           removeCoverCache(fileId.value, node.value.node_id);
         }
@@ -479,9 +509,20 @@ export default {
       callback();
     }
 
+    const fileIdModalSubmit = (file: string) => {
+      props.initData.fileId = file;
+      fileId.value = file;
+      fileIdModal.value = false;
+      if (requestAccessToken.value) {
+        accessModal.value = true;
+      } else {
+        toSave(false);
+      }
+    }
+
     return {
-      provider, loading, fileId, currentSelection, showFileInit, needAutoSave, fullTags, node, tagTree, collectTags, accessModal,
-      reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, removeTag, selectTag, toSave, toDelete, openSettings, accessModalIgnore, accessModalSubmit
+      provider, loading, fileId, currentSelection, showFileInit, needAutoSave, fullTags, node, tagTree, collectTags, accessModal, fileIdModal, requestAccessToken,
+      reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, removeTag, selectTag, toSave, toDelete, openSettings, accessModalIgnore, accessModalSubmit, fileIdModalSubmit
     }
 
   }
@@ -513,7 +554,7 @@ export default {
 
 .tree {
   padding-top: 12px;
-  border-top: solid #e0e0e0 1px;
+  border-top: solid #eee 1px;
 }
 
 .selected {
@@ -584,6 +625,14 @@ export default {
   order: 0;
   flex-grow: 0;
   margin: 0;
+}
+
+.modal-enter-from, .modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active, .modal-leave-active {
+  transition: opacity .2s cubic-bezier(0.5, 0, 0, 1.25);
 }
 
 </style>

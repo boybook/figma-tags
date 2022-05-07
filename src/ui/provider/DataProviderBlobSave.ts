@@ -9,6 +9,8 @@ export class DataProviderBlobSave implements DataProvider {
 
     type = 'local';
 
+    autoSave: true;
+
     private blob: BlobProvider;
 
     private fullTags?: Storage.FullTags;

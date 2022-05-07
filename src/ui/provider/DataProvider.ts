@@ -1,6 +1,7 @@
 export default interface DataProvider {
 
     type: string
+    autoSave: boolean
 
     /**
      * 验证Provider的配置是否正确，能连上数据

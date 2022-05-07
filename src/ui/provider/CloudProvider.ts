@@ -4,7 +4,8 @@ const API_URL = 'https://figma-tags-figma-tags-vnviuyqxwp.cn-hangzhou.fcapp.run'
 
 export class CloudProvider implements DataProvider {
 
-    type: string = 'cloud';
+    type = 'cloud';
+    autoSave = false;
 
     private readonly uuid: string;
 
@@ -69,6 +70,7 @@ export class CloudProvider implements DataProvider {
         if (result.ok) {
             const data = await result.json();
             console.log("CloudProvider.updateFullTags", data);
+            this.fullTags = fullTags;
         } else {
             throw result.statusText;
         }
@@ -77,6 +79,9 @@ export class CloudProvider implements DataProvider {
     async renameTagType(from: string, to: string): Promise<void> {
         const result = await fetch(API_URL + "/tags/" + from + "/?to=" + to, {
             method: 'PATCH',
+            headers: {
+                uuid: this.uuid
+            },
         });
         if (result.ok) {
             const data = await result.json();

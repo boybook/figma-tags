@@ -5,11 +5,11 @@
         :contents="[$t('page.tags'), $t('page.preview')]"
         @toggle="tabToggle"
     />
-    <button @click="$emit('refresh')" class="current-select-icon">
-      <img :src="require('./resource/refresh.svg')" alt="refresh">
+    <button @click="$emit('refresh')">
+      <img width="13" :src="require('./resource/refresh.svg')" alt="refresh">
     </button>
-    <button @click="$emit('page-settings')" class="current-select-icon" style="border-left: 1px #E0E0E0 solid">
-      <img :src="require('./resource/setting.svg')" alt="setting">
+    <button @click="$emit('page-settings')">
+      <img width="13" :src="require('./resource/setting.svg')" alt="setting">
     </button>
   </div>
 </template>
@@ -52,7 +52,7 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0;
+  padding: 0 8px 0 0;
 
   background: #f8f8f8e0;
   backdrop-filter: blur(16px);
@@ -71,16 +71,26 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 10px;
+  padding: 6px;
+  margin-left: 2px;
+  border-radius: 2px;
   flex-grow: 0;
   background: none;
   border: none;
   cursor: pointer;
-  transition: background-color 100ms ease;
+  transition: all 200ms ease-out;
+}
+
+.current-select button img {
+  opacity: 0.65;
 }
 
 .current-select button:hover {
   background: rgba(0, 0, 0, 0.05);
+}
+
+.current-select button:hover img {
+  opacity: 1;
 }
 
 .current-select button:active {

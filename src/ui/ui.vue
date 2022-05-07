@@ -63,6 +63,9 @@ export default {
 
     const setProvider = (prv: DataProvider) => {
       provider.value = prv;
+      if (provider.value.type === 'document') {
+        initData.value.nodeType = 'frame';
+      }
     }
 
     onMounted(() => {
@@ -79,8 +82,8 @@ export default {
         } else {
           console.log("Provider init failed!", prvError);
           dispatch('notify-err', t('settings.provider.init_failed'));
-          //initData.value.provider = { type: 'local' };
-          //setProvider(initProvider({ type: 'local' }));
+          initData.value.provider = JSON.stringify({ type: 'document' });
+          setProvider(initProvider({ type: 'document' }));
         }
       });
     });

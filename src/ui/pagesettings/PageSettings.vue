@@ -30,7 +30,7 @@
         <h3> {{ $t('settings.provider.title') }} </h3>
         <ToggleRadio
             fill="fill"
-            :entries="[$t('settings.provider.document.name'), $t('settings.provider.local.name'), $t('settings.provider.notion.name'), $t('settings.provider.cloud.name')]"
+            :entries="[$t('settings.provider.document.name'), $t('settings.provider.local.name'), $t('settings.provider.cloud.name'), $t('settings.provider.notion.name')]"
             v-model:current="providerCurrent"
         />
         <div class="provider-card" v-if="providerCurrent === 0">
@@ -54,8 +54,21 @@
             <input type="file" accept="application/json" style="display: none" ref="afile" @change="onLocalImport" >
           </div>
         </div>
-        <!-- Provider.Notion -->
+        <!-- Provider.Cloud -->
         <div class="provider-card" v-if="providerCurrent === 2">
+          <h3> {{ $t('settings.provider.cloud.title') }} </h3>
+          <p style="margin-bottom: 8px"> {{ $t('settings.provider.cloud.content') }} </p>
+          <div v-if="!providerConfigs.cloud.uuid" style="display: flex; align-self: stretch; align-items: center; justify-content: center; height: 26px; background-color: #fff; border-radius: 2px;">
+            <LoadingIcon width="14" />
+          </div>
+          <FigInput
+              v-if="providerConfigs.cloud.uuid"
+              v-model:val="providerConfigs.cloud.uuid"
+              size="small"
+          />
+        </div>
+        <!-- Provider.Notion -->
+        <div class="provider-card" v-if="providerCurrent === 3">
           <h3> {{ $t('settings.provider.notion.name') }} </h3>
           <p style="margin-bottom: 8px"> {{ $t('settings.provider.notion.content') }} </p>
           <p style="margin-bottom: 4px">
@@ -71,7 +84,6 @@
               @submit="queryNotionDatabase"
           />
           <p style="margin-top: 8px; margin-bottom: 4px"> {{ $t('settings.provider.notion.database') }} </p>
-<!--          <FigInput v-model:val="providerConfigs.notion.database" size="small" :status="providerNotionInputError ? 'error' : ''" @keydown="providerNotionInputError = false" />-->
           <FigButton v-if="notionDatabases.length === 0" type="dashed" :status="notionDatabasesQuerying ? 'loading' : 'normal'" @click="queryNotionDatabase">
             {{ $t('settings.provider.notion.query_database') }}
           </FigButton>
@@ -88,19 +100,6 @@
               <tk-select-item size="small" v-for="db in notionDatabases" :value="db.databaseId"> {{ db.name }} </tk-select-item>
             </template>
           </tk-select>
-        </div>
-        <!-- Provider.Cloud -->
-        <div class="provider-card" v-if="providerCurrent === 3">
-          <h3> {{ $t('settings.provider.cloud.title') }} </h3>
-          <p style="margin-bottom: 8px"> {{ $t('settings.provider.cloud.content') }} </p>
-          <div v-if="!providerConfigs.cloud.uuid" style="display: flex; align-self: stretch; align-items: center; justify-content: center; height: 26px; background-color: #fff; border-radius: 2px;">
-            <LoadingIcon width="14" />
-          </div>
-          <FigInput
-              v-if="providerConfigs.cloud.uuid"
-              v-model:val="providerConfigs.cloud.uuid"
-              size="small"
-          />
         </div>
       </div>
       <div class="page-settings-about">
@@ -259,10 +258,10 @@ export default {
       case 'local':
         providerIndex = 1;
         break;
-      case 'notion':
+      case 'cloud':
         providerIndex = 2;
         break;
-      case 'cloud':
+      case 'notion':
         providerIndex = 3;
         break;
     }
@@ -276,15 +275,15 @@ export default {
       local: {
         type: 'local'
       },
+      cloud: {
+        type: 'cloud',
+        uuid: providerConfig.type === 'cloud' ? providerConfig.uuid : undefined,
+      },
       notion: {
         type: 'notion',
         token: providerConfig.type === 'notion' ? providerConfig.token : '',
         database: providerConfig.type === 'notion' ? providerConfig.database : '',
       },
-      cloud: {
-        type: 'cloud',
-        uuid: providerConfig.type === 'cloud' ? providerConfig.uuid : undefined,
-      }
     });
 
     // Notion
@@ -362,10 +361,10 @@ export default {
             config = providerConfigs.value.local;
             break;
           case 2:
-            config = providerConfigs.value.notion;
+            config = providerConfigs.value.cloud;
             break;
           case 3:
-            config = providerConfigs.value.cloud;
+            config = providerConfigs.value.notion;
             break;
         }
         if (config.type === 'notion' && (!config.database || config.database.length === 0)) {

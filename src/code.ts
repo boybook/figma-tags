@@ -13,8 +13,8 @@ let uiShowed = false;
 // figma.clientStorage.setAsync("nodes", undefined).then();
 // figma.clientStorage.setAsync("language", "ch").then();
 // figma.clientStorage.setAsync("provider", undefined).then();
-// figma.clientStorage.setAsync("access-token", undefined).then();
-// figma.root.setPluginData("file-id", "");
+figma.clientStorage.setAsync("access-token", undefined).then();
+figma.root.setPluginData("file-id", "");
 // figma.root.setPluginData("tags", "");
 // figma.root.setPluginData("nodes", "");
 
@@ -122,6 +122,10 @@ handleEvent('document-plugin-data-set', (data: Transfer.DocumentPluginData) => {
 	});
 });
 
+handleEvent('document-shared-plugin-data-set', (data: Transfer.DocumentPluginData) => {
+	figma.root.setSharedPluginData('figma-nodes', data.key, data.value);
+});
+
 let lastNotify: NotificationHandler;
 
 handleEvent('notify', (msg) => {
@@ -176,17 +180,23 @@ handleEvent('node-rename', (data: NodeRename) => {
 });
 
 handleEvent('toggle-node-type', (type: 'document' | 'frame') => {
-	figma.clientStorage.setAsync("node-type", type).then(() => {
-		mNodeType = type;
-		if (type === 'document') {
-			figma.viewport.scrollAndZoomIntoView(figma.root.children[0].children);
-		}
-		dispatch("selectionchange", packageCurrentSelection());
-	});
+	figma.clientStorage.setAsync("node-type", type).then();
+	mNodeType = type;
+	if (type === 'document') {
+		figma.viewport.scrollAndZoomIntoView(figma.root.children[0].children);
+		figma.currentPage.selection = [];
+	}
+	dispatch("selectionchange", packageCurrentSelection());
 });
 
 figma.on("selectionchange", () => {
-	if (mNodeType === 'document') return;
+	if (mNodeType === 'document') {
+		if (figma.currentPage.selection.length > 0) {
+			checkSelectCanvasTag();
+			dispatch("force-change-node-type", 'frame');
+		}
+		return;
+	}
 	// 点击标签的Group，自动选择到对应的内容
 	checkSelectCanvasTag();
 	dispatch("selectionchange", packageCurrentSelection());

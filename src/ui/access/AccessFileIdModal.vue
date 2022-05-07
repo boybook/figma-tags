@@ -17,7 +17,7 @@
     </p>
     <div class="button-group">
       <FigButton @click="$emit('ignore')"> {{ $t('button.cancel') }} </FigButton>
-      <FigButton type="primary" @click="submit"> {{ $t('button.ok') }} </FigButton>
+      <FigButton type="primary" @click="submit"> {{ buttonSubmit ? buttonSubmit : $t('button.ok') }} </FigButton>
     </div>
   </div>
 </template>
@@ -31,6 +31,12 @@ import { ref } from "vue";
 export default {
   name: "AccessFileIdModal",
   components: { FigButton, FigInput },
+  props: {
+    buttonSubmit: {
+      type: String,
+      default: undefined
+    }
+  },
   emits: [ 'ignore', 'submit' ],
   setup(props, context) {
     const input = ref("");
@@ -44,7 +50,7 @@ export default {
         if (result.length >= 3) {
           if (result[0] === 'www.figma.com' && result[1] === 'file') {
             const fileId = result[2];
-            context.emit('submit', fileId, props.callback);
+            context.emit('submit', fileId);
           } else {
             error.value = true;
           }
