@@ -8,8 +8,8 @@
               :tag="element"
               :checkable="operable"
               @selectTag="onSelectTag"
-              @editTag="(nameFrom, tag) => $emit('editTag', nameFrom, tag)"
-              @deleteTag="(tagName) => $emit('deleteTag', tagName)"
+              @editTag="(tagId, nameFrom, tag) => $emit('editTag', tagId, nameFrom, tag)"
+              @deleteTag="(tagId) => $emit('deleteTag', tagId)"
           />
         </li>
       </template>

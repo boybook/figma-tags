@@ -1,4 +1,6 @@
 import DataProvider from "./DataProvider";
+import * as Utils from "../utils";
+import {dispatch} from "../uiMessageHandler";
 
 export interface BlobProvider {
     storageGet: (key: string) => Promise<any>
@@ -11,7 +13,7 @@ export class DataProviderBlobSave implements DataProvider {
 
     autoSave = true;
 
-    private blob: BlobProvider;
+    public readonly blob: BlobProvider;
 
     private fullTags?: Storage.FullTags;
     private fullNodes?: Storage.FullNodes;
@@ -21,7 +23,32 @@ export class DataProviderBlobSave implements DataProvider {
     }
 
     // 本地数据始终验证通过
-    testError = () => undefined;
+    testError = async () => {
+        const fullTags = await this.getFullTags(true);
+        const version = await this.blob.storageGet('db-version');
+        if (!version || version == 1) {  // 老版本数据结构，需要更新
+            console.log("老版本数据结构，正在更新");
+            for (let [_, group] of [...fullTags]) {
+                for (let tag of group.tags) {
+                    if (!tag.id) {
+                        tag.id = Utils.randomString();
+                    }
+                }
+            }
+            await this.setFullTags(fullTags);
+            const fullNodes = await this.getFullNodes();
+            for (let key in fullNodes) {
+                for (let tagType in fullNodes[key].tags) {
+                    fullNodes[key].tags[tagType] = fullNodes[key].tags[tagType].map(tag => {
+                        return fullTags.get(tagType).tags.find(t => t.name === tag)?.id;
+                    });
+                }
+            }
+            await this.setFullNodes(fullNodes);
+            await this.blob.storageSet('db-version', 2);
+        }
+        return undefined;
+    }
 
     getFullTags = async (reload: boolean) => {
         if (!reload && this.fullTags) {
@@ -114,18 +141,18 @@ export class DataProviderBlobSave implements DataProvider {
         const oldRename: (Map<string, Storage.TagGroup>) = new Map<string, Storage.TagGroup>();
 
         // 对old进行重命名，用于后续比对（等于服务端先模拟跑重命名，然后才能验证删除等信息）
-        for (let [t, obj] of old.entries()) {
+        /*for (let [t, obj] of old.entries()) {
             // tag重命名
             if (tagRenames[t]) {
                 for (let tag of obj.tags) {
-                    if (tagRenames[t][tag.name]) {
+                    if (tagRenames[t][tag.id]) {
                         tag.name = tagRenames[t][tag.name];
                     }
                 }
             }
             oldRename.set(t, obj);
-        }
-        await this.handleTagRename(tagRenames);
+        }*/
+        // await this.handleTagRename(tagRenames); // 基于id来区分后，不需要再去修改Nodes里的tags了
 
         // 寻找被删除的type
         const missingType = [...oldRename.keys()].filter(oldKey => ![...full.keys()].find(t => t === oldKey));
@@ -136,7 +163,7 @@ export class DataProviderBlobSave implements DataProvider {
         for (let [t, obj] of full.entries()) {
             const oldTagType = oldRename.get(t);
             if (oldTagType) {
-                const missingTag = oldTagType.tags.filter(tag => !obj.tags.find(t => t.name === tag.name)).map(t => t.name);
+                const missingTag = oldTagType.tags.filter(tag => !obj.tags.find(t => t.id === tag.id)).map(t => t.id);
                 if (missingTag.length > 0) {
                     console.log("missingTag", t, missingType);
                     await this.handleTagDelete(t, missingTag);
@@ -151,6 +178,7 @@ export class DataProviderBlobSave implements DataProvider {
                 name: obj.name,
                 view_sort: obj.view_sort,
                 tags: obj.tags.map(tag => ({
+                    id: tag.id,
                     name: tag.name,
                     color: tag.color,
                     background: tag.background
@@ -211,20 +239,20 @@ export class DataProviderBlobSave implements DataProvider {
         await this.blob.storageSet('nodes', JSON.stringify(full));
     }
 
-    selectNodes = async (tagType: string, tag: string, viewSort?: Storage.ViewSort) => {
+    selectNodes = async (tagType: string, tagId: string, tagName: string, viewSort?: Storage.ViewSort) => {
+        const fullTags = await this.getFullTags(false);
         const array = <Storage.Node[]> Object.values(await this.getFullNodes());
         const filter = <Storage.Node[]> array
             .filter(n => n.tags[tagType])
-            .filter(n => n.tags[tagType]?.find(t => t === tag));
+            .filter(n => n.tags[tagType]?.find(t => t === tagId));
         if (viewSort) {
-            const fullTags = await this.getFullTags(false);
             const sortBase = fullTags.get(viewSort.type)?.tags;
             if (sortBase) {
                 return filter.sort((n1, n2) => {
                     const n1Tags = n1.tags[viewSort.type];
-                    const n1TagIndex = (n1Tags && n1Tags.length > 0) ? sortBase.findIndex(t => t.name === n1Tags[0]) : -1;
+                    const n1TagIndex = (n1Tags && n1Tags.length > 0) ? sortBase.findIndex(t => t.id === n1Tags[0]) : -1;
                     const n2Tags = n2.tags[viewSort.type];
-                    const n2TagIndex = (n2Tags && n2Tags.length > 0) ? sortBase.findIndex(t => t.name === n2Tags[0]) : -1;
+                    const n2TagIndex = (n2Tags && n2Tags.length > 0) ? sortBase.findIndex(t => t.id === n2Tags[0]) : -1;
                     return viewSort.order === 'ASC' ? n1TagIndex - n2TagIndex : n2TagIndex - n1TagIndex;
                 });
             } else {

@@ -33,8 +33,8 @@
       :operable="operable"
       :tag-type="tagType"
       @select-tag="onSelectTag"
-      @edit-tag="(nameFrom, tag) => $emit('editTag', nameFrom, tag)"
-      @delete-tag="(tagName) => $emit('deleteTag', tagName)"
+      @edit-tag="(tagId, tag) => $emit('editTag', tagId, tag)"
+      @delete-tag="(tagId) => $emit('deleteTag', tagId)"
       @drag-tag="onDragTag"
   />
 </template>
@@ -84,6 +84,7 @@ export default {
         addingTag.value = false;
         if (!color) color = Utils.randomTagColor();
         context.emit('addTag', {
+          id: Utils.randomString(),
           name: text,
           color: color.color,
           background: color.background

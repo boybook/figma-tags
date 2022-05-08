@@ -19,7 +19,7 @@
 <!--        <img :src="require('../resource/back.svg')" alt="back">-->
 <!--        <span style="margin-left: 4px"> {{ backVisible ? $t('lookup.back') : $t('lookup.to_tags') }} </span>-->
 <!--      </div>-->
-      <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" style="padding-top: 4px" />
+      <TagTree :operable="false" :tag-tree="tagTree" @select-tag="selectTag" style="padding-top: 38px" />
     </div>
     <div v-if="tagTree?.length > 0" v-for="type in tagTree">
       <PageSelectBar
@@ -314,9 +314,13 @@ export default {
 }
 
 .page-select-wrapper-tree-tabs {
+  position: fixed;
+  width: 176px;
   align-self: stretch;
   background-color: #f8f8f8e0;
   box-shadow: inset 0 -1px 0 #eee;
+  backdrop-filter: blur(16px);
+  z-index: 99;
 }
 
 </style>

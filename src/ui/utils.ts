@@ -11,6 +11,7 @@ export function newTagToTagTree(tagTree: Context.TagTree, tagTypeName: string, t
         const treeTag: Context.Tag = {
             isNew: true,
             check: true,
+            id: tag.id,
             name: tag.name,
             color: tag.color,
             background: tag.background
@@ -32,6 +33,7 @@ export function storageTagType2ContextClassifiedTags(fullTagGroup: Storage.TagGr
         const treeTag: Context.Tag = {
             isNew: false,
             check: false,
+            id: tag.id,
             name: tag.name,
             color: tag.color,
             background: tag.background
@@ -67,7 +69,7 @@ export function storageTags2ContextTagTree(storageTags: Storage.NodeTags, fullTa
                 for (let tagIndex in entry.tags.get(childTag)) {
                     if (storageTags[typeName]) {
                         for (let tagValid of storageTags[typeName]) {
-                            if (entry.tags.get(childTag)[tagIndex].name === tagValid) {
+                            if (entry.tags.get(childTag)[tagIndex].id === tagValid) {
                                 entry.tags.get(childTag)[tagIndex].check = true;
                                 break;
                             }
@@ -109,7 +111,7 @@ export function contextNode2StorageNode(node : Context.Node) : Storage.Node {
 export function contextTagTree2ContextNode(tagTree: Context.TagTree) : Storage.NodeTags {
     const nodeTags: Storage.NodeTags = {};
     for (let tagType of tagTree) {
-        const tags = [...tagType.tags.values()].flat().filter(tag => tag.check).flatMap(tag => tag.name);
+        const tags = [...tagType.tags.values()].flat().filter(tag => tag.check).flatMap(tag => tag.id);
         if (tags.length > 0) {
             nodeTags[tagType.type] = tags;
         }
@@ -124,6 +126,7 @@ export function defaultTag(name: string, randomColor?: boolean) : Storage.Tag {
 
 export function genTag(name: string, color: Transfer.TagColor) : Storage.Tag {
     return {
+        id: randomString(),
         name: name,
         color: color.color,
         background: color.background
@@ -227,7 +230,7 @@ export function checkDataFullTags(tags: Storage.FullTags) : boolean {
 export function checkDataFullNodes(nodes: Storage.FullNodes) : boolean {
     for (let key in nodes) {
         const node = nodes[key];
-        if (!node.title || !node.file_id || !node.node_id || !node.tags) {
+        if (!node.title || !node.node_id || !node.tags) {
             return false;
         }
     }
@@ -253,6 +256,10 @@ export function equalsFullTags(full1: Storage.FullTags, full2: Storage.FullTags)
             return false;
         }
         for (let i0 = 0; i0 < entry1.tags.length; i0++) {
+            if (entry1.tags[i0].id !== entry2.tags[i0].id) {
+                console.log("equalsFullTags", "tag.id", entry1.tags[i0].id, entry2.tags[i0].id);
+                return false;
+            }
             if (entry1.tags[i0].name !== entry2.tags[i0].name) {
                 console.log("equalsFullTags", "tag.name", entry1.tags[i0].name, entry2.tags[i0].name);
                 return false;
@@ -268,4 +275,10 @@ export function equalsFullTags(full1: Storage.FullTags, full2: Storage.FullTags)
         }
     }
     return true;
+}
+
+export function randomString(length: number = 16, chars: string = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+    let result = '';
+    for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
 }

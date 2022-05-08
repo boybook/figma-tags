@@ -36,15 +36,15 @@ export default {
     const onSelectTag = (tag, check) => {
       context.emit('selectTag', tag, check);
     }
-    const editTag = (nameFrom: string, tag: Storage.Tag) => {
+    const editTag = (tagId: string, nameFrom: string, tag: Storage.Tag) => {
       if (nameFrom !== tag.name && childList.value.map(([_, v]) => v).flat().find(t => t.name === tag.name)) {
         alert("Name already exists");
       } else {
-        context.emit('editTag', nameFrom, tag);
+        context.emit('editTag', tagId, tag);
       }
     }
-    const deleteTag = (tagName: string) => {
-      context.emit('deleteTag', tagName);
+    const deleteTag = (tagId: string) => {
+      context.emit('deleteTag', tagId);
     }
     const onDragTag = (childTagType: string, _) => {
       context.emit('dragTag', props.tagType, childTagType);

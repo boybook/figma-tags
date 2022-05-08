@@ -91,6 +91,7 @@ export class NotionProvider implements DataProvider {
                     }
                     for (let option of options) {
                         tagGroups.tags.push({
+                            id: option.id,
                             name: option.name,
                             background: Utils.tagColors[option.color] ? Utils.tagColors[option.color].background : Utils.tagColors.default.background,
                             color: Utils.tagColors[option.color] ? Utils.tagColors[option.color].color : Utils.tagColors.default.color
@@ -330,14 +331,14 @@ export class NotionProvider implements DataProvider {
         }
     }
 
-    selectNodes = async(tagType: string, tag: string, viewSort: Storage.ViewSort | undefined): Promise<Storage.Node[]> => {
+    selectNodes = async(tagType: string, tagId: string, tagName: string, viewSort: Storage.ViewSort | undefined): Promise<Storage.Node[]> => {
         const nodes : Storage.Node[] = [];
         const data = await this.notion.databases.query({
             database_id: this.database,
             filter: {
                 property: tagType,
                 multi_select: {
-                    contains: tag
+                    contains: tagName
                 }
             },
             sorts: viewSort ? [

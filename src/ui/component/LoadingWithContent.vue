@@ -4,7 +4,7 @@
     <transition name="fade">
       <div v-if="realLoading" class="loading-wrapper">
         <LoadingIcon />
-        <p style="padding-bottom: 16px"> {{ msg }} </p>
+        <p style="padding: 0 16px 16px"> {{ msg }} </p>
       </div>
     </transition>
   </div>

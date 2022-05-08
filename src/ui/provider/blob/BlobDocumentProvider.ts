@@ -63,7 +63,7 @@ const storageSet = (key: string, data: any) : Promise<void> => {
         });
         dispatch('document-plugin-data-set', {
             key: key,
-            value: data
+            value: data + ''
         });
     } else {
         promiseClientStorageSet.get(key).listeners++;

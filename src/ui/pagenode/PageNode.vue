@@ -8,6 +8,7 @@
   <PageNodeTopBar
       :toggle-page="togglePage"
       :current="currentSelection"
+      :show-refresh="!provider.autoSave"
       @refresh="reloadNode(false, true)"
       @page-settings="openSettings"
   />
@@ -283,18 +284,18 @@ export default {
     }
 
     // 手动修改Tag（直接生效）
-    const editTag = async (tagType: string, nameFrom: string, tag: Storage.Tag) => {
-      console.log("editTag", tagType, nameFrom, tag);
+    const editTag = async (tagType: string, tagId: string, tag: Storage.Tag) => {
+      console.log("editTag", tagType, tagId, tag);
       try {
         loading.value = t('saving.tag');
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
-        const target = fullTags.value.get(tagType)?.tags.find(t => t.name === nameFrom);
+        const target = fullTags.value.get(tagType)?.tags.find(t => t.id === tagId);
         target.name = tag.name;
         target.color = tag.color;
         target.background = tag.background;
         const tagRenames: Transfer.TagRenameGroup = {
           [tagType]: {
-            [nameFrom]: tag.name
+            [tagId]: tag.name
           }
         };
         await props.provider.updateFullTags(fullTags.value, tagRenames);
@@ -311,14 +312,14 @@ export default {
     }
 
     // 手动删除Tag（直接生效）
-    const deleteTag = async (tagType: string, tagName: string) => {
-      console.log("deleteTag", tagType, tagName);
+    const deleteTag = async (tagType: string, tagId: string) => {
+      console.log("deleteTag", tagType, tagId);
       try {
         loading.value = t('saving.tag');
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         const tags = fullTags.value.get(tagType)?.tags;
         for (let i = 0; i < tags.length; i++) {
-          if (tags[i].name === tagName) {
+          if (tags[i].id === tagId) {
             tags.splice(i, 1);
           }
         }
@@ -413,15 +414,10 @@ export default {
       }
     });
 
-    const onDragTag = async (tagType: Context.TagType, childTagType: string) => {
+    const onDragTag = (tagType: Context.TagType, childTagType: string) => {
       console.log("PageNode.onDragTag", tagType, childTagType);
       if (props.provider.autoSave) {
-        loading.value = t('saving.node', [' (tags)']);
-        fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
-        if (!Utils.equalsFullTags(await props.provider.getFullTags(), fullTags.value)) {
-          await props.provider.updateFullTags(fullTags.value, {});
-        }
-        loading.value = undefined;
+        toSave(false);
       }
     }
 
@@ -443,6 +439,7 @@ export default {
         node.value.width = nodeWidth;
         node.value.tags = Utils.contextTagTree2ContextNode(tagTree.value);
         node.value.file_id = fileId.value;
+        console.log("toSave.node.after", node.value);
         if (props.provider.type === 'notion') {  // Notion模式，需要现场获取封面
           // 还没获取过accessKey
           if (!force && !props.initData.accessToken) {
@@ -526,6 +523,10 @@ export default {
       props.initData.fileId = file;
       fileId.value = file;
       fileIdModal.value = false;
+      dispatch('document-plugin-data-set', {
+        key: 'file-id',
+        value: fileId.value
+      });
       if (requestAccessToken.value) {
         accessModal.value = true;
       } else {

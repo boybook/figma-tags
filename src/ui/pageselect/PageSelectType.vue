@@ -2,7 +2,7 @@
   <ul class="page-select-wrapper-blocks">
     <li :id="'anchor-' + tag.name" v-for="tag in tags">
       <PageSelectTypeTag
-          :key="tagType + '#' + tag.name + '#' + viewSort?.type + '#' + viewSort?.order"
+          :key="tagType + '#' + tag.id + '#' + viewSort?.type + '#' + viewSort?.order"
           :provider="provider"
           :document-file-id="documentFileId"
           :access-token="accessToken"

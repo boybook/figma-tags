@@ -143,11 +143,11 @@ export class CloudProvider implements DataProvider {
         }
     }
 
-    async selectNodes(tagType: string, tag: string, viewSort: Storage.ViewSort | undefined): Promise<Storage.Node[]> {
+    async selectNodes(tagType: string, tagId: string, tagName: string, viewSort: Storage.ViewSort | undefined): Promise<Storage.Node[]> {
         let url = API_URL + "/node";
         const params = {
             tag_type: tagType,
-            tag: tag,
+            tag: tagId,
             sort_type: viewSort?.type,
             sort_order: viewSort?.order
         };
@@ -178,7 +178,16 @@ export class CloudProvider implements DataProvider {
     }
 
     async setViewSort(tagType: string, sort: Storage.ViewSort | undefined): Promise<void> {
-        // TODO
+        const fullTags = await this.getFullTags(false);
+        if (fullTags.has(tagType)) {
+            console.log("setViewSort", tagType, sort);
+            if (sort) {
+                fullTags.get(tagType).view_sort = sort;
+            } else {
+                delete fullTags.get(tagType).view_sort;
+            }
+            await this.updateFullTags(fullTags, {});
+        }
     }
 
 }

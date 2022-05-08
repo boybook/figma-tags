@@ -5,7 +5,7 @@
         :contents="[$t('page.tags'), $t('page.preview')]"
         @toggle="tabToggle"
     />
-    <button @click="$emit('refresh')">
+    <button v-if="showRefresh" @click="$emit('refresh')">
       <img width="13" :src="require('./resource/refresh.svg')" alt="refresh">
     </button>
     <button @click="$emit('page-settings')">
@@ -25,6 +25,7 @@ export default {
   props: {
     togglePage: Function as (p: Transfer.Page, extra?: any) => void,
     current: Object as PropType<Transfer.CurrentSelection>,
+    showRefresh: Boolean
   },
   emits: [ 'refresh', 'page-settings'],
   setup(props) {

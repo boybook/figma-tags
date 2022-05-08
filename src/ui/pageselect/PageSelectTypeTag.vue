@@ -52,7 +52,7 @@ export default {
 
     const { target, result } = useLazyData(
         () => {
-          return props.provider.selectNodes(props.tagType, props.tag.name, props.viewSort);
+          return props.provider.selectNodes(props.tagType, props.tag.id, props.tag.name, props.viewSort);
         },
         () => loading.value = false
     );

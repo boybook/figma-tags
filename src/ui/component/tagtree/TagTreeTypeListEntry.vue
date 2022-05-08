@@ -57,18 +57,19 @@ export default {
       }
       //if (props.tag.isNew || confirm(t('tag.edit.confirm', [newTagName]))) {
         const newTag : Storage.Tag = {
+          id: props.tag.id,
           name: newTagName,
           color: color ? color.color : props.tag.color,
           background: color ? color.background : props.tag.background,
         };
         const nameFrom = props.tag.name;
-        context.emit('editTag', nameFrom, newTag);
+        context.emit('editTag', props.tag.id, nameFrom, newTag);
       //}
       editing.value = false;
     }
     const tryDelete = () => {
       if (props.tag.isNew || confirm(t('tag.delete.confirm', [props.tag.name]))) {
-        context.emit('deleteTag', props.tag.name);
+        context.emit('deleteTag', props.tag.id);
       }
       editing.value = false;
     }

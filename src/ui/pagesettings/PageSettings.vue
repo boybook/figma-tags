@@ -210,8 +210,9 @@ export default {
         const blobProvider = <DataProviderBlobSave> props.provider;
         const fullTags = await blobProvider.getFullTags(true);
         const fullNodes = await blobProvider.getFullNodes();
+        const dbVersion = await blobProvider.blob.storageGet("db-version");
         const json = {
-          version: "1",
+          version: dbVersion ? dbVersion : "1",
           tags: [...fullTags],
           nodes: fullNodes
         }
@@ -229,15 +230,18 @@ export default {
       if (afile.value.files.length) {
         const file = afile.value.files[0];
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = async () => {
           if (props.provider.type === 'document' || props.provider.type === 'local') {
             const blobProvider = <DataProviderBlobSave>props.provider;
             const decode = JSON.parse(<string>reader.result);
             const tags: Storage.FullTags = new Map(decode.tags);
             const nodes: Storage.FullNodes = decode.nodes;
+            const version: string = decode.version;
             if (Utils.checkDataFullTags(tags) && Utils.checkDataFullNodes(nodes)) {
-              blobProvider.setFullTags(tags);
-              blobProvider.setFullNodes(nodes);
+              await blobProvider.setFullTags(tags);
+              await blobProvider.setFullNodes(nodes);
+              await blobProvider.blob.storageSet("db-version", version);
+              await blobProvider.testError();
               dispatch('notify', t('settings.provider.local.import_json_suc'));
             } else {
               dispatch('notify-err', t('settings.provider.local.import_json_error'));

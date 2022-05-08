@@ -58,6 +58,9 @@ export const messages = {
             },
             delete: {
                 confirm: "Delete the type \"{0}\"?\n\nIt will be updated to other nodes."
+            },
+            select: {
+                button: "查阅"
             }
         },
         tag: {
@@ -222,6 +225,9 @@ export const messages = {
             },
             delete: {
                 confirm: "确认删除分类 \"{0}\"?\n\n删除后，将同时更新到其他Node"
+            },
+            select: {
+                button: "查阅"
             }
         },
         tag: {

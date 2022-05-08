@@ -56,10 +56,11 @@ export default interface DataProvider {
     /**
      * 获取 Node 列表（根据tagType+tag，排序）
      * @param tagType
-     * @param tag
+     * @param tagId
+     * @param tagName
      * @param sortTagType 根据另一的tag维度排序
      */
-    selectNodes: (tagType: string, tag: string, viewSort?: Storage.ViewSort) => Promise<Storage.Node[]>
+    selectNodes: (tagType: string, tagId: string, tagName: string, viewSort?: Storage.ViewSort) => Promise<Storage.Node[]>
 
     /**
      * 设置视图的排序方式

@@ -73,7 +73,7 @@ export default {
         left: `${dropdownPosition.value.x}px`,
         top: `${dropdownPosition.value.y}px`,
         width: `${props.minWidth ? Math.max(props.minWidth, dropdownPosition.value.w) : dropdownPosition.value.w}px`,
-        maxHeight: props.maxHeight ? `${props.maxHeight}px` : ((document.body.clientHeight - select_button.value?.getBoundingClientRect().y - 44) + "px")  // TODO 根据绝对位置来限制高度
+        maxHeight: props.maxHeight ? `${props.maxHeight}px` : ((document.body.clientHeight - select_button.value?.getBoundingClientRect().y - 44) + "px")  // 根据绝对位置来限制高度
       }
     })
 

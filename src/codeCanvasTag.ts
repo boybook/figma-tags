@@ -29,7 +29,7 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
             const tags : Storage.Tag[] = [];
             for (let type in nodeData.tags) {
                 if (fullTags.has(type)) {
-                    tags.push(...fullTags.get(type).tags.filter(t => nodeData.tags[type].find(t0 => t.name === t0)));
+                    tags.push(...fullTags.get(type).tags.filter(t => nodeData.tags[type].find(t0 => t.id === t0)));
                 }
             }
 

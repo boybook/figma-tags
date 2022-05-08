@@ -19,9 +19,11 @@
       <img v-if="operable && !editing" v-show="hover" class="icon-edit" @click="editing = true" @click.stop :src="require('../../resource/edit.svg')" alt="edit" style="margin-left: 4px;">
     </div>
     <div class="tree-extra-area" v-if="operable && !editing">
-      <div v-if="extraLookup" class="tree-extra-operation" @click="$emit('extraLookup')" @click.stop>
-        <img :src="require('../../resource/lookup.svg')" alt="lookup">
-      </div>
+      <popper :hover="true" :arrow="true" offsetDistance="0" :disableClickAway="true" :content="$t('tag_type.select.button')">
+        <div v-if="extraLookup" class="tree-extra-operation" @click="$emit('extraLookup')" @click.stop style="margin: 0">
+          <img :src="require('../../resource/lookup.svg')" alt="lookup">
+        </div>
+      </popper>
       <popper :hover="true" :arrow="true" offsetDistance="0" :disableClickAway="true" :content="$t('tag.add.button')">
         <div v-if="extraAdd" class="tree-extra-operation" @click="$emit('extraAdd')" @click.stop>
           <img :src="require('../../resource/add.svg')" alt="add">

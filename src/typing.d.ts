@@ -101,6 +101,7 @@ declare namespace Transfer {
 declare namespace Storage {
 
     type Tag = {
+        id: string,
         name: string,
         color: RGBA
         background: RGBA
@@ -116,7 +117,7 @@ declare namespace Storage {
     type FullTags = Map<string, TagGroup>
 
     type NodeTags = {
-        [tagType: string]: string[]  // 这边的tag是纯string，颜色需要去对照上面的FullTags配置里取到
+        [tagType: string]: string[]  // 这边的tag是id，需要去对照上面的FullTags配置里取到
     }
 
     type Node = {
@@ -147,6 +148,7 @@ declare namespace Context {
     type Tag = {
         isNew: boolean,  // 是否为伪保存中新建的
         check: boolean,  // 是否勾选
+        id: string,
         name: string,
         color: RGBA
         background: RGBA
