@@ -270,9 +270,9 @@ export const messages = {
                     content: "在Figma的各文件中储存，可多人在同一文件中协作。但是在多个文件之间，数据不互通，如需跨文件，请切换至其他数据源。"
                 },
                 local: {
-                    name: "本地",
+                    name: "本机",
                     title: "储存在本机",
-                    content: "数据保存在本地，但是只能个人本机使用。\n如需多人协作，请切换数据源。",
+                    content: "数据保存在本地，可跨文件管理，但是只能个人本机使用。\n如需多人协作，请使用「云同步」。",
                     export_json: "导出JSON",
                     export_json_fail: "JSON导出失败！",
                     import_json: "导入JSON",
@@ -280,8 +280,8 @@ export const messages = {
                     import_json_error: "导入失败，可能是文件中缺少了部分内容！"
                 },
                 cloud: {
-                    name: "云储存",
-                    title: "云储存",
+                    name: "云同步",
+                    title: "云同步",
                     content: "支持完整功能的云储存。如需协作，可让他人填入该UUID。",
                     uuid_empty: "请先输入UUID"
                 },

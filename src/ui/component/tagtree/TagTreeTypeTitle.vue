@@ -72,10 +72,10 @@ export default {
     }
 
     const editTypeName = (name: string) => {
-      if (confirm(t('tag_type.edit.confirm', [name]))) {
+      // if (confirm(t('tag_type.edit.confirm', [name]))) {
         context.emit('editTypeName', name);
         editing.value = false;
-      }
+      // }
     }
 
     const deleteTagType = () => {

@@ -26,8 +26,9 @@
             @update:current="(val) => initData.nodeType = val === 0 ? 'document' : 'frame'"
             fill="min"
             :entries="[{icon: require('./resource/page.svg'), tooltip: $t('type.document')}, {icon: require('./resource/frame.svg'), tooltip: $t('type.frame')}]"
+            style="margin-right: 8px"
         />
-        <FigInput style="flex-grow: 1; margin-left: 8px;" v-if="node" v-model:val="node.title" @submit="toSave(false)" />
+        <FigInput style="flex-grow: 1" v-if="node" v-model:val="node.title" @submit="toSave(false)" />
       </div>
       <div class="selected" :class="{ 'selected-empty': !collectTags || collectTags.length === 0 }">
         <FigTag
@@ -49,6 +50,7 @@
             @delete-tag="deleteTag"
             @select-tag="selectTag"
             :toggle-page="togglePage"
+            @drag-tag="onDragTag"
         />
       </div>
     </div>
@@ -106,18 +108,17 @@ export default {
 
   setup(props) {
     const { t } = useI18n();
-    const provider = <DataProvider> props.provider;
     const loading = ref<string|undefined>(undefined);
 
     const fileId = ref(props.initData.fileId);
     const currentSelection = ref<Transfer.CurrentSelection>(props.initData.selection);
 
     const showFileInit = computed(() => {
-      return provider.type !== 'document' && !fileId.value;
+      return props.provider.type !== 'document' && !fileId.value;
     });
 
     const needAutoSave = computed(() => {
-      return provider.autoSave;
+      return props.provider.autoSave;
     });
 
     const fullTags = ref<Storage.FullTags>();
@@ -187,7 +188,7 @@ export default {
         console.log("PageNode.reloadNode", currentSelection.value);
         accessModal.value = false;
         loading.value = t('loading.node');
-        fullTags.value = new Map(JSON.parse(JSON.stringify([...await provider.getFullTags(reloadTags)])));
+        fullTags.value = new Map(JSON.parse(JSON.stringify([...await props.provider.getFullTags(reloadTags)])));
         console.log("PageNode.reloadNode.fullTags", fullTags.value);
         // 如果没有取到，那么会返回默认的tags
         if (fullTags.value.size === 0) {
@@ -208,7 +209,7 @@ export default {
               }
           )
         }
-        const originNodeData = await provider.getNode(fileId.value, currentSelection.value.id);
+        const originNodeData = await props.provider.getNode(fileId.value, currentSelection.value.id);
         const nodeData = <Storage.Node> originNodeData ? JSON.parse(JSON.stringify(originNodeData)) : undefined;
         if (keepCheck && nodeData) {
           nodeData.tags = Utils.contextTagTree2ContextNode(tagTree.value);
@@ -236,7 +237,7 @@ export default {
 
     watch(currentSelection, () => {
       // selection改变时，自动刷新当前已选中的frame
-      if (provider.type === 'document' || fileId.value) {
+      if (props.provider.type === 'document' || fileId.value) {
         reloadNode(false, false);
       }
     });
@@ -269,7 +270,7 @@ export default {
     // 手动添加Tag（伪保存）
     const addTag = (tagType: string, tag: Storage.Tag) => {
       if (tagTree.value) {
-        if (tagTree.value.flatMap(type => [...type.tags.values()]).flat().find(t => t.name === tag.name)) {
+        if (tagTree.value.filter(type => type.type === tagType).flatMap(type => [...type.tags.values()]).flat().find(t => t.name === tag.name)) {
           return; // 重复了
         }
         Utils.newTagToTagTree(tagTree.value, tagType, tag);
@@ -296,7 +297,7 @@ export default {
             [nameFrom]: tag.name
           }
         };
-        await provider.updateFullTags(fullTags.value, tagRenames);
+        await props.provider.updateFullTags(fullTags.value, tagRenames);
         await reloadNode(true, true);
         loading.value = undefined;
         if (needAutoSave.value) {
@@ -321,7 +322,7 @@ export default {
             tags.splice(i, 1);
           }
         }
-        await provider.updateFullTags(fullTags.value, {});
+        await props.provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
         loading.value = undefined;
         if (needAutoSave.value) {
@@ -343,7 +344,7 @@ export default {
           name: tagType,
           tags: []
         });
-        await provider.updateFullTags(fullTags.value, {});
+        await props.provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
         //tagTree.value = Utils.storageTags2ContextTagTree(node.value.tags, fullTags.value);
       } catch (e) {
@@ -358,7 +359,7 @@ export default {
       console.log("deleteTagType", tagType);
       try {
         fullTags.value.delete(tagType);
-        await provider.updateFullTags(fullTags.value, {});
+        await props.provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
         if (needAutoSave.value) {
           await toSave();
@@ -380,7 +381,7 @@ export default {
           return;
         }
         loading.value = t("saving.tag");
-        await provider.renameTagType(oldName, newName);
+        await props.provider.renameTagType(oldName, newName);
         await reloadNode(false, true);
       } catch (e) {
         loading.value = t('loading.error');
@@ -411,6 +412,18 @@ export default {
         return false;
       }
     });
+
+    const onDragTag = async (tagType: Context.TagType, childTagType: string) => {
+      console.log("PageNode.onDragTag", tagType, childTagType);
+      if (props.provider.autoSave) {
+        loading.value = t('saving.node', [' (tags)']);
+        fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
+        if (!Utils.equalsFullTags(await props.provider.getFullTags(), fullTags.value)) {
+          await props.provider.updateFullTags(fullTags.value, {});
+        }
+        loading.value = undefined;
+      }
+    }
 
     // 保存Node
     const toSave = async (force: boolean = false) => {
@@ -445,14 +458,14 @@ export default {
         loading.value = t('saving.node', [' (tags)']);
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         if (!Utils.equalsFullTags(await props.provider.getFullTags(), fullTags.value)) {
-          await provider.updateFullTags(fullTags.value, {});
+          await props.provider.updateFullTags(fullTags.value, {});
         }
         loading.value = t('saving.node', [' (storage)']);
         if (Object.keys(node.value.tags).length > 0) {
-          await provider.saveNode(fileId.value, node.value.node_id, node.value);
+          await props.provider.saveNode(fileId.value, node.value.node_id, node.value);
           node.value.saved = true;
         } else if (node.value.saved) {
-          await provider.deleteNode(fileId.value, node.value.node_id);
+          await props.provider.deleteNode(fileId.value, node.value.node_id);
           node.value.saved = false;
         }
         if (node.value.cover === "") {
@@ -478,7 +491,7 @@ export default {
       try {
         const nodeId = currentSelection.value.id;
         loading.value = t('delete.node');
-        await provider.deleteNode(fileId.value, nodeId);
+        await props.provider.deleteNode(fileId.value, nodeId);
         dispatch('canvas-unmark-node', nodeId);
         loading.value = t('loading.node');
         await reloadNode(false, false);
@@ -521,8 +534,8 @@ export default {
     }
 
     return {
-      provider, loading, fileId, currentSelection, showFileInit, needAutoSave, fullTags, node, tagTree, collectTags, accessModal, fileIdModal, requestAccessToken,
-      reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, removeTag, selectTag, toSave, toDelete, openSettings, accessModalIgnore, accessModalSubmit, fileIdModalSubmit
+      loading, fileId, currentSelection, showFileInit, needAutoSave, fullTags, node, tagTree, collectTags, accessModal, fileIdModal, requestAccessToken,
+      reloadNode, onSetFileId, addTag, editTag, deleteTag, addTagType, deleteTagType, editTypeName, removeTag, selectTag, onDragTag, toSave, toDelete, openSettings, accessModalIgnore, accessModalSubmit, fileIdModalSubmit
     }
 
   }

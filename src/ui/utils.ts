@@ -201,8 +201,11 @@ export function findColorName(color: Transfer.TagColor) {
 }
 
 export function randomTagColor() : TagColor {
-    const index = Math.round(Math.random() * Object.values(tagColors).length);
+    const index = Math.round(Math.random() * Object.values(tagColors).length - 1);
     const json = JSON.stringify(tagColors[Object.keys(tagColors)[index]]);
+    if (json === undefined || json.length === 0) {
+        console.error("randomTagColor", index, Object.keys(tagColors)[index]);
+    }
     console.log("randomTagColor", json);
     return JSON.parse(json);
 }

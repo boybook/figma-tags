@@ -1,6 +1,6 @@
 <template>
   <!-- 下拉框 -->
-  <div ref="select_button" class="tk-select-button" @click="selectOpen = !selectOpen">
+  <div ref="select_button" class="tk-select-button" @click.stop="selectOpen = !selectOpen">
     <!-- 选中内容 -->
     <slot name="selectButton">
       <div class="tk-select-button-input" :class="'tk-select-button-input--size-' + size">
@@ -73,7 +73,7 @@ export default {
         left: `${dropdownPosition.value.x}px`,
         top: `${dropdownPosition.value.y}px`,
         width: `${props.minWidth ? Math.max(props.minWidth, dropdownPosition.value.w) : dropdownPosition.value.w}px`,
-        maxHeight: props.maxHeight ? `${props.maxHeight}px` : 'auto'
+        maxHeight: props.maxHeight ? `${props.maxHeight}px` : ((document.body.clientHeight - select_button.value?.getBoundingClientRect().y - 44) + "px")  // TODO 根据绝对位置来限制高度
       }
     })
 

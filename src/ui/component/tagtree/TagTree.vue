@@ -11,6 +11,7 @@
           @delete-tag-type="(typeName) => $emit('deleteTagType', typeName)"
           @edit-tag="(nameFrom, tag) => $emit('editTag', tagType.type, nameFrom, tag)"
           @delete-tag="(tagName) => $emit('deleteTag', tagType.type, tagName)"
+          @drag-tag="onDragTag"
       />
     </li>
     <li v-if="operable">
@@ -44,10 +45,14 @@ export default {
     'deleteTagType',
     'addTag',
     'editTag',
-    'deleteTag'
+    'deleteTag',
+    'dragTag'
   ],
   setup(props, context) {
-    return { }
+    const onDragTag = (tagType: Context.TagType, childTagType: string) => {
+      context.emit('dragTag', tagType, childTagType);
+    }
+    return { onDragTag }
   }
 }
 </script>

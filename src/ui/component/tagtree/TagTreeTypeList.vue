@@ -8,6 +8,7 @@
           @edit-tag="editTag"
           @delete-tag="deleteTag"
           @select-tag="onSelectTag"
+          @drag-tag="onDragTag"
       />
     </li>
   </ul>
@@ -29,7 +30,7 @@ export default {
       default: true
     }
   },
-  emits: [ "selectTag", "editTag" ],
+  emits: [ "selectTag", "editTag", "dragTag" ],
   setup(props, context) {
     const childList = computed(() => [...props.tagType.tags.entries()]);
     const onSelectTag = (tag, check) => {
@@ -45,7 +46,10 @@ export default {
     const deleteTag = (tagName: string) => {
       context.emit('deleteTag', tagName);
     }
-    return { childList, onSelectTag, editTag, deleteTag }
+    const onDragTag = (childTagType: string, _) => {
+      context.emit('dragTag', props.tagType, childTagType);
+    }
+    return { childList, onSelectTag, editTag, deleteTag, onDragTag }
   }
 }
 

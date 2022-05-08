@@ -35,6 +35,7 @@
       @select-tag="onSelectTag"
       @edit-tag="(nameFrom, tag) => $emit('editTag', nameFrom, tag)"
       @delete-tag="(tagName) => $emit('deleteTag', tagName)"
+      @drag-tag="onDragTag"
   />
 </template>
 
@@ -72,7 +73,8 @@ export default {
     'editTag',
     'deleteTag',
     'editTypeName',
-    'deleteTagType'
+    'deleteTagType',
+    'dragTag'
   ],
   setup(props, context) {
     const addingTag = ref(false);
@@ -96,8 +98,11 @@ export default {
     });
     const editTypeName = (typeName: string) => {
       context.emit('editTypeName', typeName);
+    };
+    const onDragTag = (tagType: Context.TagType, childTagType: string) => {
+      context.emit('dragTag', tagType, childTagType);
     }
-    return { Utils, addingTag, isTagTypeEmpty, addTag, onSelectTag, editTypeName }
+    return { Utils, addingTag, isTagTypeEmpty, addTag, onSelectTag, editTypeName, onDragTag }
   }
 }
 </script>

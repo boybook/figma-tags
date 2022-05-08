@@ -55,7 +55,7 @@ export default {
         editing.value = false;
         return;  // Nothing changed!
       }
-      if (props.tag.isNew || confirm(t('tag.edit.confirm', [newTagName]))) {
+      //if (props.tag.isNew || confirm(t('tag.edit.confirm', [newTagName]))) {
         const newTag : Storage.Tag = {
           name: newTagName,
           color: color ? color.color : props.tag.color,
@@ -63,7 +63,7 @@ export default {
         };
         const nameFrom = props.tag.name;
         context.emit('editTag', nameFrom, newTag);
-      }
+      //}
       editing.value = false;
     }
     const tryDelete = () => {

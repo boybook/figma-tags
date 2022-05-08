@@ -1,4 +1,4 @@
-const offset = 49;
+const offset = 63;
 
 const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
     const node: BaseNode = figma.getNodeById(nodeData.node_id);
@@ -53,8 +53,8 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
                     family: "Inter",
                     style: "Semi Bold"
                 };
-                text.lineHeight = { value: 21, unit: 'PIXELS' };
-                text.fontSize = 14;
+                text.lineHeight = { value: 27, unit: 'PIXELS' };
+                text.fontSize = 18;
                 text.characters = tag.name;
                 text.fills = [{
                     type: "SOLID",
@@ -73,8 +73,8 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
                 frame.layoutMode = "HORIZONTAL";
                 frame.primaryAxisSizingMode = "AUTO";
                 frame.counterAxisSizingMode = "AUTO";
-                frame.paddingTop = 4;
-                frame.paddingBottom = 4;
+                frame.paddingTop = 6;
+                frame.paddingBottom = 6;
                 frame.paddingLeft = 16;
                 frame.paddingRight = 16;
                 frame.cornerRadius = 4;
@@ -95,6 +95,7 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
             });
             const group = figma.group([root], page);
             group.name = "Tag#" + nodeData.node_id;
+            group.locked = true;
             page.appendChild(group);
             page.setPluginData(nodeData.node_id, group.id);
         }).catch(e => {

@@ -13,8 +13,8 @@ let uiShowed = false;
 // figma.clientStorage.setAsync("nodes", undefined).then();
 // figma.clientStorage.setAsync("language", "ch").then();
 // figma.clientStorage.setAsync("provider", undefined).then();
-figma.clientStorage.setAsync("access-token", undefined).then();
-figma.root.setPluginData("file-id", "");
+// figma.clientStorage.setAsync("access-token", undefined).then();
+// figma.root.setPluginData("file-id", "");
 // figma.root.setPluginData("tags", "");
 // figma.root.setPluginData("nodes", "");
 

@@ -9,7 +9,7 @@ export class DataProviderBlobSave implements DataProvider {
 
     type = 'local';
 
-    autoSave: true;
+    autoSave = true;
 
     private blob: BlobProvider;
 

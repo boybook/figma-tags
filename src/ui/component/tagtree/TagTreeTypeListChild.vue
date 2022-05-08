@@ -1,7 +1,7 @@
 <template>
   <ul v-if="childTags.length > 0" class="sub-type">
     <li class="sub-type-title" v-if="childTagType.length > 0"> {{ childTagType }} </li>
-    <draggable :list="childTags" :disabled="!operable" animation="100" item-key="name" handle=".icon-drag" class="draggable-ul">
+    <draggable :list="childTags" :disabled="!operable" @change="onDrag" animation="100" item-key="name" handle=".icon-drag" class="draggable-ul">
       <template #item="{ element }">
         <li :key="element.name">
           <TagTreeTypeListEntry
@@ -34,7 +34,7 @@ export default {
     childTagType: String,
     childTags: Object as PropType<Context.Tag[]>
   },
-  emits: [ 'update:childTags', 'selectTag', 'editTag', 'deleteTag' ],
+  emits: [ 'update:childTags', 'selectTag', 'editTag', 'deleteTag', 'dragTag' ],
   setup(props, context) {
     watch(
         () => props.childTags,
@@ -45,7 +45,10 @@ export default {
     const onSelectTag = (tag: Context.Tag, check: boolean) => {
       context.emit('selectTag', tag, check);
     }
-    return { onSelectTag }
+    const onDrag = () => {
+      context.emit('dragTag', props.childTagType, props.childTags);
+    }
+    return { onSelectTag, onDrag }
   }
 }
 </script>

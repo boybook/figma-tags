@@ -333,7 +333,7 @@ export default {
 
     // Cloud
     watch(providerCurrent,  async (newVal) => {
-      if (newVal === 3 && providerConfigs.value.cloud.uuid === undefined) {
+      if (newVal === 2 && providerConfigs.value.cloud.uuid === undefined) {
         const re = await fetch("https://figma-tags-figma-tags-vnviuyqxwp.cn-hangzhou.fcapp.run/user/def_uuid/" + props.initData.userId);
         if (re.ok) {
           const result = await re.json();
