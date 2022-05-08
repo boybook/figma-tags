@@ -43,6 +43,7 @@ declare namespace Transfer {
         language: string,
         accessToken?: string,
         userId: string
+        userName: string,
         provider: string,
         nodeType: 'document' | 'frame',
         page: Page,

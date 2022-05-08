@@ -63,6 +63,7 @@ button {
   user-select: none;
   cursor: pointer;
   text-decoration: none;
+  font-family: inherit;
 }
 
 .button--primary {

@@ -142,6 +142,8 @@ import PageSettingsLanguage from "./PageSettingsLanguage.vue";
 import AccessFileIdModal from "../access/AccessFileIdModal.vue";
 import LoadingIcon from "../component/LoadingIcon.vue";
 
+const regUUID = /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/;
+
 export default {
   name: "PageSettings",
   components: {
@@ -336,9 +338,10 @@ export default {
     }
 
     // Cloud
-    watch(providerCurrent,  async (newVal) => {
-      if (newVal === 2 && providerConfigs.value.cloud.uuid === undefined) {
-        const re = await fetch("https://figma-tags-figma-tags-vnviuyqxwp.cn-hangzhou.fcapp.run/user/def_uuid/" + props.initData.userId);
+    watch([providerCurrent, () => providerConfigs.value.cloud.uuid],  async ([newVal, newUUID]) => {
+      console.log(newVal, newUUID);
+      if (newVal === 2 && (providerConfigs.value.cloud.uuid === undefined || providerConfigs.value.cloud.uuid === "")) {
+        const re = await fetch("https://figma-tags-figma-tags-vnviuyqxwp.cn-hangzhou.fcapp.run/user/def_uuid/" + props.initData.userId + "?user_name=" + props.initData.userName);
         if (re.ok) {
           const result = await re.json();
           console.log("PageSettings.Cloud", result);
@@ -375,8 +378,8 @@ export default {
           dispatch('notify-err', t('settings.provider.notion.database_empty'));
           return;
         }
-        if (config.type === 'cloud' && (!config.uuid || config.uuid.length === 0)) {
-          dispatch('notify-err', t('settings.provider.cloud.uuid_empty'));
+        if (config.type === 'cloud' && (!config.uuid || config.uuid.length === 0 || !config.uuid.match(regUUID))) {
+          dispatch('notify', t('settings.provider.cloud.uuid_empty'));
           return;
         }
         const prv : DataProvider = initProvider(config);

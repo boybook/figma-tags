@@ -6,9 +6,9 @@ export const messages = {
         },
         type: {
             document: "File",
-            document_notify: "📖  Toggled to 'File', Tagging to the whole file.",
-            frame: "Frame",
-            frame_notify: "🏷  Toggled to 'Frame', please select a frame to tag it."
+            document_notify: "📖  File mode, tagging to the whole file.",
+            frame: "Page / Frame",
+            frame_notify: "🏷  Frame mode, please select a frame and tag it."
         },
         file_id: {
             placeholder: "Start with the file URL",
@@ -34,7 +34,8 @@ export const messages = {
             save: "Save",
             cancel: "Cancel",
             ignore: "Ignore",
-            ok: "OK"
+            ok: "Confirm",
+            next: "Next"
         },
         default_tag: {
             type: "Status",
@@ -60,7 +61,7 @@ export const messages = {
                 confirm: "Delete the type \"{0}\"?\n\nIt will be updated to other nodes."
             },
             select: {
-                button: "查阅"
+                button: "Preview"
             }
         },
         tag: {
@@ -82,11 +83,13 @@ export const messages = {
             sort: "Sort",
             empty_title: "Nothing here",
             empty_intro: "You will easily manage everything across files",
+            empty_document_intro: "You will easily manage tags in this file.",
+            empty_document_extra_intro: "For cross-file management, set the Cloud data source in Settings.",
             empty_button: "Start Now",
             alert: {
-                token: "Previews require the Figma Token license to generate.",
-                token_file: "Previews require the Figma Token license and File URL to generate.",
-                button: "License"
+                token: "Previews require personal access token license to generate.",
+                token_file: "Previews require personal access tokens and file URL to generate.",
+                button: "Get PAT"
             }
         },
         settings: {
@@ -105,12 +108,12 @@ export const messages = {
                 init_failed: "😵  Data Source connection failure!",
                 document: {
                     name: "Document",
-                    title: "Storage in the Document",
-                    content: "Stored in the Figma document, but data is not communicated between files. Switch to another data source if you want to cross files."
+                    title: "Stored in current Document",
+                    content: "Stored in the current document, but data is not communicated between files. Switch to another data source if you want to cross files."
                 },
                 local: {
                     name: "Local",
-                    title: "Stored in this device",
+                    title: "Stored on this device",
                     content: "Data is stored locally, but only for personal use. If multiple people collaborate, switch data sources.",
                     export_json: "Export JSON",
                     export_json_fail: "JSON export failed!",
@@ -120,9 +123,9 @@ export const messages = {
                 },
                 cloud: {
                     name: "Cloud",
-                    title: "Coming soon!",
+                    title: "Cloud alpha",
                     content: "Data hosting services with full features, and you will be able to teamwork across Figma accounts through UUID.",
-                    uuid_empty: "Enter the UUID first"
+                    uuid_empty: "❗️  The UUID is incorrect."
                 },
                 oss: {
                     name: "Custom OSS"
@@ -145,14 +148,14 @@ export const messages = {
         },
         access: {
             token: {
-                title: "License for Figma Token",
+                title: "License for Access Token",
                 intro: "Authorization to Figma Access Token is required for generating preview images.",
                 step1: "Step1: Open the URL.",
                 step2: "Step2: Click and paste the Access Token below.",
                 placeholder: "Paste the token here",
                 error: "Maybe the token is incorrect?",
                 demo: "Sample",
-                suc: "✅  Figma Token saved!"
+                suc: "✅  Figma Access Token saved!"
             },
             file_id: {
                 title: "Locate the File URL",
@@ -173,7 +176,7 @@ export const messages = {
         type: {
             document: "文件",
             document_notify: "📖  已切换至「文件」，将给整个文件打标签",
-            frame: "Frame",
+            frame: "Page / Frame",
             frame_notify: "🏷  已切换至「Frame」，请选中Frame来打标签"
         },
         file_id: {
@@ -221,10 +224,10 @@ export const messages = {
                 placeholder: "分类名称"
             },
             edit: {
-                confirm: "确认重命名为 \"{0}\"?\n\n重命名后，将同时更新到其他Node"
+                confirm: "确认重命名为 \"{0}\"?\n\n重命名后，将同时更新到其他 Node"
             },
             delete: {
-                confirm: "确认删除分类 \"{0}\"?\n\n删除后，将同时更新到其他Node"
+                confirm: "确认删除分类 \"{0}\"?\n\n删除后，将同时更新到其他 Node"
             },
             select: {
                 button: "查阅"
@@ -249,10 +252,12 @@ export const messages = {
             sort: "排序",
             empty_title: "这里看起来空空如也",
             empty_intro: "你将在此方便地「跨文件」管理所有内容",
+            empty_document_intro: "你将在此方便地管理本文件中的 Tag",
+            empty_document_extra_intro: "如需跨文件管理，可在设置中切换为「云同步」数据源",
             empty_button: "从打标签开始",
             alert: {
-                token: "部分预览图需要授权 Figma Token 来生成",
-                token_file: "部分预览图需要授权 Figma Token 和 填写文件URL 来生成",
+                token: "部分预览图需要授权 Figma Access Token 来生成",
+                token_file: "部分预览图需要授权 Figma Access Token 和 填写文件URL 来生成",
                 button: "前往授权"
             }
         },
@@ -287,9 +292,9 @@ export const messages = {
                 },
                 cloud: {
                     name: "云同步",
-                    title: "云同步",
+                    title: "云同步 alpha",
                     content: "支持完整功能的云储存。如需协作，可让他人填入该UUID。",
-                    uuid_empty: "请先输入UUID"
+                    uuid_empty: "❗️  UUID 格式有误？"
                 },
                 oss: {
                     name: "自定义OSS"
@@ -313,13 +318,13 @@ export const messages = {
         access: {
             token: {
                 title: "授权生成预览图",
-                intro: "为了后续展示预览图，需要授权获取 Figma Token",
+                intro: "为了后续展示预览图，需要授权获取 Figma Access Token",
                 step1: "第1步：点击打开网页",
                 step2: "第2步：点击如图所示位置，复制生成的 access token 到下方输入框中",
                 placeholder: "请点击网页中如图所示位置，获取token",
                 error: "似乎你输入的token不正确？",
                 demo: "示例图",
-                suc: "✅  Figma Token 已保存"
+                suc: "✅  Figma Access Token 已保存"
             },
             file_id: {
                 title: "填写文件URL",

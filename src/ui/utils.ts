@@ -10,7 +10,7 @@ export function newTagToTagTree(tagTree: Context.TagTree, tagTypeName: string, t
         }
         const treeTag: Context.Tag = {
             isNew: true,
-            check: true,
+            check: false,
             id: tag.id,
             name: tag.name,
             color: tag.color,

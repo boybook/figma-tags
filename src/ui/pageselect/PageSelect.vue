@@ -1,10 +1,18 @@
 <template>
   <div class="page-select">
     <div v-if="tagTree?.length === 0" class="page-select-empty">
+      <div class="page-select-wrapper-empty-tabs">
+        <Tabs
+            :current="1"
+            :contents="[$t('page.tags'), $t('page.preview')]"
+            @toggle="tabToggle"
+        />
+      </div>
       <img :src="require('../resource/empty.svg')" alt="empty">
-      <p style="margin: 4px 0 0 0"> {{ $t('lookup.empty_title') }} </p>
-      <p style="margin: 4px 0 16px 0"> {{ $t('lookup.empty_intro') }} </p>
-      <FigButton type="primary" @click="togglePage('PageNode')"> {{ $t('lookup.empty_button') }} </FigButton>
+      <p v-if="provider.type !== 'document'" style="margin: 4px 0 0 0"> {{ $t('lookup.empty_title') }} </p>
+      <p style="margin: 4px 0 0 0"> {{ provider.type === 'document' ? $t('lookup.empty_document_intro') : $t('lookup.empty_intro') }} </p>
+      <p v-if="provider.type === 'document'" style="margin: 4px 0 0 0"> {{ $t('lookup.empty_document_extra_intro') }} </p>
+      <FigButton type="primary" @click="togglePage('PageNode')" style="margin-top: 16px"> {{ $t('lookup.empty_button') }} </FigButton>
     </div>
     <div class="page-select-wrapper-tree" v-if="tagTree?.length > 0">
       <div class="page-select-wrapper-tree-tabs">
@@ -61,7 +69,6 @@
         <AccessFileIdModal v-if="fileIdModal" @ignore="fileIdModal=false" @submit="fileIdModalSubmit" />
       </div>
     </transition>
-    <!--  TODO 为了生成预览图，则必须获取本文件的URL  -->
   </div>
 </template>
 
@@ -193,7 +200,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 0 32px;
+  padding: 0 0 24px;
   font-size: 12px;
   line-height: 18px;
   color: rgba(0, 0, 0, 0.45);
@@ -316,6 +323,17 @@ export default {
 .page-select-wrapper-tree-tabs {
   position: fixed;
   width: 176px;
+  align-self: stretch;
+  background-color: #f8f8f8e0;
+  box-shadow: inset 0 -1px 0 #eee;
+  backdrop-filter: blur(16px);
+  z-index: 99;
+}
+
+.page-select-wrapper-empty-tabs {
+  position: fixed;
+  width: 100%;
+  top: 0;
   align-self: stretch;
   background-color: #f8f8f8e0;
   box-shadow: inset 0 -1px 0 #eee;

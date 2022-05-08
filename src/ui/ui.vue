@@ -74,7 +74,7 @@ export default {
         locale.value = data.language;
         initData.value = data;
         page.value = data.page;
-        if (!initData.value.provider) initData.value.provider = JSON.stringify({ type: 'document' });
+        if (!initData.value.provider) initData.value.provider = JSON.stringify({ type: 'local' });
         const prv: DataProvider = initProvider(JSON.parse(initData.value.provider));
         const prvError = await prv.testError();
         if (!prvError) {
@@ -82,8 +82,8 @@ export default {
         } else {
           console.log("Provider init failed!", prvError);
           dispatch('notify-err', t('settings.provider.init_failed'));
-          initData.value.provider = JSON.stringify({ type: 'document' });
-          setProvider(initProvider({ type: 'document' }));
+          initData.value.provider = JSON.stringify({ type: 'local' });
+          setProvider(initProvider({ type: 'local' }));
         }
       });
     });

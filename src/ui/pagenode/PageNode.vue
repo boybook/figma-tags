@@ -238,9 +238,7 @@ export default {
 
     watch(currentSelection, () => {
       // selection改变时，自动刷新当前已选中的frame
-      if (props.provider.type === 'document' || fileId.value) {
-        reloadNode(false, false);
-      }
+      reloadNode(false, false);
     });
 
     // watch(fileId, () => {
@@ -289,6 +287,12 @@ export default {
       try {
         loading.value = t('saving.tag');
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
+        const oldFullTags = await props.provider.getFullTags(false);
+        for (let type of oldFullTags.keys()) {
+          if (fullTags.value.has(type)) {
+            fullTags.value.get(type).view_sort = oldFullTags.get(type).view_sort;
+          }
+        }
         const target = fullTags.value.get(tagType)?.tags.find(t => t.id === tagId);
         target.name = tag.name;
         target.color = tag.color;
@@ -300,6 +304,7 @@ export default {
         };
         await props.provider.updateFullTags(fullTags.value, tagRenames);
         await reloadNode(true, true);
+        dispatch("canvas-refresh-all-marks", JSON.stringify([...fullTags.value.entries()]));
         loading.value = undefined;
         if (needAutoSave.value) {
           await toSave();
@@ -325,6 +330,7 @@ export default {
         }
         await props.provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
+        dispatch("canvas-refresh-all-marks", JSON.stringify([...fullTags.value.entries()]));
         loading.value = undefined;
         if (needAutoSave.value) {
           await toSave();
@@ -362,6 +368,7 @@ export default {
         fullTags.value.delete(tagType);
         await props.provider.updateFullTags(fullTags.value, {});
         await reloadNode(true, true);
+        dispatch("canvas-refresh-all-marks", JSON.stringify([...fullTags.value.entries()]));
         if (needAutoSave.value) {
           await toSave();
         }
@@ -456,6 +463,7 @@ export default {
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
         if (!Utils.equalsFullTags(await props.provider.getFullTags(), fullTags.value)) {
           await props.provider.updateFullTags(fullTags.value, {});
+          dispatch("canvas-refresh-all-marks", JSON.stringify([...fullTags.value.entries()]));
         }
         loading.value = t('saving.node', [' (storage)']);
         if (Object.keys(node.value.tags).length > 0) {

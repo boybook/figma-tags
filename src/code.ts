@@ -1,6 +1,6 @@
 import { dispatch, handleEvent } from './codeMessageHandler';
 import SelectionChange = Transfer.CurrentSelection;
-import { interval, markNode, unmarkNode } from "./codeCanvasTag";
+import { interval, markNode, unmarkNode, refreshFileAllMarks } from "./codeCanvasTag";
 import WindowResize = Transfer.WindowResize;
 import PageNode from "./ui/pagenode/PageNode.vue";
 import NodeRename = Transfer.NodeRename;
@@ -12,7 +12,7 @@ let uiShowed = false;
 // figma.clientStorage.setAsync("tags", undefined).then();
 // figma.clientStorage.setAsync("nodes", undefined).then();
 // figma.clientStorage.setAsync("language", "ch").then();
-// figma.clientStorage.setAsync("provider", undefined).then();
+// figma.clientStorage.setAsync("provider", undefined).then();h
 // figma.clientStorage.setAsync("access-token", undefined).then();
 // figma.root.setPluginData("file-id", "");
 // figma.root.setPluginData("tags", "");
@@ -46,6 +46,7 @@ switch (figma.command) {
 				language: language ? language : "en",
 				accessToken: accessToken,
 				userId: figma.currentUser.id,
+				userName: figma.currentUser.name,
 				provider: provider,
 				nodeType: mNodeType,
 				page: 'PageSelect',
@@ -65,6 +66,7 @@ switch (figma.command) {
 				language: language ? language : "en",
 				accessToken: accessToken,
 				userId: figma.currentUser.id,
+				userName: figma.currentUser.name,
 				provider: provider,
 				nodeType: mNodeType,
 				page: 'PageNode',
@@ -152,6 +154,13 @@ handleEvent('canvas-mark-node', (data: Transfer.CanvasSignNode) => {
 
 handleEvent('canvas-unmark-node', (nodeId: string) => {
 	unmarkNode(nodeId);
+});
+
+handleEvent('canvas-refresh-all-marks', (fullTagsJson: string) => {
+	console.log("canvas-refresh-all-marks.json", fullTagsJson);
+	const fullTags: Storage.FullTags = new Map(JSON.parse(fullTagsJson));
+	console.log("canvas-refresh-all-marks.map", fullTags);
+	refreshFileAllMarks(fullTags);
 });
 
 handleEvent('request-selection', () => {

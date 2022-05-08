@@ -98,6 +98,7 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
             group.locked = true;
             page.appendChild(group);
             page.setPluginData(nodeData.node_id, group.id);
+            node.setSharedPluginData("figma_tags", "node", JSON.stringify(nodeData));  // 可在Tag重命名时，本地更新名称；可用于其他插件读取
         }).catch(e => {
             figma.notify("Font family not found!", { error: true });
             console.log(e);
@@ -109,12 +110,24 @@ const unmarkNode = (nodeId: string) => {
     const node: BaseNode = figma.getNodeById(nodeId);
     if (node && isEmbedNodeLike(node)) {
         node.setRelaunchData({});
+        node.setSharedPluginData("figma_tags", "node", "");
 
         const page = getPageNode(node);
 
         const tileNodeId = page.getPluginData(nodeId);
         if (tileNodeId) {
             figma.getNodeById(tileNodeId)?.remove();
+        }
+    }
+}
+
+const refreshFileAllMarks = (fullTags: Storage.FullTags) => {
+    for (let page of figma.root.children) {
+        for (let node of page.children.filter(c => c.getSharedPluginData("figma_tags", "node"))) {
+            const nodeData = JSON.parse(node.getSharedPluginData("figma_tags", "node"));
+            if (nodeData) {
+                markNode(fullTags, nodeData);
+            }
         }
     }
 }
@@ -147,4 +160,4 @@ const interval = setInterval(() => {
 
 console.log("codeCanvasTag init!");
 
-export { interval, markNode, unmarkNode }
+export { interval, markNode, unmarkNode, refreshFileAllMarks }
