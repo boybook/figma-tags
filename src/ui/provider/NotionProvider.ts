@@ -129,7 +129,7 @@ export class NotionProvider implements DataProvider {
             for (let key of Object.keys(e['properties'])) {
                 const value = e['properties'][key];
                 if (value.type === 'multi_select') {
-                    tags[key] = value.multi_select.map(s => s.name);
+                    tags[key] = value.multi_select.map(s => s.id);
                 }
             }
             return {
@@ -174,6 +174,8 @@ export class NotionProvider implements DataProvider {
             },
         });
 
+        const fullTags = await this.getFullTags(false);
+
         const properties = {};
 
         for (let tagType in node.tags) {
@@ -182,7 +184,7 @@ export class NotionProvider implements DataProvider {
             };
             for (let tag of node.tags[tagType]) {
                 properties[tagType].multi_select.push({
-                    name: tag
+                    name: fullTags.get(tagType)?.tags.find(t => t.id === tag)?.name
                 });
             }
             properties["Name"] = {

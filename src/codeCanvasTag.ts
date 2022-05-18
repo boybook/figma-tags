@@ -10,7 +10,7 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
         const page = getPageNode(node);
         if (page.id === node.id) return;
 
-        const tileNodeId = page.getPluginData(nodeData.node_id);
+        const tileNodeId = node.getSharedPluginData("figma_tags", "tile_node_id");
         if (tileNodeId) {
             figma.getNodeById(tileNodeId)?.remove();
         }
@@ -97,7 +97,7 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
             group.name = "Tag#" + nodeData.node_id;
             group.locked = true;
             page.appendChild(group);
-            page.setPluginData(nodeData.node_id, group.id);
+            node.setSharedPluginData("figma_tags", "tile_node_id", group.id);
             node.setSharedPluginData("figma_tags", "node", JSON.stringify(nodeData));  // 可在Tag重命名时，本地更新名称；可用于其他插件读取
         }).catch(e => {
             figma.notify("Font family not found!", { error: true });
@@ -112,9 +112,7 @@ const unmarkNode = (nodeId: string) => {
         node.setRelaunchData({});
         node.setSharedPluginData("figma_tags", "node", "");
 
-        const page = getPageNode(node);
-
-        const tileNodeId = page.getPluginData(nodeId);
+        const tileNodeId = node.getSharedPluginData("figma_tags", "tile_node_id");
         if (tileNodeId) {
             figma.getNodeById(tileNodeId)?.remove();
         }
@@ -143,21 +141,28 @@ function getPageNode(node: BaseNode): PageNode {
     return <PageNode> node;
 }
 
-const interval = setInterval(() => {
-    for (let el of figma.currentPage.selection) {
-        const tileNodeId = figma.currentPage.getPluginData(el.id);
-        if (tileNodeId) {
-            const tileNode = figma.getNodeById(tileNodeId);
-            if (tileNode && (tileNode.type === 'GROUP' || tileNode.type === 'FRAME')) {
-                if (tileNode.x != el.x || tileNode.y != el.y - offset) {
-                    tileNode.x = el.x;
-                    tileNode.y = el.y - offset;
-                }
+function checkNodeTilePos(node: SceneNode) {
+    const tileNodeId = node.getSharedPluginData("figma_tags", "tile_node_id");
+    if (tileNodeId) {
+        const tileNode = figma.getNodeById(tileNodeId);
+        if (tileNode && (tileNode.type === 'GROUP' || tileNode.type === 'FRAME')) {
+            if (tileNode.parent != node.parent) {
+                node.parent.appendChild(tileNode);
+            }
+            if (tileNode.x != node.x || tileNode.y != node.y - offset) {
+                tileNode.x = node.x;
+                tileNode.y = node.y - offset;
             }
         }
+    }
+}
+
+const interval = setInterval(() => {
+    for (let el of figma.currentPage.selection) {
+        checkNodeTilePos(el);
     }
 }, 50);
 
 console.log("codeCanvasTag init!");
 
-export { interval, markNode, unmarkNode, refreshFileAllMarks }
+export { interval, markNode, unmarkNode, refreshFileAllMarks, checkNodeTilePos }

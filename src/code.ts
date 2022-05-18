@@ -1,6 +1,6 @@
 import { dispatch, handleEvent } from './codeMessageHandler';
 import SelectionChange = Transfer.CurrentSelection;
-import { interval, markNode, unmarkNode, refreshFileAllMarks } from "./codeCanvasTag";
+import { interval, markNode, unmarkNode, refreshFileAllMarks, checkNodeTilePos } from "./codeCanvasTag";
 import WindowResize = Transfer.WindowResize;
 import PageNode from "./ui/pagenode/PageNode.vue";
 import NodeRename = Transfer.NodeRename;
@@ -43,7 +43,7 @@ switch (figma.command) {
 			mNodeType = provider === 'document' ? 'frame' : (nodeType ? nodeType : 'frame');
 			checkSelectCanvasTag();
 			dispatch("init", <Transfer.InitData> {
-				language: language ? language : "en",
+				language: language ? language : (navigator.language?.startsWith("zh") ? "cn" : "en"),
 				accessToken: accessToken,
 				userId: figma.currentUser.id,
 				userName: figma.currentUser.name,
@@ -63,7 +63,7 @@ switch (figma.command) {
 			mNodeType = provider === 'document' ? 'frame' : (nodeType ? nodeType : 'frame');
 			checkSelectCanvasTag();
 			dispatch("init", <Transfer.InitData> {
-				language: language ? language : "en",
+				language: language ? language : (navigator.language?.startsWith("zh") ? "cn" : "en"),
 				accessToken: accessToken,
 				userId: figma.currentUser.id,
 				userName: figma.currentUser.name,
@@ -199,6 +199,28 @@ handleEvent('toggle-node-type', (type: 'document' | 'frame') => {
 });
 
 figma.on("selectionchange", () => {
+	if (figma.currentPage.selection.length === 0) {
+		// 需要检查一下移动至其他Page
+		for (let page of figma.root.children) {
+			for (let el of page.children.filter(c => c.getSharedPluginData("figma_tags", "node"))) {
+				checkNodeTilePos(el);
+			}
+		}
+		//TODO 处理删除（请求provider删除）
+	} else {
+		// 检查复制，脱离与原来的联系
+		for (let el of figma.currentPage.selection) {
+			// 如果是复制来的（Plugin数据中的NodeID与真实NodeID不匹配），那么清空PluginData
+			const json = el.getSharedPluginData("figma_tags", "node");
+			if (json) {
+				const nodeData: Storage.Node = JSON.parse(json);
+				if (nodeData?.node_id != el.id) {
+					el.setSharedPluginData("figma_tags", "node", "");
+					el.setSharedPluginData("figma_tags", "tile_node_id", "");
+				}
+			}
+		}
+	}
 	if (mNodeType === 'document') {
 		if (figma.currentPage.selection.length > 0) {
 			checkSelectCanvasTag();
