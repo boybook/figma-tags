@@ -70,6 +70,13 @@ export default {
 
     onMounted(() => {
       handleEvent("init", async (data: Transfer.InitData) => {
+        if (!data.language) {  // 初始化缺省language
+          data.language = navigator.language?.startsWith("zh") ? "ch" : "en";
+          dispatch('client-storage-set', {
+            key: 'language',
+            data: data.language
+          });
+        }
         console.log("language set to: ", data.language);
         locale.value = data.language;
         initData.value = data;

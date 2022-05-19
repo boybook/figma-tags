@@ -11,8 +11,8 @@ let uiShowed = false;
 
 // figma.clientStorage.setAsync("tags", undefined).then();
 // figma.clientStorage.setAsync("nodes", undefined).then();
-// figma.clientStorage.setAsync("language", "ch").then();
-// figma.clientStorage.setAsync("provider", undefined).then();h
+// figma.clientStorage.setAsync("language", undefined).then();
+// figma.clientStorage.setAsync("provider", undefined).then();
 // figma.clientStorage.setAsync("access-token", undefined).then();
 // figma.root.setPluginData("file-id", "");
 // figma.root.setPluginData("tags", "");
@@ -43,7 +43,7 @@ switch (figma.command) {
 			mNodeType = provider === 'document' ? 'frame' : (nodeType ? nodeType : 'frame');
 			checkSelectCanvasTag();
 			dispatch("init", <Transfer.InitData> {
-				language: language ? language : (navigator.language?.startsWith("zh") ? "cn" : "en"),
+				language: language,
 				accessToken: accessToken,
 				userId: figma.currentUser.id,
 				userName: figma.currentUser.name,
@@ -63,7 +63,7 @@ switch (figma.command) {
 			mNodeType = provider === 'document' ? 'frame' : (nodeType ? nodeType : 'frame');
 			checkSelectCanvasTag();
 			dispatch("init", <Transfer.InitData> {
-				language: language ? language : (navigator.language?.startsWith("zh") ? "cn" : "en"),
+				language: language,
 				accessToken: accessToken,
 				userId: figma.currentUser.id,
 				userName: figma.currentUser.name,
