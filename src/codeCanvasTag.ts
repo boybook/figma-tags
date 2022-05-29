@@ -100,8 +100,8 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
             node.setSharedPluginData("figma_tags", "tile_node_id", group.id);
             node.setSharedPluginData("figma_tags", "node", JSON.stringify(nodeData));  // 可在Tag重命名时，本地更新名称；可用于其他插件读取
         }).catch(e => {
-            figma.notify("Font family not found!", { error: true });
-            console.log(e);
+            figma.notify("Font family not found! " + e, { error: true });
+            console.error(e);
         });
     }
 }

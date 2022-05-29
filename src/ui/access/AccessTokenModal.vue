@@ -57,9 +57,7 @@ export default {
     const error = ref(false);
     const submit = async () => {
       // 检查有效性
-      if (!input.value || input.value.length !== 43) {
-        error.value = true;
-      } else {
+      if (input.value?.startsWith("figd_") || input.value?.length === 43) {
         loading.value = true;
         try {
           const re = await fetch('https://api.figma.com/v1/me', {
@@ -80,6 +78,8 @@ export default {
         } finally {
           loading.value = false;
         }
+      } else {
+        error.value = true;
       }
     }
     return { input, loading, error, submit }
