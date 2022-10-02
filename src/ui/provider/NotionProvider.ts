@@ -392,6 +392,7 @@ export class NotionProvider implements DataProvider {
             }
         });
         console.log("NotionProvider.updateFullTags", body);
+        this.fullTags = fullTags;
         const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
             method: 'PATCH',
             headers: {

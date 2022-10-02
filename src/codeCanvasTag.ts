@@ -20,9 +20,10 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
             return;
         }
 
+        const root = figma.createFrame();
+
         figma.loadFontAsync({ family: "Inter", style: "Semi Bold" }).then(() => {
             //const tagFrames = [];
-            const root = figma.createFrame();
             root.x = node.x;
             root.y = node.y - offset;
 
