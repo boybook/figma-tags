@@ -3,6 +3,8 @@ import DataProvider from "./DataProvider";
 import * as Utils from "../utils";
 import { storageGet, storageSet } from "./blob/BlobLocalProvider";
 
+const BASE_URL = "https://notion.boybook.workers.dev/https://api.notion.com";
+
 export class NotionProvider implements DataProvider {
 
     type = 'notion';
@@ -17,7 +19,7 @@ export class NotionProvider implements DataProvider {
     constructor(token: string, database: string) {
         this.token = token;
         this.notion = new Client({
-            baseUrl: "https://notion.boybook.workers.dev/https://api.notion.com",
+            baseUrl: BASE_URL,
             auth: token,
         });
         this.database = database;
@@ -28,7 +30,7 @@ export class NotionProvider implements DataProvider {
             const result = await this.notion.databases.retrieve({ database_id: this.database });
             // 如果没有URL这个字段，则自动创建（很奇怪，这边用NotionClient库反而没法正常请求
             if (!result.properties['URL'] || result.properties['URL'].type !== "url") {
-                await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
+                await fetch(BASE_URL + "/v1/databases/" + this.database, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': this.token,
@@ -145,7 +147,7 @@ export class NotionProvider implements DataProvider {
     }
 
     renameTagType = async (from: string, to: string): Promise<void> => {
-        const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
+        const update = await fetch(BASE_URL + "/databases/" + this.database, {
             method: 'PATCH',
             headers: {
                 'Authorization': this.token,
@@ -200,7 +202,7 @@ export class NotionProvider implements DataProvider {
         }
         if (response.results.length > 0) {
             // 保存
-            const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/pages/" + response.results[0].id, {
+            const update = await fetch(BASE_URL + "/v1/pages/" + response.results[0].id, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': this.token,
@@ -237,7 +239,7 @@ export class NotionProvider implements DataProvider {
             for (let child of childList.results) {
                 if (child['type'] === 'embed') {
                     if (child['embed']['url'].startsWith("https://www.figma.com/embed")) {
-                        const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/blocks/" + child.id, {
+                        const update = await fetch(BASE_URL + "/v1/blocks/" + child.id, {
                             method: 'PATCH',
                             headers: {
                                 'Authorization': this.token,
@@ -260,7 +262,7 @@ export class NotionProvider implements DataProvider {
                         //     }
                         // });
                     } else if (child['embed']['url'].includes("amazonaws.com")) {
-                        const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/blocks/" + child.id, {
+                        const update = await fetch(BASE_URL + "/v1/blocks/" + child.id, {
                             method: 'PATCH',
                             headers: {
                                 'Authorization': this.token,
@@ -393,7 +395,7 @@ export class NotionProvider implements DataProvider {
         });
         console.log("NotionProvider.updateFullTags", body);
         this.fullTags = fullTags;
-        const update = await fetch("https://notion.boybook.workers.dev/https://api.notion.com/v1/databases/" + this.database, {
+        const update = await fetch(BASE_URL + "/v1/databases/" + this.database, {
             method: 'PATCH',
             headers: {
                 'Authorization': this.token,

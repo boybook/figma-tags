@@ -1,7 +1,7 @@
 const offset = 63;
 
-const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
-    const node: BaseNode = figma.getNodeById(nodeData.node_id);
+const markNode = async (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
+    const node: BaseNode = await figma.getNodeByIdAsync(nodeData.node_id);
     if (node && isEmbedNodeLike(node)) {
         node.setRelaunchData({
             'node': nodeData.title,
@@ -12,7 +12,7 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
 
         const tileNodeId = node.getSharedPluginData("figma_tags", "tile_node_id");
         if (tileNodeId) {
-            figma.getNodeById(tileNodeId)?.remove();
+            (await figma.getNodeByIdAsync(tileNodeId))?.remove();
         }
 
         if (Object.values(nodeData.tags).flat().length === 0) {
@@ -107,15 +107,15 @@ const markNode = (fullTags: Storage.FullTags, nodeData: Storage.Node) => {
     }
 }
 
-const unmarkNode = (nodeId: string) => {
-    const node: BaseNode = figma.getNodeById(nodeId);
+const unmarkNode = async (nodeId: string) => {
+    const node: BaseNode = await figma.getNodeByIdAsync(nodeId);
     if (node && isEmbedNodeLike(node)) {
         node.setRelaunchData({});
         node.setSharedPluginData("figma_tags", "node", "");
 
         const tileNodeId = node.getSharedPluginData("figma_tags", "tile_node_id");
         if (tileNodeId) {
-            figma.getNodeById(tileNodeId)?.remove();
+            (await figma.getNodeByIdAsync(tileNodeId))?.remove();
         }
     }
 }
@@ -125,7 +125,7 @@ const refreshFileAllMarks = (fullTags: Storage.FullTags) => {
         for (let node of page.children.filter(c => c.getSharedPluginData("figma_tags", "node"))) {
             const nodeData = JSON.parse(node.getSharedPluginData("figma_tags", "node"));
             if (nodeData) {
-                markNode(fullTags, nodeData);
+                markNode(fullTags, nodeData).then();
             }
         }
     }
@@ -142,10 +142,10 @@ function getPageNode(node: BaseNode): PageNode {
     return <PageNode> node;
 }
 
-function checkNodeTilePos(node: SceneNode) {
+async function checkNodeTilePos(node: SceneNode) {
     const tileNodeId = node.getSharedPluginData("figma_tags", "tile_node_id");
     if (tileNodeId) {
-        const tileNode = figma.getNodeById(tileNodeId);
+        const tileNode = await figma.getNodeByIdAsync(tileNodeId);
         if (tileNode && (tileNode.type === 'GROUP' || tileNode.type === 'FRAME')) {
             if (tileNode.parent != node.parent) {
                 node.parent.appendChild(tileNode);
@@ -160,7 +160,7 @@ function checkNodeTilePos(node: SceneNode) {
 
 const interval = setInterval(() => {
     for (let el of figma.currentPage.selection) {
-        checkNodeTilePos(el);
+        checkNodeTilePos(el).then();
     }
 }, 50);
 

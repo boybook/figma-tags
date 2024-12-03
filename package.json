@@ -4,8 +4,8 @@
 	"main": "index.js",
 	"license": "MIT",
 	"scripts": {
-		"dev": "webpack --mode=development --watch",
-		"build": "webpack --mode=production",
+		"dev": "NODE_OPTIONS=--openssl-legacy-provider webpack --mode=development --watch",
+		"build": "NODE_OPTIONS=--openssl-legacy-provider webpack --mode=production",
 		"preview": "live-server --entry-file='livepreview.html'"
 	},
 	"dependencies": {
@@ -18,7 +18,7 @@
 		"vuedraggable": "^4.1.0"
 	},
 	"devDependencies": {
-		"@figma/plugin-typings": "^1.18.2",
+		"@figma/plugin-typings": "^1.103.0",
 		"@types/node": "^12.0.5",
 		"@vue/compiler-sfc": "^3.0.2",
 		"css-loader": "^2.1.1",

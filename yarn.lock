@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.17.10.tgz#873b16db82a8909e0fbd7f115772f4b739f6ce78"
   integrity sha512-n2Q6i+fnJqzOaq2VkdXxy2TCPCWQZHiCo0XqmrCvDWcZQKRyZzYi4Z0yxlBuN0w+r2ZHmre+Q087DSrw3pbJDQ==
 
-"@figma/plugin-typings@^1.18.2":
-  version "1.45.0"
-  resolved "https://registry.yarnpkg.com/@figma/plugin-typings/-/plugin-typings-1.45.0.tgz#9a0b73151c749a2023e40943e0ba368559437703"
-  integrity sha512-qMvWW/HDcVVlroUtazml42AyXvjYrtE9zat4tCoAHzI2YZNCXm2VhXoE0nKp5dn7OrPb+LvvBZx+oALY34dZiw==
+"@figma/plugin-typings@^1.103.0":
+  version "1.103.0"
+  resolved "https://registry.yarnpkg.com/@figma/plugin-typings/-/plugin-typings-1.103.0.tgz#106bcefa197bd80c546fca0f7c1303491d830e74"
+  integrity sha512-hinDFmafuvjiOSHpbaqLKTiFVBksjFgEuAIQ0OpF9BhkCqIpJqrEgGwJkOnvLtodvaJaabw5kUce1xaIibRciw==
 
 "@intlify/core-base@9.2.0-beta.35":
   version "9.2.0-beta.35"

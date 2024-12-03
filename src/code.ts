@@ -108,7 +108,7 @@ handleEvent('client-storage-set', (data: Transfer.ClientStorageSetRequest) => {
 	});
 });
 
-handleEvent('document-plugin-data-get', (key: string) => {;
+handleEvent('document-plugin-data-get', (key: string) => {
 	const result: Transfer.DocumentPluginData = {
 		key: key,
 		value: figma.root.getPluginData(key)
@@ -149,11 +149,11 @@ handleEvent('notify-err', (msg) => {
 });
 
 handleEvent('canvas-mark-node', (data: Transfer.CanvasSignNode) => {
-	markNode(new Map<string, Storage.TagGroup>(JSON.parse(data.fullTags)), JSON.parse(data.node));
+	markNode(new Map<string, Storage.TagGroup>(JSON.parse(data.fullTags)), JSON.parse(data.node)).then();
 });
 
 handleEvent('canvas-unmark-node', (nodeId: string) => {
-	unmarkNode(nodeId);
+	unmarkNode(nodeId).then();
 });
 
 handleEvent('canvas-refresh-all-marks', (fullTagsJson: string) => {
@@ -168,8 +168,8 @@ handleEvent('request-selection', () => {
 	dispatch("selectionchange", packageCurrentSelection());
 })
 
-handleEvent('select-node', (nodeId: string) => {
-	const node = figma.getNodeById(nodeId);
+handleEvent('select-node', async (nodeId: string) => {
+	const node = await figma.getNodeByIdAsync(nodeId);
 	if (node) {
 		figma.currentPage = getPageNode(node);
 		if (node.type !== 'PAGE') {
@@ -181,8 +181,8 @@ handleEvent('select-node', (nodeId: string) => {
 	}
 });
 
-handleEvent('node-rename', (data: NodeRename) => {
-	const node = figma.getNodeById(data.nodeId);
+handleEvent('node-rename', async (data: NodeRename) => {
+	const node = await figma.getNodeByIdAsync(data.nodeId);
 	if (node && data.name) {
 		node.name = data.name;
 	}
@@ -203,7 +203,7 @@ figma.on("selectionchange", () => {
 		// 需要检查一下移动至其他Page
 		for (let page of figma.root.children) {
 			for (let el of page.children.filter(c => c.getSharedPluginData("figma_tags", "node"))) {
-				checkNodeTilePos(el);
+				checkNodeTilePos(el).then();
 			}
 		}
 		//TODO 处理删除（请求provider删除）
@@ -242,12 +242,12 @@ figma.on("close", () => {
 	clearInterval(interval);
 });
 
-function checkSelectCanvasTag() {
+async function checkSelectCanvasTag() {
 	if (figma.currentPage.selection.length > 0) {
 		const select = figma.currentPage.selection[0];
 		if (select.type === 'GROUP' && select.name.startsWith("Tag#")) {
 			const nodeId = select.name.slice(4);
-			const node = figma.getNodeById(nodeId);
+			const node = await figma.getNodeByIdAsync(nodeId);
 			if (node) {
 				figma.currentPage = getPageNode(node);
 				figma.currentPage.selection = [<SceneNode> node];
