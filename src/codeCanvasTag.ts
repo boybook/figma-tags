@@ -120,8 +120,9 @@ const unmarkNode = async (nodeId: string) => {
     }
 }
 
-const refreshFileAllMarks = (fullTags: Storage.FullTags) => {
+const refreshFileAllMarks = async (fullTags: Storage.FullTags) => {
     for (let page of figma.root.children) {
+        await page.loadAsync();
         for (let node of page.children.filter(c => c.getSharedPluginData("figma_tags", "node"))) {
             const nodeData = JSON.parse(node.getSharedPluginData("figma_tags", "node"));
             if (nodeData) {

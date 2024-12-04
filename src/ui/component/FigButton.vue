@@ -55,7 +55,7 @@ button {
   justify-content: center;
   align-items: center;
   padding: 6px 16px;
-  border-radius: 2px;
+  border-radius: 5px;
   font-size: 12px;
   line-height: 18px;
   border: none;

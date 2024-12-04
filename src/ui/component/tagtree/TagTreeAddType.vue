@@ -58,7 +58,7 @@ export default {
   background-color: rgba(0, 0, 0, 0);
   font-size: 12px;
   line-height: 18px;
-  border-radius: 2px;
+  border-radius: 5px;
   transition: all 200ms ease-out;
   /* Auto layout */
   display: flex;
@@ -94,7 +94,7 @@ export default {
 
 .add-tag-type-popup-content {
   background: #fff;
-  border-radius: 4px;
+  border-radius: 5px;
   font-size: 12px;
   line-height: 18px;
   color: rgba(0, 0, 0, 0.45);

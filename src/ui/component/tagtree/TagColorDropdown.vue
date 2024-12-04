@@ -75,7 +75,7 @@ export default {
   flex-grow: 1;
   border: 1px solid rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
-  border-radius: 2px;
+  border-radius: 5px;
   transition: all 100ms ease-out;
   cursor: pointer;
 }

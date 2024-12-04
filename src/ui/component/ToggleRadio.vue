@@ -61,14 +61,14 @@ export default {
   align-items: center;
   padding: 2px;
   background: #F0F0F0;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 .toggle-radio-entry {
   display: flex;
   flex-direction: row;
   align-items: center;
-  border-radius: 2px;
+  border-radius: 3px;
   transition: all 200ms ease-out;
   font-weight: 400;
   font-size: 12px;

@@ -70,7 +70,7 @@ export default {
   background-color: white;
   padding: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

@@ -74,7 +74,7 @@ export default {
   align-items: flex-start;
   padding: 6px;
   margin-left: 2px;
-  border-radius: 2px;
+  border-radius: 5px;
   flex-grow: 0;
   background: none;
   border: none;

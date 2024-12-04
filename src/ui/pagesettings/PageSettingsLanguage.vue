@@ -49,7 +49,7 @@ export default {
   padding: 4px 8px;
   color: rgba(0, 0, 0, 0.85);
   background-color: white;
-  border-radius: 2px;
+  border-radius: 5px;
   transition: all 200ms ease-out;
   flex-grow: 0;
   user-select: none;

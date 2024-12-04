@@ -132,7 +132,7 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 4px 8px;
-  border-radius: 2px;
+  border-radius: 5px;
   transition: all 200ms ease-out;
   font-size: 12px;
   line-height: 18px;

@@ -212,7 +212,7 @@ export default {
   border: none;
   box-shadow: inset 0 0 0 1px #E5E5E5;
   box-sizing: border-box;
-  border-radius: 2px;
+  border-radius: 5px;
   color: rgba(0, 0, 0, 0.85);
   transition: box-shadow 100ms ease;
 }
@@ -223,7 +223,7 @@ export default {
 
 .tk-select-button-input:hover {
   border: none;
-  border-radius: 2px;
+  border-radius: 5px;
   box-shadow: inset 0 0 0 2px #24A0FB;
 }
 
@@ -264,7 +264,7 @@ export default {
   position: fixed;
   box-shadow: 0 3px 6px -4px #0000001f, 0 6px 16px #00000014, 0 9px 28px 8px #0000000d;
   background-color: #fff;
-  border-radius: 2px;
+  border-radius: 5px;
   padding: 4px 0;
   overflow-y: auto;
   z-index: 999;

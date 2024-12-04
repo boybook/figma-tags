@@ -94,7 +94,7 @@ export default {
   background-color: white;
   padding: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -154,7 +154,7 @@ export default {
   font-weight: 600;
   font-size: 12px;
   line-height: 18px;
-  border-radius: 2px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   flex-direction: row;

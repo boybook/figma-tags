@@ -67,20 +67,20 @@ input {
   border: none;
   box-shadow: inset 0 0 0 1px #E5E5E5;
   box-sizing: border-box;
-  border-radius: 2px;
+  border-radius: 5px;
   color: rgba(0, 0, 0, 0.85);
   transition: box-shadow 100ms ease;
 }
 
 input:hover {
   border: none;
-  border-radius: 2px;
+  border-radius: 5px;
   box-shadow: inset 0 0 0 2px #24A0FB;
 }
 
 input:focus {
   border: none;
-  border-radius: 2px;
+  border-radius: 5px;
   box-shadow: inset 0 0 0 2px #24A0FB;
 }
 
