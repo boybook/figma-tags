@@ -61,7 +61,7 @@ export default {
 }
 
 .sub-type-title {
-  color: rgba(0, 0, 0, .45);
+  color: var(--color-text-secondary);
   padding: 0 0 4px 24px;
   font-size: 12px;
 }

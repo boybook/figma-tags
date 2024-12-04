@@ -1,8 +1,8 @@
 <template>
   <tk-select class="tag-color-dropdown" :selected="colorName" v-model="colorName" :min-width="64">
     <template #selectButton>
-      <div class="tag-color" :style="{ 'background-color': 'rgba(' + color.background.r + ',' + color.background.g + ',' + color.background.b + ',' + color.background.a + ')' }">
-        <span :style="{ 'color': 'rgba(' + color.color.r + ',' + color.color.g + ',' + color.color.b + ',' + color.color.a + ')' }">A</span>
+      <div class="tag-color" :style="{ 'background-color': 'rgba(' + colorBackground.r + ',' + colorBackground.g + ',' + colorBackground.b + ',' + colorBackground.a + ')' }">
+        <span :style="{ 'color': 'rgba(' + colorText.r + ',' + colorText.g + ',' + colorText.b + ',' + colorText.a + ')' }">A</span>
       </div>
     </template>
     <template #selectDropDown>
@@ -20,6 +20,8 @@ import * as Utils from "../../utils";
 import FigTag from "../FigTag.vue";
 import TkSelect from "../select/TkSelect.vue";
 import TkSelectItem from "../select/TkSelectItem.vue";
+import { useTagColors } from "../../utils/useTagColors";
+import { useTheme } from "../../utils/theme";
 
 export default {
   name: "TagColorDropdown",
@@ -47,7 +49,10 @@ export default {
           context.emit('update:color', newVal);
         }
     );
-    return { colorName, color, Utils }
+
+    const { isDark } = useTheme();
+    const { colorBackground, colorText } = useTagColors(color.value, isDark);
+    return { colorName, color, colorBackground, colorText, Utils }
   }
 }
 </script>

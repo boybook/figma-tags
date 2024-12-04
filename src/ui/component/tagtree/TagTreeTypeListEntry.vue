@@ -16,7 +16,7 @@
         @to-delete="tryDelete"
         :color="{ color: tag.color, background: tag.background }"
     />
-    <img v-if="checkable && !editing" v-show="tag.check" :src="require('../../resource/check.svg')" alt="check" >
+    <img class="tree-entry-icon-check" v-if="checkable && !editing" v-show="tag.check" :src="require('../../resource/check.svg')" alt="check" >
   </div>
 </template>
 
@@ -100,7 +100,7 @@ export default {
 }
 
 .tag-entry:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-topbar-current-hover);
 }
 
 .tag-entry-left {
@@ -114,7 +114,7 @@ export default {
 }
 
 .selected {
-  background-color: #FAFAFA;
+  background-color: var(--color-bg-tree-selected);
   border-radius: 0;
 }
 
@@ -141,6 +141,18 @@ export default {
 
 .icon-edit:hover {
   opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .icon-drag {
+    filter: invert(100%);
+  }
+  .icon-edit {
+    filter: invert(100%);
+  }
+  .tree-entry-icon-check {
+    filter: invert(100%);
+  }
 }
 
 </style>

@@ -67,26 +67,26 @@ button {
 }
 
 .button--primary {
-  background: #18a0fb;
+  background: var(--color-bg-brand);
   color: #fff;
 }
 
 .button--primary:hover {
-  background: #0677bd;
+  background: var(--color-bg-brand-hover);
 }
 
 .button--primary:active {
-  background: #0468a4;
+  background: var(--color-bg-brand-pressed);
 }
 
 .button--secondary {
-  background: #fff;
-  color: rgba(0, 0, 0, .85);
+  background: transparent;
+  color: var(--color-text);
   box-shadow: inset 0 0 0 1px #e5e5e5;
 }
 
 .button--secondary:hover {
-  background: #fff;
+  background: transparent;
   color: #18a0fb;
   box-shadow: inset 0 0 0 1px #18a0fb;
 }

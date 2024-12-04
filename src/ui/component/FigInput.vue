@@ -63,12 +63,12 @@ export default {
 <style scoped>
 
 input {
-  background: #FFFFFF;
+  background: var(--color-bg-secondary);
   border: none;
-  box-shadow: inset 0 0 0 1px #E5E5E5;
+  box-shadow: inset 0 0 0 1px var(--color-input-border);
   box-sizing: border-box;
   border-radius: 5px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   transition: box-shadow 100ms ease;
 }
 
@@ -85,26 +85,26 @@ input:focus {
 }
 
 input::placeholder {
-  color: rgba(0, 0, 0, .25);
+  color: var(--color-text-secondary);
 }
 
 .input--size-small {
   padding: 4px 8px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   font-size: 12px;
   line-height: 18px;
 }
 
 .input--size-normal {
   padding: 4px 8px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   font-size: 14px;
   line-height: 24px;
 }
 
 .input--size-large {
   padding: 4px 10px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   font-size: 16px;
   line-height: 28px;
 }

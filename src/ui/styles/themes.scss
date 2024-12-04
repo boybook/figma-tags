@@ -1,0 +1,117 @@
+/* styles/themes.scss */
+:root {
+  --ramp-black-100: #0000000d;
+  --ramp-black-200: #0000001a;
+  --ramp-black-300: #00000033;
+  --ramp-black-400: #0000004d;
+  --ramp-black-500: #00000080;
+  --ramp-black-600: #000000cc;
+  --ramp-black-700: #000000d9;
+  --ramp-black-800: #000000e5;
+  --ramp-black-900: #000000f2;
+  --ramp-black-1000: #000000;
+
+  --ramp-grey-100: #f5f5f5;
+  --ramp-grey-200: #e6e6e6;
+  --ramp-grey-300: #d9d9d9;
+  --ramp-grey-400: #b3b3b3;
+  --ramp-grey-500: #757575;
+  --ramp-grey-600: #444444;
+  --ramp-grey-700: #383838;
+  --ramp-grey-800: #2c2c2c;
+  --ramp-grey-900: #1e1e1e;
+  --ramp-grey-1000: #111111;
+
+  --ramp-white-100: #ffffff0d;
+  --ramp-white-200: #ffffff1a;
+  --ramp-white-300: #ffffff33;
+  --ramp-white-400: #ffffff66;
+  --ramp-white-500: #ffffffb2;
+  --ramp-white-600: #ffffffcc;
+  --ramp-white-700: #ffffffd9;
+  --ramp-white-800: #ffffffe5;
+  --ramp-white-900: #fffffff2;
+  --ramp-white-1000: #ffffff;
+
+  --ramp-blue-100: #f2f9ff;
+  --ramp-blue-200: #e5f4ff;
+  --ramp-blue-300: #bde3ff;
+  --ramp-blue-400: #80caff;
+  --ramp-blue-500: #0d99ff;
+  --ramp-blue-600: #007be5;
+  --ramp-blue-700: #0768cf;
+  --ramp-blue-800: #034ac1;
+  --ramp-blue-900: #093077;
+
+  --color-bg: #ffffff;
+  --color-bg-secondary: rgba(255, 255, 255, .8);
+  --color-bg-hover-lite: var(--ramp-black-100);
+  --color-bg-pressed-lite: var(--ramp-black-200);
+  --color-bg-brand: var(--ramp-blue-500);
+  --color-bg-brand-hover: var(--ramp-blue-600);
+  --color-bg-brand-pressed: var(--ramp-blue-600);
+  --color-bg-brand-secondary: var(--ramp-blue-700);
+  --color-bg-brand-tertiary: var(--ramp-blue-200);
+  --color-bg-overlay-blur-lite: var(--ramp-white-500);
+  --color-bg-overlay-blur: var(--ramp-white-800);
+  --color-bg-topbar: #f8f8f8e0;
+  --color-bg-topbar-current-hover: rgba(0, 0, 0, 0.05);
+  --color-bg-topbar-current-pressed: rgba(0, 0, 0, 0.08);
+  --color-bg-toggle-radio: var(--ramp-grey-200);
+  --color-bg-toggle-radio-current: var(--ramp-white-1000);
+  --color-bg-popover: var(--color-bg);
+  --color-bg-frame: var(--ramp-grey-100);
+  --color-bg-tree-selected: #FAFAFA;
+  --color-bg-select-wrapper: var(--ramp-grey-200);
+  --color-border: var(--ramp-grey-200);
+  --color-border-light: var(--ramp-black-100);
+  --color-input-border: #E5E5E5;
+  --color-text: var(--ramp-black-800);
+  --color-text-hover: var(--ramp-black-800);
+  --color-text-secondary: var(--ramp-black-500);
+  --color-text-secondary-hover: var(--ramp-black-800);
+  --color-text-less: var(--ramp-black-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ramp-blue-100: #e2f1fd;
+    --ramp-blue-200: #cfe9fc;
+    --ramp-blue-300: #a8d7fa;
+    --ramp-blue-400: #7cc4f8;
+    --ramp-blue-500: #0c8ce9;
+    --ramp-blue-600: #0a6dc2;
+    --ramp-blue-700: #105cad;
+    --ramp-blue-800: #184591;
+    --ramp-blue-900: #1b335f;
+    --ramp-blue-1000: #161e36;
+
+    --color-bg: var(--ramp-grey-800);
+    --color-bg-secondary: var(--ramp-grey-700);
+    --color-bg-hover-lite: var(--ramp-white-100);
+    --color-bg-pressed-lite: var(--ramp-white-200);
+    --color-bg-overlay-blur-lite: var(--ramp-black-100);
+    --color-bg-overlay-blur: var(--ramp-black-300);
+    --color-bg-topbar: #444444e0;
+    --color-bg-topbar-current-hover: rgba(255, 255, 255, 0.08);
+    --color-bg-topbar-current-pressed: rgba(255, 255, 255, 0.13);
+    --color-bg-toggle-radio: var(--ramp-grey-900);
+    --color-bg-toggle-radio-current: var(--ramp-grey-800);
+    --color-bg-popover: var(--ramp-grey-900);
+    --color-bg-frame: var(--ramp-grey-900);
+    --color-bg-tree-selected: var(--ramp-grey-900);
+    --color-bg-select-wrapper: var(--ramp-grey-800);
+    --color-border: var(--ramp-grey-900);
+    --color-border-light: var(--ramp-white-200);
+    --color-input-border: var(--color-bg-secondary);
+    --color-text: var(--ramp-white-1000);
+    --color-text-hover: var(--ramp-white-1000);
+    --color-text-secondary: var(--ramp-white-500);
+    --color-text-secondary-hover: var(--ramp-white-1000);
+    --color-text-less: var(--ramp-white-300);
+  }
+
+  .img-icon {
+    filter: invert(100%);
+  }
+}

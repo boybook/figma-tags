@@ -1,8 +1,8 @@
 <template>
   <div class="page-settings-title-language" @click="switchLanguage">
-    <img width="14" :src="require('../resource/earth.svg')" alt="language">
+    <img class="img-icon" width="14" :src="require('../resource/earth.svg')" alt="language">
     <span> {{ displayLocale }} </span>
-    <img :src="require('../resource/swap.svg')" alt="down" style="opacity: 0.5">
+    <img class="img-icon" :src="require('../resource/swap.svg')" alt="down" style="opacity: 0.5">
   </div>
 </template>
 
@@ -47,8 +47,8 @@ export default {
   flex-direction: row;
   align-items: center;
   padding: 4px 8px;
-  color: rgba(0, 0, 0, 0.85);
-  background-color: white;
+  color: var(--color-text);
+  background-color: transparent;
   border-radius: 5px;
   transition: all 200ms ease-out;
   flex-grow: 0;
@@ -58,7 +58,7 @@ export default {
 }
 
 .page-settings-title-language:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-hover-lite);
 }
 
 .page-settings-title-language span {

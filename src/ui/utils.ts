@@ -282,3 +282,85 @@ export function randomString(length: number = 16, chars: string = '0123456789abc
     for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
 }
+
+/**
+ * Converts an RGB color to HSB (Hue, Saturation, Brightness).
+ * @param {number} r - Red component (0-255).
+ * @param {number} g - Green component (0-255).
+ * @param {number} b - Blue component (0-255).
+ * @returns {{h: number, s: number, b: number}} - HSB values.
+ */
+export function rgbToHsb(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+
+    // Hue calculation
+    let h;
+    if (delta === 0) {
+        h = 0; // Undefined hue is treated as 0
+    } else if (max === r) {
+        h = ((g - b) / delta) % 6;
+    } else if (max === g) {
+        h = (b - r) / delta + 2;
+    } else {
+        h = (r - g) / delta + 4;
+    }
+    h = Math.round(h * 60);
+    if (h < 0) h += 360;
+
+    // Saturation calculation
+    const s = max === 0 ? 0 : (delta / max) * 100;
+
+    // Brightness calculation
+    const brightness = max * 100;
+
+    return {
+        h: Math.round(h),
+        s: Math.round(s),
+        b: Math.round(brightness),
+    };
+}
+
+/**
+ * Converts an HSB (Hue, Saturation, Brightness) color to RGB.
+ * @param {number} h - Hue (0-360).
+ * @param {number} s - Saturation (0-100).
+ * @param {number} b - Brightness (0-100).
+ * @returns {{r: number, g: number, b: number}} - RGB values.
+ */
+export function hsbToRgb(h, s, b) {
+    s /= 100;
+    b /= 100;
+
+    const c = b * s; // Chroma: the difference between max and min RGB values
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1)); // Intermediate value
+    const m = b - c; // Match value to adjust RGB
+
+    let r = 0, g = 0, b_ = 0;
+
+    if (0 <= h && h < 60) {
+        r = c; g = x; b_ = 0;
+    } else if (60 <= h && h < 120) {
+        r = x; g = c; b_ = 0;
+    } else if (120 <= h && h < 180) {
+        r = 0; g = c; b_ = x;
+    } else if (180 <= h && h < 240) {
+        r = 0; g = x; b_ = c;
+    } else if (240 <= h && h < 300) {
+        r = x; g = 0; b_ = c;
+    } else if (300 <= h && h < 360) {
+        r = c; g = 0; b_ = x;
+    }
+
+    // Convert to 0-255 range
+    r = Math.round((r + m) * 255);
+    g = Math.round((g + m) * 255);
+    b_ = Math.round((b_ + m) * 255);
+
+    return { r, g, b: b_ };
+}

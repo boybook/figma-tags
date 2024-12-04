@@ -12,10 +12,10 @@
         @keydown.esc="cancel"
     />
     <FigButton v-if="showDelete" @click="toDelete" @click.stop>
-      <img :src="require('../../resource/delete.svg')" alt="delete">
+      <img class="img-icon" :src="require('../../resource/delete.svg')" alt="delete">
     </FigButton>
     <FigButton @click="cancel" @click.stop>
-      <img :src="require('../../resource/close-black.svg')" alt="close">
+      <img class="img-icon" :src="require('../../resource/close-black.svg')" alt="close">
     </FigButton>
     <FigButton type="primary" @click="submit" @click.stop>
       <img :src="require('../../resource/check-white.svg')" alt="check">

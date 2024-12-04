@@ -60,7 +60,7 @@ export default {
   flex-direction: row;
   align-items: center;
   padding: 2px;
-  background: #F0F0F0;
+  background: var(--color-bg-toggle-radio);
   border-radius: 5px;
 }
 
@@ -73,12 +73,18 @@ export default {
   font-weight: 400;
   font-size: 12px;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   user-select: none;
 }
 
 .toggle-radio-entry img {
   width: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .toggle-radio-entry img {
+    filter: invert(100%);
+  }
 }
 
 .toggle-radio--hug {
@@ -120,7 +126,7 @@ export default {
 }
 
 .toggle-radio-entry--current {
-  background-color: #fff;
+  background-color: var(--color-bg-toggle-radio-current);
 }
 
 .toggle-radio-entry--normal {
@@ -128,11 +134,11 @@ export default {
 }
 
 .toggle-radio-entry--normal:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-hover-lite);
 }
 
 .toggle-radio-entry--normal:active {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bg-pressed-lite);
 }
 
 </style>

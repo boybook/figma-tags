@@ -49,7 +49,7 @@ export default {
 }
 
 .add-tag-type-button > * {
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   opacity: 0.5;
 }
 
@@ -68,15 +68,15 @@ export default {
 }
 
 .add-tag-type-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-hover-lite);
 }
 
 .add-tag-type-button:active {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bg-pressed-lite);
 }
 
 .add-tag-type-button--focus {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bg-pressed-lite);
 }
 
 .add-tag-type-popup {
@@ -93,11 +93,11 @@ export default {
 }
 
 .add-tag-type-popup-content {
-  background: #fff;
+  background: var(--color-bg-popover);
   border-radius: 5px;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--color-text-secondary);
 
   display: flex;
   flex-direction: column;
@@ -122,9 +122,15 @@ export default {
   height: 0;
   border-left: 5px solid transparent;  /* 左边框的宽 */
   border-right: 5px solid transparent; /* 右边框的宽 */
-  border-bottom: 5px solid #fff; /* 下边框的长度|高,以及背景色 */
+  border-bottom: 5px solid var(--color-bg-popover); /* 下边框的长度|高,以及背景色 */
   font-size: 0;
   line-height: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .add-tag-type-button img {
+    filter: invert(100%);
+  }
 }
 
 </style>

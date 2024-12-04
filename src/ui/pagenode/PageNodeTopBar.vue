@@ -55,10 +55,10 @@ export default {
   align-items: center;
   padding: 0 8px 0 0;
 
-  background: #f8f8f8e0;
+  background: var(--color-bg-topbar);
   backdrop-filter: blur(16px);
 
-  box-shadow: inset 0 -1px 0 #eee;
+  box-shadow: inset 0 -1px 0 var(--color-border-light);
 }
 
 .current-select div {
@@ -86,8 +86,14 @@ export default {
   opacity: 0.65;
 }
 
+@media (prefers-color-scheme: dark) {
+  .current-select button img {
+    filter: invert(100%);
+  }
+}
+
 .current-select button:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--color-bg-topbar-current-hover);
 }
 
 .current-select button:hover img {
@@ -95,7 +101,7 @@ export default {
 }
 
 .current-select button:active {
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--color-bg-topbar-current-pressed);
 }
 
 </style>

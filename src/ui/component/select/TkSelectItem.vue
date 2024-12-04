@@ -63,6 +63,7 @@ export default {
   cursor: pointer;
   user-select: none;
   transition: background .3s ease;
+  color: var(--color-text);
 }
 
 .tk-select-item--size-small {
@@ -84,7 +85,7 @@ export default {
 }
 
 .tk-select-item:hover {
-  background-color: #FAFAFA;
+  background-color: var(--color-bg-hover-lite);
 }
 
 .tk-select-item.active {

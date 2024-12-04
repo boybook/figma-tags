@@ -101,7 +101,7 @@ export default {
 .node-tag-loading p {
   font-size: 12px;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--color-text-less);
   padding: 0;
   margin: 0 0 8px 0;
 }
@@ -147,8 +147,8 @@ export default {
   font-weight: 400;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.85);
-  background: rgba(255, 255, 255, 0.4);
+  color: var(--color-text);
+  background: var(--color-bg-pressed-lite);
   border-radius: 16px;
   min-width: 8px;
   font-family: Avenir, -apple-system, serif;
@@ -158,8 +158,8 @@ export default {
 
 .counter-zero {
   font-weight: 400 !important;
-  color: rgba(0, 0, 0, 0.25) !important;
-  background: rgba(255, 255, 255, 0.2) !important;
+  color: var(--color-text-less) !important;
+  background: var(--color-bg-hover-lite) !important;
 }
 
 </style>

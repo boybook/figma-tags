@@ -7,14 +7,14 @@
     <div class="page-settings-content">
       <div class="page-settings-content-entry">
         <h3> {{ $t('settings.current_file.title') }} </h3>
-        <p style="margin: 0; font-size: 12px; color: rgba(0, 0, 0, 0.45); display: flex; flex-direction: row; align-items: center">
+        <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary); display: flex; flex-direction: row; align-items: center">
           {{ initData.fileId ? initData.fileId : $t('settings.unset') }}
           <FigButton type="link" size="small" @click="setFileId" style="padding: 0 8px;"> {{ $t('settings.current_file.reset') }} </FigButton>
         </p>
       </div>
       <div class="page-settings-content-entry">
         <h3> {{ $t('settings.access_token.title') }} </h3>
-        <p style="margin: 0; font-size: 12px; color: rgba(0, 0, 0, 0.45);">
+        <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);">
           {{ initData.accessToken ? initData.accessToken : $t('settings.unset') }}
           <FigButton type="link" size="small" @click="setAccessToken" style="padding: 0; margin-top: 8px;"> {{ $t('settings.access_token.set') }} </FigButton>
         </p>
@@ -107,7 +107,7 @@
           <img class="bmc-button" width="120" :src="require('../resource/bmc-button.svg')" alt="bmc">
         </a>
         <a href="https://github.com/boybook/figma-tags/issues" target="_blank" style="margin: 8px 4px">
-          <img :src="require('../resource/github.svg')" alt="github" width="20" style="opacity: 0.65; margin-right: 4px;">
+          <img class="img-icon" :src="require('../resource/github.svg')" alt="github" width="20" style="opacity: 0.65; margin-right: 4px;">
           <span> {{ $t('settings.report') }} </span>
         </a>
       </div>
@@ -424,6 +424,7 @@ export default {
   padding: 12px 12px 0;
   user-select: none;
   height: 98vh;
+  color: var(--color-text);
 }
 
 .page-settings-title {
@@ -479,7 +480,7 @@ export default {
   font-weight: 600;
   font-size: 14px;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
 }
 
 .page-settings-buttons {
@@ -498,7 +499,7 @@ export default {
 }
 
 .provider-card {
-  background-color: #fafafa;
+  background-color: var(--color-bg-frame);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -510,7 +511,7 @@ export default {
   font-weight: 400;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--color-text-secondary);
 }
 
 .provider-card > * {
@@ -522,7 +523,7 @@ export default {
   font-size: 12px;
   line-height: 18px;
   margin: 0 0 8px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
 }
 
 .provider-card p {
@@ -530,7 +531,7 @@ export default {
   font-size: 12px;
   line-height: 18px;
   margin: 0;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--color-text-secondary);
 }
 
 .node-token-access {
@@ -541,6 +542,7 @@ export default {
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -570,13 +572,13 @@ export default {
   margin-right: 16px;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--color-text-secondary);
   filter: brightness(100%);
   transition: all 200ms ease-out;
 }
 
 .page-settings-about > *:hover {
-  filter: brightness(95%);
+  filter: brightness(110%);
 }
 
 .modal-enter-from, .modal-leave-to {

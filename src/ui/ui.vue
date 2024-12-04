@@ -121,6 +121,10 @@ export default {
 
 <style>
 
+body {
+  background: var(--color-bg);
+}
+
 a {
   text-decoration: none;
   color: #18a0fb;

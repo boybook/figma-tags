@@ -67,7 +67,7 @@ export default {
 <style scoped>
 
 .access-modal {
-  background-color: white;
+  background-color: var(--color-bg);
   padding: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
@@ -100,14 +100,14 @@ export default {
   font-weight: 600;
   font-size: 16px;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
 }
 
 .access-modal p {
   font-weight: 400;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--color-text-secondary);
 }
 
 .button-group {

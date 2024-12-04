@@ -208,9 +208,9 @@ export default {
   justify-content: space-between;
   align-self: stretch;
   cursor: pointer;
-  background: #FFFFFF;
+  background: var(--color-bg);
   border: none;
-  box-shadow: inset 0 0 0 1px #E5E5E5;
+  box-shadow: inset 0 0 0 1px var(--color-input-border);
   box-sizing: border-box;
   border-radius: 5px;
   color: rgba(0, 0, 0, 0.85);
@@ -224,26 +224,26 @@ export default {
 .tk-select-button-input:hover {
   border: none;
   border-radius: 5px;
-  box-shadow: inset 0 0 0 2px #24A0FB;
+  box-shadow: inset 0 0 0 2px var(--ramp-blue-400);
 }
 
 .tk-select-button-input--size-small {
   padding: 4px 8px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   font-size: 12px;
   line-height: 18px;
 }
 
 .tk-select-button-input--size-normal {
   padding: 4px 8px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   font-size: 14px;
   line-height: 24px;
 }
 
 .tk-select-button-input--size-large {
   padding: 4px 10px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
   font-size: 16px;
   line-height: 28px;
 }
@@ -263,7 +263,7 @@ export default {
 .tk-select-dropdown {
   position: fixed;
   box-shadow: 0 3px 6px -4px #0000001f, 0 6px 16px #00000014, 0 9px 28px 8px #0000000d;
-  background-color: #fff;
+  background-color: var(--color-bg);
   border-radius: 5px;
   padding: 4px 0;
   overflow-y: auto;

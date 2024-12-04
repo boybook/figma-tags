@@ -116,12 +116,12 @@ export default {
 }
 
 .tree-title:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-hover-lite);
   border-radius: 3px;
 }
 
 .tree-title:active {
-  background-color: rgba(0, 0, 0, 0.08);
+  background-color: var(--color-bg-pressed-lite);
 }
 
 .title-area {
@@ -134,6 +134,8 @@ export default {
   order: 1;
   flex-grow: 1;
   margin: 0 4px 0 0;
+
+  color: var(--color-text);
 }
 
 .icon-fold {
@@ -165,8 +167,8 @@ export default {
   font-weight: 600;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.85);
-  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-text);
+  background: var(--color-bg-pressed-lite);
   border-radius: 16px;
   min-width: 8px;
   font-family: Avenir, -apple-system, serif;
@@ -174,8 +176,8 @@ export default {
 
 .counter-zero {
   font-weight: 400 !important;
-  color: rgba(0, 0, 0, 0.25) !important;
-  background: rgba(0, 0, 0, 0.03) !important;
+  color: var(--color-text-less) !important;
+  background: var(--color-bg-hover-lite) !important;
 }
 
 .tree-extra-area {
@@ -201,7 +203,7 @@ export default {
 }
 
 .tree-extra-operation:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-hover-lite);
 }
 
 .title-name-edit {
@@ -221,6 +223,15 @@ export default {
 
 .icon-edit:hover {
   opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .icon-fold {
+    filter: invert(100%);
+  }
+  .tree-extra-operation img {
+    filter: invert(100%);
+  }
 }
 
 </style>

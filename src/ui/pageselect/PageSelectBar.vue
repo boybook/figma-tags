@@ -3,7 +3,7 @@
     <div class="page-select-bar-title">
       <p> {{ typeName }} </p>
       <span class="page-select-bar-cover-reloading" v-if="requestCount > 0">
-        <LoadingIcon width="10" style="margin-right: 6px;" />
+        <LoadingIcon :color="isDark ? 'white' : 'black'" width="10" style="margin-right: 6px;" />
         {{ $t('lookup.refresh', [requestCount]) }}
       </span>
     </div>
@@ -11,7 +11,7 @@
       <tk-select v-if="fullTypes.length > 1" :selected="sortType" v-model="sortType" :allow-clear-selection="true" :min-width="120" align="right">
         <template #selectButton>
           <div class="page-select-bar-sort" :class="{ 'page-select-bar-sort--normal': !sort, 'page-select-bar-sort--sorting': sort }">
-            <img :src="require('../resource/sort' + (sort ? '-blue' : '') + '.svg')" alt="sort" style="margin-right: 4px">
+            <img class="img-icon" :src="require('../resource/sort' + (sort ? '-blue' : '') + '.svg')" alt="sort" style="margin-right: 4px">
             {{ sort ? sort.type : $t('lookup.sort') }}
           </div>
         </template>
@@ -30,6 +30,7 @@ import {PropType, ref, watch} from "vue";
 import DataProvider from "../provider/DataProvider";
 import TkSelect from "../component/select/TkSelect.vue";
 import TkSelectItem from "../component/select/TkSelectItem.vue";
+import { useTheme } from "../utils/theme";
 
 export default {
   name: "PageSelectBar",
@@ -41,9 +42,10 @@ export default {
   },
   emits: [ 'changeSort' ],
   setup(props, context) {
+    const { isDark } = useTheme();
     // 获取完整列表
     const fullTypes = ref<string[]>([]);
-    props.provider.getFullTags().then(re => fullTypes.value = [...re.values()].flatMap(g => g.name));
+    props.provider.getFullTags(false).then(re => fullTypes.value = [...re.values()].flatMap(g => g.name));
     // 加载排序
     const sort = ref<Storage.ViewSort>(props.viewSort);
     const sortType = ref<string>(props.viewSort?.type);
@@ -58,7 +60,7 @@ export default {
       context.emit('changeSort', sort.value);
     });
 
-    return { sort, sortType, fullTypes, requestCount }
+    return { isDark, sort, sortType, fullTypes, requestCount }
   }
 }
 </script>
@@ -75,10 +77,10 @@ export default {
   flex-direction: row;
   align-items: center;
   padding: 0;
-  background: rgba(255, 255, 255, .9);
+  background: var(--color-bg-topbar);
   backdrop-filter: blur(16px);
   user-select: none;
-  border-bottom: 1px #E0E0E0 solid;
+  border-bottom: 1px var(--color-border-light) solid;
   z-index: 999;
 }
 
@@ -99,7 +101,7 @@ export default {
   font-weight: 500;
   font-size: 14px;
   line-height: 24px;
-  color: rgba(0, 0, 0, .85);
+  color: var(--color-text);
   overflow: hidden;
   text-overflow:ellipsis;
   white-space: nowrap;
@@ -112,7 +114,7 @@ export default {
   padding: 0;
   margin: 0 8px 0 0;
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--color-text-secondary);
   line-height: 18px;
   animation: ease-show 0.1s ease-out;
 }
@@ -136,16 +138,17 @@ export default {
   transition: all 200ms ease-out;
   font-size: 12px;
   line-height: 18px;
+  color: var(--color-text);
 }
 
 .page-select-bar-sort--normal {
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--color-text-secondary);
   background-color: transparent;
 }
 
 .page-select-bar-sort--normal:hover {
-  color: rgba(0, 0, 0, 0.65);
-  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-text);
+  background-color: var(--color-bg-hover-lite);
 }
 
 .page-select-bar-sort--sorting {

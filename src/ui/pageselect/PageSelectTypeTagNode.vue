@@ -93,7 +93,7 @@ export default {
 <style scoped>
 
 .node {
-  background: white;
+  background: var(--color-bg-secondary);
   border-radius: 4px;
   /* Auto layout */
   display: flex;
@@ -129,7 +129,7 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 0;
-  background-color: #fafafa;
+  background-color: var(--color-bg-popover);
   transition: all 300ms ease-out;
 }
 
@@ -161,7 +161,7 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #fafafa;
+  background-color: var(--color-bg-popover);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -179,7 +179,7 @@ export default {
   margin: 0;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, .85);
+  color: var(--color-text);
 }
 
 </style>

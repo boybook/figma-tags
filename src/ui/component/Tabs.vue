@@ -56,23 +56,23 @@ export default {
   font-size: 12px;
   line-height: 32px;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--color-text-secondary);
   transition: all 200ms ease-out;
   user-select: none;
   cursor: pointer;
 }
 
 .tab-entry:hover {
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--color-text-hover);
 }
 
 .tab-entry--current {
   font-weight: 600 !important;
-  color: rgba(0, 0, 0, 0.85) !important;
+  color: var(--color-text) !important;
 }
 
 .tab-entry--current .tab-entry-span {
-  border-bottom: rgba(0, 0, 0, 0.85) solid 2px;
+  border-bottom: var(--color-text) solid 2px;
 }
 
 .tab-entry-span {

@@ -43,7 +43,7 @@ export default {
   flex-grow: 1;
   margin: 0 0 0 176px;
   padding: 42px 0 64px 0;
-  background-color: #EDEDED;
+  background-color: var(--color-bg-select-wrapper);
   min-height: 100vh;
 }
 

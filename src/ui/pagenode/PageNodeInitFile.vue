@@ -77,7 +77,7 @@ export default {
 }
 
 .settings:hover {
-  background-color: #f2f2f2;
+  background-color: var(--color-bg-secondary);
 }
 
 p {
@@ -130,7 +130,7 @@ p {
   text-align: left;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--color-text-secondary);
 }
 
 </style>

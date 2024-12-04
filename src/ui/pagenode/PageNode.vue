@@ -576,7 +576,7 @@ export default {
 
 .tree {
   padding-top: 12px;
-  border-top: solid #eee 1px;
+  border-top: solid var(--color-border-light) 1px;
 }
 
 .selected {
@@ -617,6 +617,7 @@ export default {
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   justify-content: center;

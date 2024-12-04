@@ -41,10 +41,10 @@ export default {
   align-items: center;
   padding: 8px 12px 9px; /* 不知为何，下方少了1个像素 */
 
-  background: rgba(255, 255, 255, .8);
+  background: var(--color-bg-overlay-blur);
   backdrop-filter: blur(16px);
 
-  border-top: 1px #E0E0E0 solid;
+  border-top: 1px var(--color-border) solid;
 }
 
 </style>

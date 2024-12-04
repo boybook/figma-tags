@@ -5,6 +5,7 @@ import App from './ui.vue';
 import { messages } from "./I18n";
 import Popper from "vue3-popper";
 import './popper.css';
+import './styles/themes.scss';
 
 const i18n = createI18n({
     legacy: false,

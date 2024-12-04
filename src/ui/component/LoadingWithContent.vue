@@ -3,7 +3,7 @@
     <slot></slot>
     <transition name="fade">
       <div v-if="realLoading" class="loading-wrapper">
-        <LoadingIcon />
+        <LoadingIcon :color="isDark ? 'white' : 'black'" />
         <p style="padding: 0 16px 16px"> {{ msg }} </p>
       </div>
     </transition>
@@ -13,6 +13,8 @@
 <script lang="ts">
 
 import LoadingIcon from "./LoadingIcon.vue";
+import { useTheme } from '../utils/theme';
+
 import {ref, watchEffect} from "vue";
 export default {
   name: "LoadingWithContent",
@@ -22,6 +24,7 @@ export default {
     msg: String
   },
   setup(props) {
+    const { isDark } = useTheme();
     const realLoading = ref(false);
     watchEffect(() => {
       console.log('loading', props.loading, props.msg);
@@ -35,7 +38,7 @@ export default {
         }, 50);
       }
     });
-    return { realLoading };
+    return { isDark, realLoading };
   }
 }
 
@@ -49,7 +52,7 @@ export default {
   right: 0;
   top: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--color-bg-overlay-blur-lite);
   backdrop-filter: blur(8px);
   z-index: 999;
 
@@ -59,7 +62,7 @@ export default {
   align-items: center;
 
   font-size: 14px;
-  color: rgba(0, 0, 0, .65);
+  color: var(--color-text-secondary);
 }
 
 .fade-enter-from,

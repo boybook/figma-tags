@@ -203,7 +203,7 @@ export default {
   padding: 0 0 24px;
   font-size: 12px;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--color-text-less);
   user-select: none;
 }
 
@@ -217,11 +217,11 @@ export default {
   left: 0;
   top: 0;
   bottom: 0;
-  background: white;
+  background: var(--color-bg);
   margin: 0;
   padding: 0 0 4px 0;
   overflow: auto;
-  border-right: 1px #E0E0E0 solid;
+  border-right: 1px var(--color-border) solid;
 
   display: flex;
   flex-direction: column;
@@ -239,7 +239,7 @@ export default {
   transition: all 200ms ease-out;
   cursor: pointer;
   align-self: flex-start;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--color-text-less);
 
   /* Auto layout */
   display: flex;
@@ -249,11 +249,11 @@ export default {
 }
 
 .back-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-hover-lite);
 }
 
 .back-button:active {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bg-pressed-lite);
 }
 
 .node-token-access {
@@ -324,8 +324,8 @@ export default {
   position: fixed;
   width: 176px;
   align-self: stretch;
-  background-color: #f8f8f8e0;
-  box-shadow: inset 0 -1px 0 #eee;
+  background-color: var(--color-bg-topbar);
+  box-shadow: inset 0 -1px 0 var(--color-border-light);
   backdrop-filter: blur(16px);
   z-index: 99;
 }
@@ -335,8 +335,8 @@ export default {
   width: 100%;
   top: 0;
   align-self: stretch;
-  background-color: #f8f8f8e0;
-  box-shadow: inset 0 -1px 0 #eee;
+  background-color: var(--color-bg-topbar);
+  box-shadow: inset 0 -1px 0 var(--color-border-light);
   backdrop-filter: blur(16px);
   z-index: 99;
 }
