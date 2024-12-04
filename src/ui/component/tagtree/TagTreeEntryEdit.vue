@@ -47,8 +47,15 @@ export default {
       type: Object as PropType<Transfer.TagColor>
     }
   },
-  emits: [ 'submit', 'cancel', 'toDelete' ],
+  emits: [ 'update:color', 'submit', 'cancel', 'toDelete' ],
   setup(props, context) {
+    const color = ref(props.color);
+    watch(
+      color,
+      (newVal) => {
+        context.emit('update:color', newVal);
+      }
+    )
     const text = ref<string>(props.defaultText);
     const error = ref(false);
     watch(
@@ -72,7 +79,7 @@ export default {
     const toDelete = () => {
       context.emit('toDelete');
     }
-    return { text, error, submit, cancel, toDelete };
+    return { color, text, error, submit, cancel, toDelete };
   }
 }
 

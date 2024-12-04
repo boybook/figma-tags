@@ -41,7 +41,7 @@
 
 <script lang="ts">
 
-import {computed, PropType, ref} from "vue";
+import { computed, PropType, ref, watch } from "vue";
 import * as Utils from "../../utils";
 import TagTreeTypeTitle from "./TagTreeTypeTitle.vue";
 import TagTreeTypeList from "./TagTreeTypeList.vue";
@@ -68,6 +68,7 @@ export default {
     }
   },
   emits: [
+    'update:open',
     'selectTag',
     'addTag',
     'editTag',
@@ -77,6 +78,10 @@ export default {
     'dragTag'
   ],
   setup(props, context) {
+    const open = ref(props.open);
+    watch(open, (newVal) => {
+      context.emit('update:open', newVal);
+    });
     const addingTag = ref(false);
     // 一层层往外传，直到PageNode
     const addTag = (text: string, color?: Transfer.TagColor) => {
@@ -103,7 +108,7 @@ export default {
     const onDragTag = (tagType: Context.TagType, childTagType: string) => {
       context.emit('dragTag', tagType, childTagType);
     }
-    return { Utils, addingTag, isTagTypeEmpty, addTag, onSelectTag, editTypeName, onDragTag }
+    return { Utils, open, addingTag, isTagTypeEmpty, addTag, onSelectTag, editTypeName, onDragTag }
   }
 }
 </script>
