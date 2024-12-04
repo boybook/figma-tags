@@ -1,22 +1,20 @@
-const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const RemovePlugin = require('remove-files-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {VueLoaderPlugin} = require('vue-loader');
+const { VueLoaderPlugin } = require('vue-loader');
 const path = require('path');
 
 module.exports = (env, argv) => ({
-    // This is necessary because Figma's 'eval' works differently than normal eval
     devtool: argv.mode === 'production' ? false : 'inline-source-map',
 
     entry: {
-        ui: './src/ui/ui.ts', // The entry point for your UI code
-        code: './src/code.ts' // The entry point for your plugin code
+        ui: './src/ui/ui.ts',
+        code: './src/code.ts'
     },
 
     module: {
         rules: [
-            // Converts TypeScript code to JavaScript
+            // 处理 TypeScript 文件
             {
                 test: /\.tsx?$/,
                 loader: 'ts-loader',
@@ -26,23 +24,28 @@ module.exports = (env, argv) => ({
                 }
             },
 
+            // 处理 .mjs 文件
             {
                 test: /\.mjsx?$/,
                 include: /node_modules/,
                 type: 'javascript/auto',
             },
 
-            // Enables including CSS by doing "import './file.css'" in your TypeScript code
-            {test: /\.css$/, loader: [{loader: 'style-loader'}, {loader: 'css-loader'}]},
+            // 处理 CSS 文件
+            {
+                test: /\.css$/,
+                use: [
+                    { loader: 'style-loader' },
+                    { loader: 'css-loader' }
+                ]
+            },
+
+            // 处理 SCSS 文件
             {
                 test: /\.scss$/,
                 use: [
-                    {
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader'
-                    },
+                    { loader: 'style-loader' },
+                    { loader: 'css-loader' },
                     {
                         loader: 'sass-loader',
                         options: {
@@ -52,62 +55,77 @@ module.exports = (env, argv) => ({
                 ]
             },
 
+            // 处理 Pug 模板
             {
                 test: /\.pug$/,
                 loader: 'pug-plain-loader'
             },
 
+            // 处理 Vue 文件
             {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             },
 
-            // Allows you to use "<%= require('./file.svg') %>" in your HTML code to get a data URI
-            {test: /\.(png|jpg|gif|webp|svg)$/, loader: [{loader: 'url-loader'}]}
+            // 处理资源文件（使用 Webpack 5 的 Asset Modules）
+            {
+                test: /\.(png|jpg|gif|webp|svg)$/i,
+                type: 'asset/inline'
+            }
         ]
     },
 
-    // Webpack tries these extensions for you if you omit the extension like "import './file'"
-    resolve: {extensions: ['.tsx', '.ts', '.jsx', '.js']},
+    resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js'] },
 
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'dist') // Compile into a folder called "dist"
+        path: path.resolve(__dirname, 'dist')
     },
 
-    // Tells Webpack to generate "ui.html" and to inline "ui.ts" into it
-    plugins:
-        argv.mode === 'production'
-            ? [
-                new VueLoaderPlugin(),
-                new RemovePlugin({
-                    after: {include: ['dist/ui.js']}
-                }),
-                new UglifyJsPlugin({
-                    uglifyOptions: {
-                        compress: {
-                            drop_console: true,  //注释console
-                            drop_debugger: true, //注释debugger
-                            pure_funcs: ['console.log'], //移除console.log
-                        },
-                    },
-                }),
-                new HtmlWebpackPlugin({
-                    template: './src/ui/ui.html',
-                    filename: 'ui.html',
-                    inlineSource: '.(js|css|scss)$',
-                    chunks: ['ui']
-                }),
-                new HtmlWebpackInlineSourcePlugin()
-            ]
-            : [
-                new VueLoaderPlugin(),
-                new HtmlWebpackPlugin({
-                    template: './src/ui/ui.html',
-                    filename: 'ui.html',
-                    inlineSource: '.(js|css|scss)$',
-                    chunks: ['ui']
-                }),
-                new HtmlWebpackInlineSourcePlugin()
-            ]
+    plugins: [
+        new VueLoaderPlugin(),
+        new RemovePlugin({
+            after: { include: ['dist/ui.js'] }
+        }),
+        // new UglifyJsPlugin({
+        //     uglifyOptions: {
+        //         compress: {
+        //             drop_console: true,
+        //             drop_debugger: true,
+        //             pure_funcs: ['console.log'],
+        //         },
+        //     },
+        // }),
+        new HtmlWebpackPlugin({
+            filename: 'ui.html',
+            chunks: ['ui'],
+            inject: false,
+            templateContent: ({ htmlWebpackPlugin, compilation }) => {
+                const cssAssets = htmlWebpackPlugin.files.css;
+                const jsAssets = htmlWebpackPlugin.files.js;
+
+                const styles = cssAssets
+                    .map(asset => `<style>${compilation.assets[asset].source()}</style>`)
+                    .join('\n');
+                const scripts = jsAssets
+                    .map(asset => `<script>${compilation.assets[asset].source()}</script>`)
+                    .join('\n');
+
+                return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>Figma Tags Test</title>
+        ${styles}
+      </head>
+      <body>
+        <div id="app"></div>
+        ${scripts}
+      </body>
+      </html>
+    `;
+            }
+        })
+    ]
 });
