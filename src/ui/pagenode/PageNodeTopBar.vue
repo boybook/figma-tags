@@ -23,7 +23,7 @@ export default {
   name: "PageNodeTopBar",
   components: { Tabs },
   props: {
-    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
+    togglePage: Function as PropType<(p: Transfer.Page, extra?: any) => void>,
     current: Object as PropType<Transfer.CurrentSelection>,
     showRefresh: Boolean
   },

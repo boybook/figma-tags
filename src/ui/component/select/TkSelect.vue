@@ -31,7 +31,9 @@ import {ref, onMounted, computed, watch, onDeactivated, provide, getCurrentInsta
 export default {
   name: 'TkSelect',
   props: {
-    selected: {},
+    selected: {
+      type: String
+    },
     minWidth: Number,
     maxHeight: Number,
     align: {

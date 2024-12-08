@@ -11,7 +11,6 @@
 	"documentAccess": "dynamic-page",
 	"networkAccess": {
 		"allowedDomains": [
-			"https://figma-tags-figma-tags-vnviuyqxwp.cn-hangzhou.fcapp.run",
 			"https://notion.boybook.workers.dev",
 			"https://api.figma.com"
 		]

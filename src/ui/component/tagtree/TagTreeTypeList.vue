@@ -30,7 +30,7 @@ export default {
       default: true
     }
   },
-  emits: [ "selectTag", "editTag", "dragTag" ],
+  emits: [ "selectTag", "deleteTag", "editTag", "dragTag" ],
   setup(props, context) {
     const childList = computed(() => [...props.tagType.tags.entries()]);
     const onSelectTag = (tag, check) => {

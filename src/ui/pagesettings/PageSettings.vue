@@ -30,7 +30,7 @@
         <h3> {{ $t('settings.provider.title') }} </h3>
         <ToggleRadio
             fill="fill"
-            :entries="[$t('settings.provider.document.name'), $t('settings.provider.local.name'), $t('settings.provider.cloud.name'), $t('settings.provider.notion.name')]"
+            :entries="[$t('settings.provider.document.name'), $t('settings.provider.local.name')/*, $t('settings.provider.cloud.name')*/, $t('settings.provider.notion.name')]"
             v-model:current="providerCurrent"
         />
         <div class="provider-card" v-if="providerCurrent === 0">
@@ -55,7 +55,7 @@
           </div>
         </div>
         <!-- Provider.Cloud -->
-        <div class="provider-card" v-if="providerCurrent === 2">
+<!--        <div class="provider-card" v-if="providerCurrent === 2">
           <h3> {{ $t('settings.provider.cloud.title') }} </h3>
           <p style="margin-bottom: 8px"> {{ $t('settings.provider.cloud.content') }} </p>
           <div v-if="!providerConfigs.cloud.uuid" style="display: flex; align-self: stretch; align-items: center; justify-content: center; height: 26px; background-color: #fff; border-radius: 2px;">
@@ -66,9 +66,9 @@
               v-model:val="providerConfigs.cloud.uuid"
               size="small"
           />
-        </div>
+        </div>-->
         <!-- Provider.Notion -->
-        <div class="provider-card" v-if="providerCurrent === 3">
+        <div class="provider-card" v-if="providerCurrent === 2">
           <h3> {{ $t('settings.provider.notion.name') }} </h3>
           <p style="margin-bottom: 8px"> {{ $t('settings.provider.notion.content') }} </p>
           <p style="margin-bottom: 4px">
@@ -152,7 +152,10 @@ export default {
   props: {
     initData: Object as PropType<Transfer.InitData>,
     provider: Object as PropType<DataProvider>,
-    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
+    togglePage: {
+      type: Function as PropType<(p: Transfer.Page, extra?: any) => void>,
+      required: true
+    }
   },
   emits: [ 'setProvider' ],
   setup(props, context) {

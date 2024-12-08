@@ -15,16 +15,10 @@ export default {
   props: {
     type: {
       type: String as PropType<'primary' | 'secondary' | 'link' | 'dashed'>,
-      validator(value) {
-        return ['primary', 'secondary', 'link', 'dashed'].includes(value)
-      },
       default: 'secondary'
     },
     status: {
       type: String as PropType< 'normal' | 'loading' | 'disable' >,
-      validator(value) {
-        return ['normal', 'loading', 'disable'].includes(value)
-      },
       default: 'normal'
     }
   },

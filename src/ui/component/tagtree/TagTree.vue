@@ -22,21 +22,31 @@
 </template>
 
 <script lang="ts">
-import {PropType} from "vue";
+import { defineComponent, PropType } from "vue";
 import TagTreeType from "./TagTreeType.vue";
 import FigButton from "../FigButton.vue";
 import TagTreeAddType from "./TagTreeAddType.vue";
 
 export default {
-  name: "TagTree",
-  components: { TagTreeAddType, FigButton, TagTreeType },
+  name: 'TagTree',
+  components: {
+    TagTreeAddType,
+    FigButton,
+    TagTreeType,
+  },
   props: {
-    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
-    tagTree: Object as PropType<Context.TagTree>,
+    togglePage: {
+      type: Function as PropType<(p: Transfer.Page, extra?: any) => void>,
+      required: true,
+    },
+    tagTree: {
+      type: Object as PropType<Context.TagTree>,
+      required: true,
+    },
     operable: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   emits: [
     'selectTag',
@@ -46,15 +56,18 @@ export default {
     'addTag',
     'editTag',
     'deleteTag',
-    'dragTag'
+    'dragTag',
   ],
-  setup(props, context) {
+  setup(props, { emit }) {
     const onDragTag = (tagType: Context.TagType, childTagType: string) => {
-      context.emit('dragTag', tagType, childTagType);
-    }
-    return { onDragTag }
-  }
-}
+      emit('dragTag', tagType, childTagType);
+    };
+
+    return {
+      onDragTag,
+    };
+  },
+};
 </script>
 
 <style scoped>

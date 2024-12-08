@@ -52,20 +52,26 @@ export default {
   name: "TagTreeType",
   components: { FigButton, TagTreeEntryEdit, TagTreeTypeList, TagTreeTypeTitle },
   props: {
-    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
-    tagType: Object as PropType<Context.TagType>,
+    togglePage: {
+      type: Function as PropType<(p: Transfer.Page, extra?: any) => void>,
+      required: true,
+    },
+    tagType: {
+      type: Object as PropType<Context.TagType>,
+      required: true,
+    },
     checkable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     open: {
       type: Boolean,
-      default: true
+      default: true,
     },
     operable: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   emits: [
     'update:open',

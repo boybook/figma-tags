@@ -22,17 +22,11 @@ export default {
     },
     placeholder: String,
     size: {
-      type: String,
-      validator(value: string) {
-        return ['small', 'normal', 'large'].includes(value)
-      },
+      type: String as () => 'small' | 'normal' | 'large',
       default: 'normal'
     },
     status: {
-      type: String,
-      validator(value: string) {
-        return ['', 'error', 'warning'].includes(value)
-      },
+      type: String as () => '' | 'error' | 'warning',
       default: ''
     }
   },

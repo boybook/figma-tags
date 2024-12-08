@@ -102,7 +102,10 @@ export default {
     PageNodeTopBar
   },
   props: {
-    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
+    togglePage: {
+      type: Function as PropType<(p: Transfer.Page, extra?: any) => void>,
+      required: true
+    },
     provider: Object as PropType<DataProvider>,
     initData: Object as PropType<Transfer.InitData>
   },
@@ -461,7 +464,7 @@ export default {
         }
         loading.value = t('saving.node', [' (tags)']);
         fullTags.value = Utils.contextTagTree2StorageTags(tagTree.value);
-        if (!Utils.equalsFullTags(await props.provider.getFullTags(), fullTags.value)) {
+        if (!Utils.equalsFullTags(await props.provider.getFullTags(false), fullTags.value)) {
           await props.provider.updateFullTags(fullTags.value, {});
           dispatch("canvas-refresh-all-marks", JSON.stringify([...fullTags.value.entries()]));
         }

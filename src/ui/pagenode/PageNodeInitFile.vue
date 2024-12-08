@@ -17,7 +17,7 @@
 
 <script lang="ts">
 
-import { ref } from "vue";
+import { PropType, ref } from "vue";
 import FigInput from "../component/FigInput.vue";
 import FigButton from "../component/FigButton.vue";
 import { dispatch } from "../uiMessageHandler";
@@ -26,7 +26,7 @@ import PageSettingsLanguage from "../pagesettings/PageSettingsLanguage.vue";
 export default {
   name: "PageNodeInitFile",
   props: {
-    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
+    togglePage: Function as PropType<(p: Transfer.Page, extra?: any) => void>,
   },
   components: { PageSettingsLanguage, FigButton, FigInput },
   emits: [ 'set-file-id' ],
