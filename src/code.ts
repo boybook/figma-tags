@@ -171,7 +171,7 @@ handleEvent('request-selection', () => {
 handleEvent('select-node', async (nodeId: string) => {
 	const node = await figma.getNodeByIdAsync(nodeId);
 	if (node) {
-		figma.currentPage = getPageNode(node);
+		await figma.setCurrentPageAsync(getPageNode(node));
 		if (node.type !== 'PAGE') {
 			figma.currentPage.selection = [getPageRootNode(node)];
 			figma.viewport.scrollAndZoomIntoView([node]);
@@ -250,7 +250,7 @@ async function checkSelectCanvasTag() {
 			const nodeId = select.name.slice(4);
 			const node = await figma.getNodeByIdAsync(nodeId);
 			if (node) {
-				figma.currentPage = getPageNode(node);
+				await figma.setCurrentPageAsync(getPageNode(node));
 				figma.currentPage.selection = [<SceneNode> node];
 			}
 		}

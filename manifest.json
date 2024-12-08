@@ -12,7 +12,8 @@
 	"networkAccess": {
 		"allowedDomains": [
 			"https://notion.boybook.workers.dev",
-			"https://api.figma.com"
+			"https://api.figma.com",
+			"https://*.amazonaws.com"
 		]
 	},
 	"permissions": [
