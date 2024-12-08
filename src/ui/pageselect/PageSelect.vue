@@ -1,4 +1,5 @@
 <template>
+  <ResizableCorner />
   <div class="page-select">
     <div v-if="tagTree?.length === 0" class="page-select-empty">
       <div class="page-select-wrapper-empty-tabs">
@@ -73,9 +74,9 @@
 </template>
 
 <script lang="ts">
-
+import ResizableCorner from "../component/ResizableCorner.vue";
 import TagTree from "../component/tagtree/TagTree.vue";
-import {computed, onMounted, PropType, ref, watchEffect} from "vue";
+import {computed, PropType, ref, watchEffect} from "vue";
 import * as Utils from "../utils";
 import DataProvider from "../provider/DataProvider";
 import PageSelectType from "./PageSelectType.vue";
@@ -88,10 +89,13 @@ import Tabs from "../component/Tabs.vue";
 
 export default {
   name: "PageSelect",
-  components: {Tabs, FigButton, PageSelectBar, PageSelectType, TagTree, AccessTokenModal, AccessFileIdModal },
+  components: { Tabs, FigButton, PageSelectBar, PageSelectType, TagTree, AccessTokenModal, AccessFileIdModal, ResizableCorner },
   props: {
     initData: Object as PropType<Transfer.InitData>,
-    togglePage: Function as (p: Transfer.Page, extra?: any) => void,
+    togglePage: {
+      type: Function as PropType<(p: Transfer.Page, extra?: any) => void>,
+      required: true
+    },
     provider: Object as PropType<DataProvider>,
     defaultTagType: String,
     backVisible: {
@@ -115,7 +119,7 @@ export default {
       document.body.style.overflow = (accessModal.value) ? 'hidden' : 'auto';
     })
 
-    props.provider.getFullTags().then(result => {
+    props.provider.getFullTags(false).then(result => {
       tagTree.value = Utils.storageTags2ContextTagTree({}, result);
       if (!currentType.value) currentType.value = tagTree.value[0]?.type;
     });
@@ -182,7 +186,21 @@ export default {
       }
     }
 
-    return { tagTree, currentType, collectTags, alertAccess, accessModal, fileIdModal, needAccessBoth, selectTag, changeSort, accessModalIgnore, accessModalSubmit, fileIdModalSubmit, tabToggle }
+    return {
+      tagTree,
+      currentType,
+      collectTags,
+      alertAccess,
+      accessModal,
+      fileIdModal,
+      needAccessBoth,
+      selectTag,
+      changeSort,
+      accessModalIgnore,
+      accessModalSubmit,
+      fileIdModalSubmit,
+      tabToggle
+    }
   }
 }
 

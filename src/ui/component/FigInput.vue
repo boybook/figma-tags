@@ -11,7 +11,7 @@
 
 <script lang="ts">
 
-import {toRefs, watch, computed} from "vue";
+import {watch, computed} from "vue";
 
 export default {
   name: "FigInput",
@@ -23,14 +23,14 @@ export default {
     placeholder: String,
     size: {
       type: String,
-      validator(value) {
+      validator(value: string) {
         return ['small', 'normal', 'large'].includes(value)
       },
       default: 'normal'
     },
     status: {
       type: String,
-      validator(value) {
+      validator(value: string) {
         return ['', 'error', 'warning'].includes(value)
       },
       default: ''
@@ -54,7 +54,7 @@ export default {
       }
     ));
     return {
-      ...toRefs(props), classObject
+      classObject
     };
   },
 }

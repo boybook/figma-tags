@@ -198,10 +198,11 @@ handleEvent('toggle-node-type', (type: 'document' | 'frame') => {
 	dispatch("selectionchange", packageCurrentSelection());
 });
 
-figma.on("selectionchange", () => {
+figma.on("selectionchange", async () => {
 	if (figma.currentPage.selection.length === 0) {
 		// 需要检查一下移动至其他Page
 		for (let page of figma.root.children) {
+			await page.loadAsync()
 			for (let el of page.children.filter(c => c.getSharedPluginData("figma_tags", "node"))) {
 				checkNodeTilePos(el).then();
 			}
